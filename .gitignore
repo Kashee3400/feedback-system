@@ -1,0 +1,7 @@
+_pycache_
+staticfiles
+error.log
+web.config-devep
+redis.bat-devep
+staticfiles
+.env-devep

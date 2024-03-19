@@ -1,0 +1,46 @@
+{% load i18n static %}<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0" />
+    <meta name="description" content="POS - Bootstrap Admin Template" />
+    <meta name="keywords" content="admin, estimates, bootstrap, business, corporate, creative, invoice, html5, responsive, Projects" />
+    <meta name="author" content="Dreamguys - Bootstrap Admin Template" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>{% block title %}{% endblock title %}</title>
+    <link rel="shortcut icon" type="image/x-icon" href="{% static 'img/favicon.png' %}" />
+    <link rel="stylesheet" href="{% static 'invent_app/bootstrap/css/bootstrap.min.css' %}" />
+    <link rel="stylesheet" href="{% static 'invent_app/bootstrap/css/bootstrap-datetimepicker.min.css' %}" />
+    <link rel="stylesheet" href="{% static 'invent_app/css/animate.css' %}" />
+    <link rel="stylesheet" href="{% static 'invent_app/select2/css/select2.min.css' %}" />
+    {% block xtra_css %}{% endblock xtra_css %}
+    <link rel="stylesheet" href="{% static 'invent_app/fontawesome/css/fontawesome.min.css' %}" />
+    <link rel="stylesheet" href="{% static 'invent_app/fontawesome/css/all.min.css' %}" />
+    <link rel="stylesheet" href="{% static 'invent_app/css/style.css' %}" />
+  </head>
+  <body>
+    <div id="global-loader">
+      <div class="whirly-loader"></div>
+    </div>
+    <div class="main-wrapper">
+      {% include "invent_app/myadmin/header.html" %}
+      {% include "invent_app/myadmin/sidebar.html" %}
+      {% include "invent_app/myadmin/collapsed-sidebar.html" %}   
+      {% include "invent_app/myadmin/horizontal-sidebar.html" %}
+      {% block main_content %}{% endblock main_content %}
+      
+    </div>
+    {% block xtra_js %}{% endblock xtra_js %}
+    <script src="{% static 'invent_app/js/jquery-3.7.1.min.js' %}" type="d8cbfc58f92430278d5b9360-text/javascript"></script>
+    <script src="{% static 'invent_app/js/feather.min.js' %}" type="d8cbfc58f92430278d5b9360-text/javascript"></script>
+    <script src="{% static 'invent_app/js/jquery.slimscroll.min.js' %}" type="d8cbfc58f92430278d5b9360-text/javascript"></script>
+    <script src="{% static 'invent_app/js/bootstrap.bundle.min.js' %}" type="d8cbfc58f92430278d5b9360-text/javascript"></script>
+    <script src="{% static 'invent_app/js/apexcharts.min.js' %}" type="d8cbfc58f92430278d5b9360-text/javascript"></script>
+    <script src="{% static 'invent_app/js/chart-data.js' %}" type="d8cbfc58f92430278d5b9360-text/javascript"></script>
+    <script src="{% static 'invent_app/sweetalert2/sweetalert2.all.min.js' %}" type="d8cbfc58f92430278d5b9360-text/javascript"></script>
+    <script src="{% static 'invent_app/js/theme-script.js' %}" type="d8cbfc58f92430278d5b9360-text/javascript"></script>
+    {% comment %} <script src="{% static 'invent_app/js/theme-setting.js' %}" type="d8cbfc58f92430278d5b9360-text/javascript"></script> {% endcomment %}
+    <script src="{% static 'invent_app/js/scripts.js' %}" type="d8cbfc58f92430278d5b9360-text/javascript"></script>
+    <script src="{% static 'invent_app/js/rocket-loader.min.js' %}" data-cf-settings="d8cbfc58f92430278d5b9360-|49" defer></script>
+  </body>
+</html>

@@ -1,0 +1,59 @@
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-inner slimscroll">
+    <div id="sidebar-menu" class="sidebar-menu">
+      <ul>
+        <li class="submenu-open">
+          <h6 class="submenu-hdr">Main</h6>
+
+          <ul>
+            <li class="submenu">
+              <a href="javascript:void(0);" class="subdrop active"><i data-feather="grid"></i><span>Dashboard</span><span class="menu-arrow"></span></a>
+
+              <ul>
+                <li>
+                  <a target="_blank" href="{% url 'admin:index' %}" class="active">Manager Users</a>
+                </li>
+
+                <li>
+                  <a href="sales-dashboard.html">Profile</a>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+
+        <li class="submenu-open">
+          <h6 class="submenu-hdr">Feedbacks</h6>
+          <ul>
+            <li class="submenu">
+              <a href="javascript:void(0);" class="subdrop"><i data-feather="grid"></i><span>Feedback</span><span class="menu-arrow"></span></a>
+              <ul>
+                <li>
+                  <a href="product-list.html"><i data-feather="box"></i><span>Farmers' Feedbacks</span></a>
+                </li>
+    
+                <li>
+                  <a href="add-product.html"><i data-feather="plus-square"></i><span>Sahayaks' Feedbacks</span></a>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+
+
+        {% comment %} <li class="submenu-open">
+          <h6 class="submenu-hdr">Feedback</h6>
+          <ul>
+            <li>
+              <a href="product-list.html"><i data-feather="box"></i><span>Farmers' Feedbacks</span></a>
+            </li>
+
+            <li>
+              <a href="add-product.html"><i data-feather="plus-square"></i><span>Sahayaks' Feedbacks</span></a>
+            </li>
+          </ul>
+        </li> {% endcomment %}
+      </ul>
+    </div>
+  </div>
+</div>
