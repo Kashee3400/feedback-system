@@ -27,12 +27,12 @@ else:
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# DEBUG = False
-DEBUG = True
+DEBUG = False
+# DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '*']
+# ALLOWED_HOSTS = ['localhost', '*']
 
-# ALLOWED_HOSTS = ["1.22.197.176"]
+ALLOWED_HOSTS = ["1.22.197.176"]
 
 
 # Application definition
