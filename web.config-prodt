@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <configuration>
+  <system.webServer>
+  </system.webServer>
 
   <appSettings>
-    <add key="PYTHONPATH" value="K:\Django\inventory\invent" />
+    <add key="PYTHONPATH" value="E:\production\feedbacksystem\invent\feedback-system" />
     <add key="WSGI_HANDLER" value="invent.wsgi.application" />
     <add key="DJANGO_SETTINGS_MODULE" value="invent.settings" />
   </appSettings>
@@ -13,7 +15,7 @@
     <location path="" overrideMode="Allow">
         <system.webServer>
     <handlers>
-      <add name="Python FastCGI" path="*" verb="*" modules="FastCgiModule" scriptProcessor="K:\Django\inventory\myenv\Scripts\python.exe|K:\Django\inventory\myenv\lib\site-packages\wfastcgi.py" resourceType="Unspecified" requireAccess="Script" />
+      <add name="Python FastCGI" path="*" verb="*" modules="FastCgiModule" scriptProcessor="E:\production\feedbacksystem\venv\Scripts\python.exe|E:\production\feedbacksystem\venv\lib\site-packages\wfastcgi.py" resourceType="Unspecified" requireAccess="Script" />
     </handlers>
         </system.webServer>
     </location>

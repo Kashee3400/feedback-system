@@ -89,10 +89,16 @@ class Department(models.Model):
 
     def __str__(self):
         return self.department
+    
+class FeedbackCategory(models.Model):
+    department = models.ForeignKey(Department, on_delete=models.CASCADE, related_name='department_category')
+    category = models.CharField(max_length=50)
+    def __str__(self):
+        return f"Feedback Category {self.department.department} {self.category}"
 
 class Feedback(models.Model):
     sender = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='sent_feedbacks')
-    department = models.ForeignKey(Department, on_delete=models.CASCADE)
+    feedback_cat = models.ForeignKey(FeedbackCategory, on_delete=models.CASCADE,blank=True,null=True)
     district = models.CharField(max_length=50)
     message = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
