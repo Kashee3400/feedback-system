@@ -1,0 +1,204 @@
+{% extends 'invent_app/myadmin/base.html' %}
+{% load static %}
+{% block title %}
+  Dashboard | Admin
+{% endblock %}
+
+{% block xtra_css %}
+{% endblock xtra_css %}
+
+{% block main_content %}
+<div class="page-wrapper">
+  <div class="content">
+    <div class="row">
+      <div class="col-xl-12 col-sm-12 col-12 d-flex">
+        <div class="card flex-fill">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0">Create Farmer Feedback</h5>
+            <div class="graph-sets">
+              <div class="view-all-link">
+                <a href="javascript:void(0);" class="view-all d-flex align-items-center">View All<span class="ps-2 d-flex align-items-center"><i data-feather="arrow-right" class="feather-16"></i></span></a>
+              </div>
+            </div>
+          </div>
+          
+          <div class="card-body">
+            <form method="post" id="sahayak-feedback-form" enctype="multipart/form-data">
+              {% csrf_token %}
+              <div class="row">
+                <div class="col-lg-6 col-sm-6 col-12">
+                  <div class="input-blocks">
+                      {{ form.name.label_tag }}
+                      {{ form.name }}
+                      {% if form.name.errors %}
+                          <div class="error">
+                              {{ form.name.errors }}
+                          </div>
+                      {% endif %}
+                  </div>
+                </div>
+                <div class="col-lg-6 col-sm-6 col-12">
+                  <div class="input-blocks">
+                    {{ form.mobile.label_tag }}
+                      {{ form.mobile }}
+                      {% if form.mobile.errors %}
+                          <div class="error">
+                              {{ form.mobile.errors }}
+                          </div>
+                      {% endif %}
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-lg-4 col-sm-6 col-12">
+                  <div class="input-blocks">
+                      {{ form.mpp.label_tag }}
+                      {{ form.mpp }}
+                      {% if form.mpp.errors %}
+                          <div class="error">
+                              {{ form.mpp.errors }}
+                          </div>
+                      {% endif %}
+                  </div>
+                </div>
+                <div class="col-lg-4 col-sm-6 col-12">
+                  <div class="input-blocks">
+                    {{ form.mcc.label_tag }}
+                      {{ form.mcc }}
+                      {% if form.mcc.errors %}
+                          <div class="error">
+                              {{ form.mcc.errors }}
+                          </div>
+                      {% endif %}
+                  </div>
+                </div>
+                <div class="col-lg-4 col-sm-6 col-12">
+                  <div class="input-blocks">
+                    {{ form.district.label_tag }}
+                      {{ form.district }}
+                      {% if form.district.errors %}
+                          <div class="error">
+                              {{ form.district.errors }}
+                          </div>
+                      {% endif %}
+                  </div>
+                </div>
+              </div>
+              
+              <div class="row">
+                <div class="col-lg-12 col-sm-12 col-12">
+                  <div class="input-blocks">
+                    {{ form.message.label_tag }}
+                      {{ form.message }}
+                      {% if form.message.errors %}
+                          <div class="error">
+                              {{ form.message.errors }}
+                          </div>
+                      {% endif %}
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-lg-12 col-sm-12 col-12">
+                  <div class="input-blocks">
+                    {{ form.file.label_tag }}
+                      {{ form.file }}
+                      {% if form.file.errors %}
+                          <div class="error">
+                              {{ form.file.errors }}
+                          </div>
+                      {% endif %}
+                  </div>
+                </div>
+              </div>
+              <button type="submit" class="btn btn-primary">Submit Feedback</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+{% endblock main_content %}
+
+  {% block xtra_js %}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+      $(document).ready(function () {
+
+        $('#id_location').change(function() {
+          var locationId = $(this).val();
+          
+          // Clear existing options in sub-location dropdown
+          $('#id_sub_location').empty();
+          
+          // Append default option to sub-location dropdown
+          $('#id_sub_location').append($('<option>', {
+              value: '',
+              text: 'Select Sub Location'
+          }));
+          
+          // Make AJAX request to fetch sub-locations based on selected location
+          $.ajax({
+              url: '/get_sublocations/',
+              type: 'GET',
+              data: { location_id: locationId },
+              success: function(data) {
+                  // Iterate over received data and append options to sub-location dropdown
+                  data.forEach(function(subLocation) {
+                      $('#id_sub_location').append($('<option>', {
+                          value: subLocation.id,
+                          text: subLocation.sub_loc
+                      }));
+                  });
+              },
+              error: function(xhr, status, error) {
+                  console.error('Error:', error);
+              }
+          });
+      });
+      
+
+        $('#id_department').change(function () {
+          var departmentId = $(this).val()
+          console.log(departmentId)
+          if (departmentId) {
+            $.ajax({
+              url: '/get_feedback_categories/',
+              type: 'GET',
+              data: { department_id: departmentId },
+              success: function (data) {
+                console.log(data)
+                // Clear existing options
+                $('#id_feedback_cat').empty()
+      
+                // Append new options
+                data.forEach(function (category) {
+                  $('#id_feedback_cat').append(
+                    $('<option>', {
+                      value: category.id,
+                      text: category.category
+                    })
+                  )
+                })
+              },
+              error: function (xhr, status, error) {
+                console.error('Error:', error)
+              }
+            })
+          } else {
+            // If no department is selected, clear the options
+            $('#id_feedback_cat').empty()
+            // Add a default option
+            $('#id_feedback_cat').append(
+              $('<option>', {
+                value: '',
+                text: 'Select Feedback Category'
+              })
+            )
+          }
+        })
+      })
+    </script>
+  {% endblock %}
+</div>

@@ -1,0 +1,130 @@
+{% extends 'invent_app/myadmin/base.html' %}
+{% load static %}
+{% load permission_check %}
+{% load models_field_tag %}
+
+{% block title %}
+  Feedback Review
+{% endblock %}
+
+{% block xtra_style %}
+  <style>
+    .card-body {
+      padding: 20px;
+    }
+    
+    .card-title {
+      font-size: 1.5em;
+      margin-bottom: 15px;
+    }
+    
+    .list-group {
+      padding-left: 0;
+    }
+    
+    .list-group-item {
+      border: none;
+      border-top: 1px solid #dee2e6;
+      background-color: transparent;
+    }
+    
+    .list-group-item:first-child {
+      border-top: none;
+    }
+    
+    .btn-primary {
+      background-color: #007bff;
+      border-color: #007bff;
+    }
+    
+    .btn-primary:hover {
+      background-color: #0056b3;
+      border-color: #0056b3;
+    }
+    
+    .btn-primary:focus {
+      box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.5);
+    }
+  </style>
+{% endblock %}
+
+{% block main_content %}
+  <div class="page-wrapper">
+    <div class="content">
+      <div class="row">
+        <div class="col-xl-12 center col-sm-12 col-12 d-flex">
+          <div class="card flex-fill">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <h5 class="card-title mb-0">Feedback Details</h5>
+            </div>
+            <div class="card-body">
+              <div class="row">
+                <div class="col-lg-4 col-sm-6 col-12">
+                  <div class="input-blocks">
+                    <p>
+                      <strong>Created By:</strong> {{ object.sender }}
+                    </p>
+                  </div>
+                </div>
+                <div class="col-lg-4 col-sm-6 col-12">
+                  <div class="input-blocks">
+                    <p>
+                      <strong>Name:</strong> {{ object.name }}
+                    </p>
+                  </div>
+                </div>
+                <div class="col-lg-4 col-sm-6 col-12">
+                  <div class="input-blocks">
+                    <p>
+                      <strong>Mobile:</strong> +91 {{ object.mobile }}
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-lg-4 col-sm-6 col-12">
+                  <div class="input-blocks">
+                    <p>
+                      <strong>MPP:</strong> {{ object.mpp }}
+                    </p>
+                  </div>
+                </div>
+                <div class="col-lg-4 col-sm-6 col-12">
+                  <div class="input-blocks">
+                    <p>
+                      <strong>MCC:</strong> {{ object.mcc }}
+                    </p>
+                  </div>
+                </div>
+                <div class="col-lg-4 col-sm-6 col-12">
+                  <div class="input-blocks">
+                    <p>
+                      <strong>District:</strong> {{ object.district }}
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <p>
+                <strong>Status:</strong> {% if object.is_closed %}
+                  Closed
+                {% else %}
+                  Open
+                {% endif %}
+              </p>
+              {% if object.file %}
+                <p>
+                  File:
+                  <a href="{{ object.file.url }}" alt="Feedback Image">{{ object.file }}</a>
+                </p>
+              {% endif %}
+              {% if user|has_permission:'invent_app.delete_feedback' %}
+                <a href="{% url 'm_feedback_delete' object.pk %}" class="btn btn-danger">Delete Feedback</a>
+              {% endif %}
+              <a href="{% url 'forward_feedback' object.pk %}" class="btn btn-secondary">Forward Feedback To HOD</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

@@ -1,0 +1,133 @@
+{% extends 'invent_app/myadmin/base.html' %}
+{% block title %}
+  Dashboard |{% if user.role %}
+    {{ user.role }}
+  {% else %}
+    Super Admin
+  {% endif %}
+{% endblock %}
+
+{% block xtra_css %}
+  <style>
+    .errorlist {
+      color: red;
+    }
+  </style>
+{% endblock %}
+
+{% block main_content %}
+  <div class="page-wrapper">
+    <div class="content">
+      <div class="page-header">
+        <div class="page-title">
+          <h4>Profile</h4>
+
+          <h6>User Profile</h6>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-body">
+          <div class="profile-set">
+            <div class="profile-head"></div>
+            <div class="profile-top">
+              <div class="profile-content">
+                {% if user.user_profile.profile_image %}
+                  <div class="profile-contentimg">
+                    <img src="{% if user.user_profile.profile_image %}{{ user.user_profile.profile_image.url }}{% endif %}" alt="img" id="blah" />
+                  </div>
+                {% endif %}
+                <div class="profile-contentname">
+                  <h2>{{ user.first_name }} {{ user.last_name }}</h2>
+                  <h4>Updates Your Photo and Personal Details.</h4>
+                </div>
+              </div>
+            </div>
+          </div>
+          <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="form-errors">
+              {% if form.non_field_errors %}
+                <div class="alert alert-danger" role="alert">
+                  {% for error in form.non_field_errors %}
+                    {{ error }}
+                  {% endfor %}
+                </div>
+              {% endif %}
+            </div>
+            <div class="row">
+              <div class="col-lg-4 col-sm-6 col-12">
+                <div class="input-blocks">
+                  {{ form.first_name.label_tag }}
+                  {{ form.first_name }}
+                  {% if form.first_name.errors %}
+                    <div class="error">{{ form.first_name.errors }}</div>
+                  {% endif %}
+                </div>
+              </div>
+              <div class="col-lg-4 col-sm-6 col-12">
+                <div class="input-blocks">
+                  {{ form.last_name.label_tag }}
+                  {{ form.last_name }}
+                  {% if form.last_name.errors %}
+                    <div class="error">{{ form.last_name.errors }}</div>
+                  {% endif %}
+                </div>
+              </div>
+              <div class="col-lg-4 col-sm-6 col-12">
+                <div class="input-blocks">
+                  {{ form.email.label_tag }}
+                  {{ form.email }}
+                  {% if form.email.errors %}
+                    <div class="error">{{ form.email.errors }}</div>
+                  {% endif %}
+                </div>
+              </div>
+              <div class="col-lg-4 col-sm-6 col-12">
+                <div class="input-blocks">
+                  {{ form.phone_number.label_tag }}
+                  {{ form.phone_number }}
+                  {% if form.phone_number.errors %}
+                    <div class="error">{{ form.phone_number.errors }}</div>
+                  {% endif %}
+                </div>
+              </div>
+              <div class="col-lg-4 col-sm-6 col-12">
+                <div class="input-blocks">
+                  {{ form.dob.label_tag }}
+                  {{ form.dob }}
+                  {% if form.dob.errors %}
+                    <div class="error">{{ form.dob.errors }}</div>
+                  {% endif %}
+                </div>
+              </div>
+              <div class="col-lg-4 col-sm-6 col-12">
+                <div class="input-blocks">
+                  {{ form.gender.label_tag }}
+                  {{ form.gender }}
+                  {% if form.gender.errors %}
+                    <div class="error">{{ form.gender.errors }}</div>
+                  {% endif %}
+                </div>
+              </div>
+              <div class="col-lg-12 col-sm-6 col-12">
+                <div class="input-blocks">
+                  {{ form.profile_image.label_tag }}
+                  {{ form.profile_image }}
+                  {% if form.profile_image.errors %}
+                    <div class="error">{{ form.profile_image.errors }}</div>
+                  {% endif %}
+                </div>
+              </div>
+              <div class="col-lg-12 col-sm-6 col-12">
+                <div class="input-blocks">
+                  <input type="submit" class="btn btn-primary" value="Submit" />
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

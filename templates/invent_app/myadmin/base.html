@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+{% load i18n static %}
+{% load webpush_notifications %}
+{% get_current_language as LANGUAGE_CODE %}{% get_current_language_bidi as LANGUAGE_BIDI %}
+<html lang="{{ LANGUAGE_CODE|default:"en-us" }}" dir="{{ LANGUAGE_BIDI|yesno:'rtl,ltr,auto' }}">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0" />
+    <meta name="description" content="POS - Bootstrap Admin Template" />
+    <meta name="keywords" content="admin, estimates, bootstrap, business, corporate, creative, invoice, html5, responsive, Projects" />
+    <meta name="author" content="Dreamguys - Bootstrap Admin Template" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>
+      {% block title %}
+
+      {% endblock %}
+    </title>
+    {% block xtra_css %}
+
+    {% endblock %}
+
+    <link rel="stylesheet" href="https://dreamspos.dreamstechnologies.com/html/template/assets/css/bootstrap-datetimepicker.min.css" />
+
+    <link rel="stylesheet" href="https://dreamspos.dreamstechnologies.com/html/template/assets/css/animate.css" />
+
+    <link rel="stylesheet" href="https://dreamspos.dreamstechnologies.com/html/template/assets/plugins/select2/css/select2.min.css" />
+
+    <link rel="stylesheet" href="https://dreamspos.dreamstechnologies.com/html/template/assets/plugins/daterangepicker/daterangepicker.css" />
+    <link rel="stylesheet" href="https://dreamspos.dreamstechnologies.com/html/template/assets/css/bootstrap-datetimepicker.min.css" />
+
+    <link rel="stylesheet" href="https://dreamspos.dreamstechnologies.com/html/template/assets/plugins/summernote/summernote-bs4.min.css" />
+
+    <link rel="stylesheet" href="{% static 'invent_app/bootstrap/css/bootstrap.min.css' %}" />
+    <link rel="stylesheet" href="{% static 'invent_app/bootstrap/css/dataTables.bootstrap5.min.css' %}" />
+    <link rel="stylesheet" href="{% static 'invent_app/bootstrap/css/style.css' %}" />
+
+    <link rel="stylesheet" href="https://dreamspos.dreamstechnologies.com/html/template/assets/css/owl.carousel.min.css" />
+
+    <link rel="stylesheet" href="https://dreamspos.dreamstechnologies.com/html/template/assets/plugins/fontawesome/css/fontawesome.min.css" />
+    <link rel="stylesheet" href="https://dreamspos.dreamstechnologies.com/html/template/assets/plugins/fontawesome/css/all.min.css" />
+  </head>
+  <body>
+    <div id="global-loader">
+      <div class="whirly-loader"></div>
+    </div>
+
+    <div class="main-wrapper">
+      {% include 'invent_app/myadmin/header.html' %}
+      {% include 'invent_app/myadmin/sidebar.html' %}
+      {% include 'invent_app/myadmin/collapsed-sidebar.html' %}
+      {% include 'invent_app/myadmin/horizontal-sidebar.html' %}
+      {% block main_content %}
+      {% endblock %}
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    {% block xtra_js %}
+
+    {% endblock %}
+
+    <script src="https://dreamspos.dreamstechnologies.com/html/template/assets/js/jquery-3.7.1.min.js" type="fe69808df06de7d882341805-text/javascript"></script>
+
+    <script src="https://dreamspos.dreamstechnologies.com/html/template/assets/js/feather.min.js" type="fe69808df06de7d882341805-text/javascript"></script>
+
+    <script src="https://dreamspos.dreamstechnologies.com/html/template/assets/js/owl.carousel.min.js" type="fe69808df06de7d882341805-text/javascript"></script>
+
+    <script src="https://dreamspos.dreamstechnologies.com/html/template/assets/js/jquery.slimscroll.min.js" type="fe69808df06de7d882341805-text/javascript"></script>
+
+    <script src="https://dreamspos.dreamstechnologies.com/html/template/assets/js/jquery.dataTables.min.js" type="fe69808df06de7d882341805-text/javascript"></script>
+    <script src="https://dreamspos.dreamstechnologies.com/html/template/assets/js/dataTables.bootstrap5.min.js" type="fe69808df06de7d882341805-text/javascript"></script>
+
+    <script src="https://dreamspos.dreamstechnologies.com/html/template/assets/js/bootstrap.bundle.min.js" type="fe69808df06de7d882341805-text/javascript"></script>
+
+    <script src="https://dreamspos.dreamstechnologies.com/html/template/assets/plugins/moment/moment.min.js" type="fe69808df06de7d882341805-text/javascript"></script>
+    <script src="https://dreamspos.dreamstechnologies.com/html/template/assets/plugins/daterangepicker/daterangepicker.js" type="fe69808df06de7d882341805-text/javascript"></script>
+    <script src="https://dreamspos.dreamstechnologies.com/html/template/assets/js/bootstrap-datetimepicker.min.js" type="fe69808df06de7d882341805-text/javascript"></script>
+
+    <script src="https://dreamspos.dreamstechnologies.com/html/template/assets/plugins/summernote/summernote-bs4.min.js" type="fe69808df06de7d882341805-text/javascript"></script>
+
+    <script src="https://dreamspos.dreamstechnologies.com/html/template/assets/plugins/select2/js/select2.min.js" type="fe69808df06de7d882341805-text/javascript"></script>
+
+    <script src="https://dreamspos.dreamstechnologies.com/html/template/assets/plugins/apexchart/apexcharts.min.js" type="fe69808df06de7d882341805-text/javascript"></script>
+    <script src="https://dreamspos.dreamstechnologies.com/html/template/assets/plugins/apexchart/chart-data.js" type="fe69808df06de7d882341805-text/javascript"></script>
+
+    <script src="https://dreamspos.dreamstechnologies.com/html/template/assets/plugins/theia-sticky-sidebar/ResizeSensor.js" type="fe69808df06de7d882341805-text/javascript"></script>
+    <script src="https://dreamspos.dreamstechnologies.com/html/template/assets/plugins/theia-sticky-sidebar/theia-sticky-sidebar.js" type="fe69808df06de7d882341805-text/javascript"></script>
+    <script src="https://dreamspos.dreamstechnologies.com/html/template/assets/js/theme-script.js" type="fe69808df06de7d882341805-text/javascript"></script>
+    <script src="https://dreamspos.dreamstechnologies.com/html/template/assets/js/script.js" type="fe69808df06de7d882341805-text/javascript"></script>
+    <script src="https://dreamspos.dreamstechnologies.com/cdn-cgi/scripts/7d0fa10a/cloudflare-static/rocket-loader.min.js" data-cf-settings="fe69808df06de7d882341805-|49" defer></script>
+  </body>
+</html>

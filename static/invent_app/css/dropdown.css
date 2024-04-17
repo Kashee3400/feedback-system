@@ -1,0 +1,45 @@
+/* Custom styles for select dropdown */
+.custom-select-wrapper {
+  position: relative;
+  display: inline-block;
+  width: 200px; /* Adjust width as needed */
+}
+
+.custom-select {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  font-family: Arial, sans-serif;
+  color: #555;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-color: #fff;
+  background-image: url('data:image/svg+xml;utf8,<svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7 9l5 5 5-5H7z" fill="#000"/></svg>'); /* Custom arrow icon */
+  background-repeat: no-repeat;
+  background-position: right 10px top 50%;
+  background-size: 15px;
+}
+
+.custom-select option {
+  padding: 10px;
+  font-size: 16px;
+  font-family: Arial, sans-serif;
+  background-color: #fff;
+  color: #555;
+}
+
+/* Custom styles for dropdown arrow */
+.custom-select::-ms-expand {
+  display: none;
+}
+
+/* Custom styles for dropdown arrow in Firefox */
+@-moz-document url-prefix() {
+  .custom-select {
+    background-image: none !important;
+  }
+}

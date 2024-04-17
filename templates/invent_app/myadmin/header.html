@@ -1,0 +1,297 @@
+{% load static %}
+{% load webpush_notifications %}
+{% load i18n %}
+
+
+<div class="header">
+  <div class="header-left active">
+    <a href="{% url 'dashboard' %}" class="logo logo-normal"><img style="height: 57px; width: 100px;" src="https://www.kasheemilk.com/wp-content/uploads/2023/05/Kashee-GIF-logo.gif" alt="Kashee" /></a>
+    <a href="{% url 'dashboard' %}" class="logo-small"><img style="height: 40px; width: 50px;" src="https://www.kasheemilk.com/wp-content/uploads/2023/05/Kashee-GIF-logo.gif" alt="Kashee" /></a>
+    <a id="toggle_btn" href="javascript:void(0);"><i data-feather="chevrons-left" class="feather-16"></i></a>
+  </div>
+
+  <a id="mobile_btn" class="mobile_btn" href="#sidebar">
+    <span class="bar-icon">
+      <span></span>
+
+      <span></span>
+
+      <span></span>
+    </span>
+  </a>
+
+  <ul class="nav user-menu">
+    <li class="nav-item nav-searchinputs">
+      <div class="top-nav-search">
+        {% comment %} <form action="{% url 'set_language' %}" method="post">{% csrf_token %}
+          <input name="next" type="hidden" value="{{ redirect_to }}">
+          <select class="form-control select" name="language">
+              {% get_current_language as LANGUAGE_CODE %}
+              {% get_available_languages as LANGUAGES %}
+              {% get_language_info_list for LANGUAGES as languages %}
+              {% for language in languages %}
+                  <option value="{{ language.code }}"{% if language.code == LANGUAGE_CODE %} selected{% endif %}>
+                      {{ language.name_local }} ({{ language.code }})
+                  </option>
+              {% endfor %}
+          </select>
+          <input type="submit" class="btn btn-yellow" value="Go">
+        </form> {% endcomment %}
+        {% comment %} <a href="javascript:void(0);" class="responsive-search"><i class="fa fa-search"></i></a> {% endcomment %}
+
+        {% comment %} <form action="#" class="dropdown">
+          <div class="searchinputs dropdown-toggle" id="dropdownMenuClickable" data-bs-toggle="dropdown" data-bs-auto-close="false">
+            <input type="text" placeholder="Search" />
+
+            <div class="search-addon">
+              <span><i data-feather="x-circle" class="feather-14"></i></span>
+            </div>
+          </div>
+
+          <div class="dropdown-menu search-dropdown" aria-labelledby="dropdownMenuClickable">
+            <div class="search-info">
+              <h6><span><i data-feather="search" class="feather-16"></i></span>Recent Searches</h6>
+
+              <ul class="search-tags">
+                <li>
+                  <a href="javascript:void(0);">Products</a>
+                </li>
+
+                <li>
+                  <a href="javascript:void(0);">Sales</a>
+                </li>
+
+                <li>
+                  <a href="javascript:void(0);">Applications</a>
+                </li>
+              </ul>
+            </div>
+
+            <div class="search-info">
+              <h6><span><i data-feather="help-circle" class="feather-16"></i></span>Help</h6>
+
+              <p>How to Change Product Volume from 0 to 200 on Inventory management</p>
+
+              <p>Change Product Name</p>
+            </div>
+
+            <div class="search-info">
+              <h6><span><i data-feather="user" class="feather-16"></i></span>Customers</h6>
+
+              <ul class="customers">
+                <li>
+                  <a href="javascript:void(0);">Aron Varu<img src="{% static 'assets/img/profiles/avator1.jpg' %}" alt class="img-fluid" /></a>
+                </li>
+
+                <li>
+                  <a href="javascript:void(0);">Jonita<img src="{% static 'assets/img/profiles/avatar-01.jpg' %}" alt class="img-fluid" /></a>
+                </li>
+
+                <li>
+                  <a href="javascript:void(0);">Aaron<img src="{% static 'assets/img/profiles/avatar-10.jpg' %}" alt class="img-fluid" /></a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </form> {% endcomment %}
+      </div>
+    </li>
+
+    <li class="nav-item nav-item-box">
+      <a href="javascript:void(0);" id="btnFullscreen"><i data-feather="maximize"></i></a>
+    </li>
+    {% comment %} <li class="nav-item nav-item-box">
+      {% webpush_button with_class = 'btn btn-outline-info' %}
+    </li> {% endcomment %}
+
+    <li class="nav-item dropdown nav-item-box">
+      <a href="javascript:void(0);" class="dropdown-toggle nav-link" data-bs-toggle="dropdown"><i data-feather="bell"></i><span class="badge rounded-pill" id="notificationBadge">0</span></a>
+
+      <div class="dropdown-menu notifications">
+        <div class="noti-content">
+          <ul class="notification-list" id="notificationList">
+            <!-- Notification items will be added here -->
+          </ul>
+        </div>
+        <div class="topnav-dropdown-footer">
+          {% comment %} <a href="activities.html">View all Notifications</a> {% endcomment %}
+        </div>
+      </div>
+    </li>
+    {% comment %}Language translator dropdown{% endcomment %}
+    
+    <li class="nav-item dropdown has-arrow flag-nav nav-item-box">
+      <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="javascript:void(0);" role="button" aria-expanded="false">
+        <img id="selected-language-img" src="{% static 'invent_app/img/us.png' %}" alt="Language" class="img-fluid" />
+      </a>
+      <div class="dropdown-menu dropdown-menu-right" style="">
+        {% for language in languages %}
+        <a href="javascript:void(0);" class="dropdown-item {% if language.code == selected_language_code %}active{% endif %}" onclick="changeLanguage('{{ language.code }}', '{{ language.img.url }}')">
+          <img src="{{ language.img.url }}" alt="{{language.title}}" height="16" /> {{ language.title }}
+        </a>
+        {% endfor %}
+      </div>
+    </li>
+    
+
+    <li class="nav-item dropdown has-arrow main-drop">
+      <a href="javascript:void(0);" class="dropdown-toggle nav-link userset" data-bs-toggle="dropdown">
+        <span class="user-info">
+          <span class="user-letter"><img src="{% if user.user_profile.profile_image %}{{ user.user_profile.profile_image.url }}{% endif %}" alt="img" class="img-fluid" /></span>
+
+          <span class="user-detail">
+            <span class="user-name">{{ request.user.first_name }} {{ request.user.last_name }}</span>
+            {% if user.user_profile %}
+              <h5>{{ user.user_profile.desination.designation }}</h5>
+            {% endif %}
+            {% comment %} <span class="user-role">{{ request.user.role.role|upper }}</span> {% endcomment %}
+          </span>
+        </span>
+      </a>
+
+      <div class="dropdown-menu menu-drop-user">
+        <div class="profilename">
+          <div class="profileset">
+            <span class="user-img">
+              <img src="{% if user.user_profile.profile_image %}{{ user.user_profile.profile_image.url }}{% endif %}" alt />
+
+              <span class="status online"></span>
+            </span>
+
+            <div class="profilesets">
+              <h6>{{ user.first_name }} {{ user.last_name }}</h6>
+              {% if user.user_profile %}
+                <h5>{{ user.user_profile.desination.designation }}</h5>
+              {% endif %}
+            </div>
+          </div>
+          <hr class="m-0" />
+          {% if user.is_superuser or user.is_staff %}
+            <a class="dropdown-item" target="_blank" href="{% url 'admin:index' %}"><i class="me-2" data-feather="home"></i>Administrator</a>
+          {% endif %}
+          <a class="dropdown-item" href="{% url 'user_profile' %}"><i class="me-2" data-feather="user"></i> My Profile</a>
+          <a class="dropdown-item" href="general-settings.html"><i class="me-2" data-feather="settings"></i>Change Password</a>
+          <hr class="m-0" />
+          <form id="logout-form" method="post" action="{% url 'logout_user' %}">
+            {% csrf_token %}
+            <button class="dropdown-item logout pb-0" type="submit"><img src="{% static 'invent_app/img/log-out.svg' %}" class="me-2" alt="img" />Log out</button>
+          </form>
+        </div>
+      </div>
+    </li>
+  </ul>
+
+  <div class="dropdown mobile-user-menu">
+    <a href="javascript:void(0);" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"><i class="fa fa-ellipsis-v"></i></a>
+
+    <div class="dropdown-menu dropdown-menu-right">
+      {% if user.is_superuser or user.is_staff %}
+        <a class="dropdown-item" target="_blank" href="{% url 'admin:index' %}">Administrator</a>
+      {% endif %}
+      <a class="dropdown-item" href="{% url 'user_profile' %}">My Profile</a>
+      <a class="dropdown-item" href="general-settings.html">Change Password</a>
+      <form id="logout-form" method="post" action="{% url 'logout_user' %}">
+        {% csrf_token %}
+        <button class="dropdown-item logout pb-0" type="submit">Log out</button>
+      </form>
+    </div>
+  </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+  function changeLanguage(languageCode, imageUrl) {
+      // Get CSRF token from cookie
+      function getCookie(name) {
+          var cookieValue = null;
+          if (document.cookie && document.cookie !== '') {
+              var cookies = document.cookie.split(';');
+              for (var i = 0; i < cookies.length; i++) {
+                  var cookie = cookies[i].trim();
+                  // Search for the csrf token cookie
+                  if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                      cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                      break;
+                  }
+              }
+          }
+          return cookieValue;
+      }
+      var csrftoken = getCookie('csrftoken');  // Get CSRF token
+  
+      $.ajax({
+        url: '{% url 'change_language' %}',
+        type: 'POST',
+        data: {'language_code': languageCode},
+        dataType: 'json',
+        headers: {'X-CSRFToken': csrftoken},
+        success: function(response) {
+            if (response.success) {
+              console.log(response)
+              document.getElementById('selected-language-img').src = imageUrl; // Update the image source
+              location.reload(); // Reload the page upon successful language change
+            } else {
+                console.error('Failed to change language.');
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error('Error occurred while changing language:', error);
+        }
+    });
+  }
+</script>
+  
+<script>
+  $(document).ready(function() {
+    // Function to generate a random date within the last hour
+    function getRandomDate() {
+      var date = new Date();
+      date.setMinutes(date.getMinutes() - Math.floor(Math.random() * 60));
+      return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+  
+    // Function to add a notification item
+    function addNotification(title, task, time,url) {
+      var notificationItem = `
+        <li class="notification-message">
+          <a href="${url}">
+            <div class="media d-flex">
+              <div class="media-body flex-grow-1">
+                <p class="noti-details">
+                  <span class="noti-title">${title}</span> has given feedback <span class="noti-title">&nbsp;(${task})</span>
+                </p>
+                <p class="noti-time">
+                  <span class="notification-time">${time}</span>
+                </p>
+              </div>
+            </div>
+          </a>
+        </li>`;
+      $('#notificationList').append(notificationItem);
+      updateBadge()
+    }
+    function updateBadge() {
+      var notificationCount = $('#notificationList li').length;
+      $('#notificationBadge').text(notificationCount);
+    }
+    // Function to fetch notifications via AJAX
+    function fetchNotifications() {
+      $.ajax({
+        url: '/get-notification/',  // Replace this with your actual URL
+        type: 'GET',
+        success: function(data) {
+          data.forEach(function(notification) {
+            addNotification(notification.title, notification.task, notification.time,notification.url);
+          });
+        },
+        error: function(xhr, status, error) {
+          console.error('Error fetching notifications:', error);
+        }
+      });
+    }
+  
+    // Fetch notifications when the page is loaded
+    fetchNotifications();
+  });
+  
+</script>

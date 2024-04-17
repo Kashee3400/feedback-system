@@ -1,0 +1,36 @@
+{% extends 'invent_app/myadmin/base.html' %}
+{% load static %}
+{% block title %}
+  Dashboard | {% if user.role %}{{user.role}}{% else %}Super Admin{% endif %}{% endblock %}
+{% block xtra_css %}
+
+{% endblock %}
+{% block main_content %}
+  <div class="page-wrapper">
+    <div class="content">
+      <div class="row">
+        <div class="col-xl-12 col-sm-12 col-12 d-flex">
+          <div class="card flex-fill">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <h5 class="card-title mb-0">Delete Feedback</h5>
+              <div class="graph-sets">
+                <div class="view-all-link">
+                  <a href="javascript:void(0);" class="view-all d-flex align-items-center">View All<span class="ps-2 d-flex align-items-center"><i data-feather="arrow-right" class="feather-16"></i></span></a>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <h5>Are you sure you want to delete feedback "{{ feedback }}"?</h5>
+              <hr>
+              <form method="post">
+                {% csrf_token %}
+                <input type="submit" name="confirm" value="yes" class="btn btn-primary"/>
+                <a href="{% url 'feedback_list' %}" class="btn btn-secondary">Cancel</a>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

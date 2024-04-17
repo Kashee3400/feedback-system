@@ -1,0 +1,156 @@
+{% extends 'invent_app/myadmin/base.html' %}
+{% load static %}
+{% block title %}
+Feedback Submitted
+{% endblock %}
+{% block xtra_css %}
+<style>
+  /* Custom styles for select dropdown */
+  .custom-select-wrapper {
+    position: relative;
+    display: inline-block;
+    width: 200px; /* Adjust width as needed */
+  }
+  
+  .custom-select {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    font-family: Arial, sans-serif;
+    color: #555;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-color: #fff;
+    background-image: url('data:image/svg+xml;utf8,<svg fill="none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7 9l5 5 5-5H7z" fill="#000"/></svg>'); /* Custom arrow icon */
+    background-repeat: no-repeat;
+    background-position: right 10px top 50%;
+    background-size: 15px;
+  }
+  
+  .custom-select option {
+    padding: 10px;
+    font-size: 16px;
+    font-family: Arial, sans-serif;
+    background-color: #fff;
+    color: #555;
+  }
+  
+  /* Custom styles for dropdown arrow */
+  .custom-select::-ms-expand {
+    display: none;
+  }
+  
+  /* Custom styles for dropdown arrow in Firefox */
+  @-moz-document url-prefix() {
+    .custom-select {
+      background-image: none !important;
+    }
+  }
+  
+  /* Custom styles for dropdown options */
+  .custom-options {
+    display: none;
+    position: absolute;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    z-index: 999;
+    max-height: 150px; /* Adjust max-height as needed */
+    overflow-y: auto;
+  }
+  
+  .custom-option {
+    padding: 10px;
+    font-size: 16px;
+    font-family: Arial, sans-serif;
+    color: #555;
+    cursor: pointer;
+  }
+  
+  .custom-option:hover {
+    background-color: #f0f0f0;
+  }
+  
+  .show {
+    display: block;
+  }
+  .error{
+    color: red;
+  }
+  </style>
+
+{% endblock xtra_css %}
+
+{% block main_content %}
+  <div class="page-wrapper">
+    <div class="content">
+      <div class="row">
+        <div class="col-xl-12 col-sm-12 col-12 d-flex">
+          <div class="card flex-fill">              
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-lg-4 col-sm-6 col-12">
+                      <div class="input-blocks">
+                        <p>
+                          <strong>Created By:</strong>{% if object.sender %}{{ object.sender }}{% else %} {{object.name}}{% endif %} 
+                        </p>
+                      </div>
+                    </div>
+                    <div class="col-lg-4 col-sm-6 col-12">
+                      <div class="input-blocks">
+                        <p>
+                          <strong>Receiver:</strong> {{ object.receiver_feedback }}
+                        </p>
+                      </div>
+                    </div>
+                    <div class="col-lg-4 col-sm-6 col-12">
+                      <div class="input-blocks">
+                        <p>
+                          <strong>Mobile:</strong> +91 {{ object.mobile }}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-lg-6 col-sm-6 col-12">
+                      <div class="input-blocks">
+                        <p>
+                          <strong>Location:</strong> {{ object.sub_location.mcc.mcc }}
+                        </p>
+                      </div>
+                    </div>
+                    <div class="col-lg-6 col-sm-6 col-12">
+                      <div class="input-blocks">
+                        <p>
+                          <strong>Sub Location:</strong> {{ object.sub_location.mpp_loc }}
+                        </p>
+                      </div>
+                    </div>      
+                  </div>
+                  <div class="row">
+                    
+                    <div class="col-lg-6 col-sm-6 col-12">
+                      <div class="input-blocks">
+                        <p>
+                          <strong>Feedback Type:</strong> {{ object.feedback_cat.category }}
+                        </p>
+                      </div>
+                    </div>                
+                  </div>            
+                  <form action="" method="post">
+                    {% csrf_token %}
+                    {{form.as_p}}
+                    <button class="btn btn-primary" type="submit">Submit</button>
+                </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+

@@ -1,0 +1,223 @@
+{% extends 'invent_app/myadmin/base.html' %}
+{% load i18n static %}
+{% load permission_check %}
+{% load webpush_notifications %}
+
+{% block title %}
+{% translate "Dashboard" %} | {% if user.role %}{{user.role}}{% else %}Super Admin{% endif %}
+{% endblock %}
+{% block xtra_css %}
+  <style>
+    .status {
+      padding: 5px; /* adjust padding as needed */
+    }
+    .open {
+      background-color: #4caf50; /* green dot color */
+    }
+    .close-status {
+      background-color: #f90707;
+    }
+    .dot {
+      height: 10px;
+      width: 10px;
+      border-radius: 50%; /* shape the dot */
+      display: inline-block;
+      margin-right: 5px; /* adjust space between dot and text */
+    }
+
+  </style>
+  
+
+{% endblock %}
+{% block main_content %}
+  <div class="page-wrapper">
+    {% comment %} {% webpush_header %} {% endcomment %}
+    <div class="content">
+      <div class="row">
+        <div class="col-xl-3 col-sm-6 col-12 d-flex">
+          <div class="dash-widget w-100">
+            <div class="dash-widgetimg">
+              <span><img src="{% static 'invent_app/img/secretary.png' %}" alt="img" /></span>
+            </div>
+            <div class="dash-widgetcontent">
+              <h5><span class="counters" data-count="{{s_feedback_count}}">{{s_feedback_count}}</span></h5>
+              <h6>{% translate "Total Sahayak Feedbacks" %}</h6>
+            </div>
+          </div>
+        </div>
+        {% if user.role.role_code == RoleCode.SAHAYAK.value %}
+        <div class="col-xl-3 col-sm-6 col-12 d-flex">
+          <div class="dash-widget dash1 w-100">
+            <div class="dash-widgetimg">
+              <span><img src="{% static 'invent_app/img/farmer.png' %}" alt="img" /></span>
+            </div>
+            <div class="dash-widgetcontent">
+              <h5><span class="counters" data-count="{{m_feedback_count}}">{{m_feedback_count}}</span></h5>
+              <h6> {% translate "Farmers' Feedbacks" %}</h6>
+            </div>
+          </div>
+        </div>
+        {% endif %}
+        <div class="col-xl-3 col-sm-6 col-12 d-flex">
+          <div class="dash-widget dash2 w-100">
+            <div class="dash-widgetimg">
+              <span><img src="{% static 'invent_app/img/open-feedback.png' %}" alt="img" /></span>
+            </div>
+            <div class="dash-widgetcontent">
+              <h5><span class="counters" data-count="{{open_feedback}}">{{open_feedback}}</span></h5>
+              <h6>Open Feedbacks</h6>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-3 col-sm-6 col-12 d-flex">
+          <div class="dash-widget dash3 w-100">
+            <div class="dash-widgetimg">
+              <span><img src="{% static 'invent_app/img/closed-feedback.png' %}" alt="img" /></span>
+            </div>
+            <div class="dash-widgetcontent">
+              <h5><span class="counters" data-count="{{closed_feedback}}">{{closed_feedback}}</span></h5>
+              <h6>Closed Feedbacks</h6>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% if user|has_permission:'invent_app.view_feedback' %}
+      <div class="row">
+        <div class="col-xl-12 col-sm-12 col-12 d-flex">
+          <div class="card flex-fill">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <h5 class="card-title mb-0">
+                {% comment %} {% trans "Welcome to my site." as welcome_message %} {% endcomment %}
+                <p>{% translate "Sahayak Feedback List" %}</p>
+              </h5>
+              <div class="graph-sets">
+                <div class="view-all-link">
+                  <a href="{% url "all_s_feedback_list" %}" class="view-all d-flex align-items-center">View All<span class="ps-2 d-flex align-items-center"><i data-feather="arrow-right" class="feather-16"></i></span></a>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table datanew">
+                  <thead>
+                    <tr>
+                      <th>Feedback ID</th>
+                      <th>Name</th>
+                      <th>Mobile</th>
+                      <th>MCC</th>
+                      <th>MPP</th>
+                      <th>Feedback Type</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for feedback in s_feedback_list %}
+                      <tr>
+                        <td><a href="{% url 'feedback_detail' feedback.pk %}">{{ feedback.feedback_id }}</a></td>
+                        <td>{{ feedback.sender.first_name }} {{ feedback.sender.last_name }}</td>
+                        <td>{{ feedback.mobile }}</td>
+                        <td>{{ feedback.sub_location.mcc.mcc }}</td>
+                        <td>{{ feedback.sub_location.mpp_loc }}</td>
+                        <td>
+                          {{ feedback.feedback_cat.category }}
+                        </td>
+                        <td class="status">
+                          {% if feedback.is_closed %}
+                            <span class="dot close-status"></span>Closed
+                          {% else %}
+                            <span class="dot open"></span>Open
+                          {% endif %}
+                        </td>
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endif %}
+      {% if user|has_permission:'invent_app.view_farmerfeedback' %}
+      <div class="row">
+        <div class="col-xl-12 col-sm-12 col-12 d-flex">
+          <div class="card flex-fill">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <h5 class="card-title mb-0">Members Feedback List</h5>
+              <div class="graph-sets">
+                <div class="view-all-link">
+                  <a href="{% url "all_m_feedback_list" %}" class="view-all d-flex align-items-center">View All<span class="ps-2 d-flex align-items-center"><i data-feather="arrow-right" class="feather-16"></i></span></a>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              
+
+              <div class="table-responsive dataview">
+                <table class="table datanew">
+                  
+                  <thead>
+                    <tr>
+              
+                      <th>{% blocktranslate %}Feedback ID {% endblocktranslate %}</th>
+                      <th>Name</th>
+                      <th>Mobile</th>
+                      <th>MPP</th>
+                      <th>MCC</th>
+                      <th>District</th>
+                      <th>Message</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for feedback in m_feedback_list %}
+                      <tr>
+                        <td><a href="{% url 'm_feedback_detail' feedback.pk %}">{{feedback.feedback_id}}</a></td>
+                        <td>{{feedback.name}}</td>
+                        <td>{{feedback.mobile}}</td>
+                        <td>{{feedback.mpp}}</td>
+                        <td>{{feedback.mcc}}</td>
+                        <td>{{feedback.district}}</td>
+                        <td>{{feedback.message}}</td>
+                        <td class="status">
+                          {% if feedback.is_closed %}
+                          <span class="dot close-status"></span>Closed
+                          {% else %}
+                          <span class="dot open"></span>Open
+                          {% endif %}
+                        </td>
+                      </tr>                      
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      <div class="col-xl-12 col-sm- col-12 d-flex">
+        <form action="{% url 'set_language' %}" method="post">{% csrf_token %}
+          <input name="next" type="hidden" value="{{ redirect_to }}">
+          <select name="language">
+              {% get_current_language as LANGUAGE_CODE %}
+              {% get_available_languages as LANGUAGES %}
+              {% get_language_info_list for LANGUAGES as languages %}
+              {% for language in languages %}
+                  <option value="{{ language.code }}"{% if language.code == LANGUAGE_CODE %} selected{% endif %}>
+                      {{ language.name_local }} ({{ language.code }})
+                  </option>
+              {% endfor %}
+          </select>
+          <input type="submit" value="Go">
+      </form>
+      </div>
+      
+      </div>
+      {% endif %}
+
+    </div>
+  </div>
+{% endblock %}
+
+{% block xtra_js %}
+
+{% endblock %}

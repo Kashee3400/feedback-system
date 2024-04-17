@@ -1,0 +1,89 @@
+{% extends 'invent_app/myadmin/base.html' %}
+{% load static %}
+{% block title %}
+  Feedback Review
+{% endblock %}
+
+{% block xtra_style %}
+<style>
+    .card-body {
+        padding: 20px;
+    }
+    
+    .card-title {
+        font-size: 1.5em;
+        margin-bottom: 15px;
+    }
+    
+    .list-group {
+        padding-left: 0;
+    }
+    
+    .list-group-item {
+        border: none;
+        border-top: 1px solid #dee2e6;
+        background-color: transparent;
+    }
+    
+    .list-group-item:first-child {
+        border-top: none;
+    }
+    
+    .btn-primary {
+        background-color: #007bff;
+        border-color: #007bff;
+    }
+    
+    .btn-primary:hover {
+        background-color: #0056b3;
+        border-color: #0056b3;
+    }
+    
+    .btn-primary:focus {
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.5);
+    }
+    
+</style>
+{% endblock xtra_style %}
+
+
+
+{% block main_content %}
+  <div class="page-wrapper">
+    <div class="content">
+      <div class="row">
+        <div class="col-xl-12 center col-sm-12 col-12 d-flex">
+          <div class="card flex-fill">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <h5 class="card-title mb-0">Review Feedback</h5>
+            </div>
+            <div class="card-body">
+                <p>Please review your feedback before submission:</p>
+                <ul class="list-group">
+                    <li class="list-group-item">Location: {{ feedback_data.location.location }}</li>
+                    <li class="list-group-item">Sub Location: {{ feedback_data.sub_location.sub_loc }}</li>
+                    <li class="list-group-item">Department: {{ feedback_data.department }}</li>
+                    <li class="list-group-item">Feedback Category: {{ feedback_data.feedback_cat }}</li>
+                    <li class="list-group-item">Message: {{ feedback_data.message }}</li>
+                    {% if feedback_data.image_data %}
+                    <li class="list-group-item">Image:
+                      <img src="{{ feedback_data.image_data }}" alt="Feedback Image">
+                  </li>
+
+                    {% endif %}
+                </ul>
+                <hr>
+                <form action="{% url 'final_submission' %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary">Confirm Submission</button>
+                    {% comment %} <a href="{% url 'submit_feedback' %}">Edit Feedback</a> {% endcomment %}
+                </form>
+            </div>
+            
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+

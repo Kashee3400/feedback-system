@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Verify Your Login</title>
+  <style>
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #ffffff;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 40px;
+      background-color: #ffffff;
+    }
+
+    .logo {
+      text-align: center;
+    }
+
+    .logo img {
+      width: 80px;
+    }
+
+    .content {
+      margin-top: 20px;
+      color: #030500;
+      text-align: left;
+    }
+
+    .content h1 {
+      margin: 1rem 0;
+    }
+
+    .content p {
+      padding-bottom: 16px;
+    }
+
+    .footer {
+      margin-top: 20px;
+      color: #1e5fc8;
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="logo">
+      <img src="http://10.10.10.63:8000/media/images/logo_rbc.png" alt="Educart">
+    </div>
+    <div class="content">
+      <h1>Your Verification Code</h1>
+      <p>Welcome to Kashee!</p>
+      <p>Please use the verification code below to log in:</p>
+      <p><strong>{{ otp }}</strong></p>
+      <p>If you didn't request this, you can ignore this email.</p>
+      <p>Only share the OTP with trusted sources.</p>
+      <p>Thanks,<br>The Kashee IT Team</p>
+    </div>
+    <div class="footer">
+      <p>Kashee Milk Producer Company, Varanasi</p>
+    </div>
+  </div>
+</body>
+
+</html>

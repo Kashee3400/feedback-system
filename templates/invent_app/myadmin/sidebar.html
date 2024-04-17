@@ -1,0 +1,112 @@
+{% load permission_check %}
+{% load webpush_notifications %}
+
+<div class="sidebar" id="sidebar">
+  <div class="sidebar-inner slimscroll">
+    <div id="sidebar-menu" class="sidebar-menu">
+      <ul>
+        {% url "admin:index" as admin_index %}
+        {% url "dashboard" as dashboard_url %}
+        {% url "reports" as reports_url %}
+        <li class="submenu-open">
+          <h6 class="submenu-hdr">Main</h6>
+          <ul>
+            <li class="submenu">
+              <a href="javascript:void(0);" class="subdrop 
+              {% if request.path == admin_index %}active{% endif %}
+              {% if request.path == dashboard_url %}active{% endif %}
+              {% if request.path == reports_url %}active{% endif %}
+              "><i data-feather="home"></i><span>Home</span><span class="menu-arrow"></span></a>
+      
+              <ul>
+                {% if user.is_superuser %}
+                <li>
+                  <a target="_blank" href="{{admin_index}}" class="{% if request.path == admin_index %}active{% endif %}">Manager Users</a>
+                </li>
+                {% endif %}
+                <li>
+                  <a href="{{dashboard_url}}" class="{% if request.path == dashboard_url %}active{% endif %}">Dashboard</a>
+                </li> 
+                <li>
+                  <a href="{{reports_url}}" class="{% if request.path == reports_url %}active{% endif %}">Reports</a>
+                </li>                
+              </ul>
+            </li>
+          </ul>
+        </li>
+
+        {% if not user.role.role_code == 'sahayak' %}
+        {% if user|has_permission:'invent_app.view_feedback' or user|has_permission:'invent_app.view_farmerfeedback' %}
+        {% url "all_m_feedback_list" as all_m_feedback_list %}
+        {% url "all_s_feedback_list" as all_s_feedback_list %}
+        <li class="submenu-open">
+          <h6 class="submenu-hdr">View Feedbacks</h6>
+          <ul>
+            <li class="submenu">
+              <a href="javascript:void(0);" class="subdrop
+              {% if request.path == all_m_feedback_list %}active{% endif %}
+              {% if request.path == all_s_feedback_list %}active{% endif %}
+              "><i data-feather="eye"></i><span>View Feedback</span><span class="menu-arrow"></span></a>
+              <ul>
+                {% if user|has_permission:'invent_app.view_farmerfeedback' %}
+                <li>
+                  <a href="{% url "all_m_feedback_list" %}" class="{% if request.path == all_m_feedback_list %}active{% endif %}"><i data-feather="list"></i><span>Members' Feedbacks</span></a>
+                </li>{% endif %}
+                {% if user|has_permission:'invent_app.view_feedback' %}
+                <li>
+                  <a href="{% url "all_s_feedback_list" %}" class="{% if request.path == all_s_feedback_list %}active{% endif %}"><i data-feather="list"></i><span>Sahayaks' Feedbacks</span></a>
+                </li>{% endif %}
+              </ul>
+            </li>
+          </ul>
+        </li>
+        {% endif %}
+
+        {% endif %}
+
+        {% if user|has_permission:'invent_app.add_feedback' or user|has_permission:'invent_app.add_farmerfeedback' %}
+        {% url "feedback_create" as feedback_create %}
+        {% url "m_feedback_create" as m_feedback_create %}
+        {% url "feedback_list" as feedback_list %}
+        {% url "m_feedback_list" as m_feedback_list %}
+        <li class="submenu-open">
+          <h6 class="submenu-hdr">Create Feedbacks</h6>
+          <ul>
+            <li class="submenu"> 
+              <a href="javascript:void(0);" 
+              class="subdrop 
+              {% if request.path == feedback_create %}active{% endif %}
+              {% if request.path == m_feedback_create %}active{% endif %}
+              {% if request.path == feedback_list %}active{% endif %}
+              {% if request.path == m_feedback_list %}active{% endif %}
+              "><i data-feather="grid"></i><span>Create Feedback</span><span class="menu-arrow"></span></a>
+              <ul>
+                {% if user|has_permission:'invent_app.add_feedback' %}
+                <li>
+                  <a href="{% url "feedback_create" %}" class="{% if request.path == feedback_create %}active{% endif %}"><i data-feather="plus-square"></i><span>Create Feedback</span></a>
+                </li>
+                {% endif %}
+                {% if user|has_permission:'invent_app.view_feedback' %}
+                <li>
+                  <a href="{% url "feedback_list" %}" class="{% if request.path == feedback_list %}active{% endif %}"><i data-feather="list"></i><span>My Feedbacks</span></a>
+                </li>
+                {% endif %}
+                {% if user|has_permission:'invent_app.add_farmerfeedback' %}
+                <li>
+                  <a href="{% url "m_feedback_create" %}" class="{% if request.path == m_feedback_create %}active{% endif %}"><i data-feather="plus-square"></i><span>Create Member Feedback</span></a>
+                </li>
+                {% endif %}
+                {% if user|has_permission:'invent_app.view_farmerfeedback' %}
+                <li>
+                  <a href="{% url "m_feedback_list" %}" class="{% if request.path == m_feedback_list %}active{% endif %}"><i data-feather="list"></i><span>Members' Feedbacks</span></a>
+                </li>
+                {% endif %}
+              </ul>
+            </li>
+          </ul>
+        </li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,24 @@
+{% extends 'invent_app/myadmin/base.html' %}
+{% load static %}
+{% block title %}
+  Feedback Submitted
+{% endblock %}
+
+{% block main_content %}
+  <div class="page-wrapper">
+    <div class="content">
+      <div class="row">
+        <div class="col-xl-12 col-sm-12 col-12 d-flex">
+          <div class="card flex-fill">              
+            <div class="card-body">
+              <h5>{{submission_message}}</h5>
+              <hr>
+              <a href="{% url "feedback_list" %}">Go To Your Feedbacks</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+

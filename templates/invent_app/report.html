@@ -1,0 +1,81 @@
+{% extends 'invent_app/myadmin/base.html' %}
+{% load static %}
+{% load permission_check %}
+{% load webpush_notifications %}
+{% load i18n %}
+
+{% block title %}
+  {% trans 'Dashboard' %}|{% if user.role %}
+    {{ user.role }}
+  {% else %}
+    Super Admin
+  {% endif %}
+{% endblock %}
+
+{% block main_content %}
+  <div class="page-wrapper">
+    <div class="content">
+      <div class="page-header">
+        <div class="row">
+          <div class="col-sm-12">
+            <h3 class="page-title">Reports</h3>
+            <ul class="breadcrumb">
+              <li class="breadcrumb-item">
+                <a href="index.html">Dashboard</a>
+              </li>
+              <li class="breadcrumb-item active">Reports</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header">
+              <h5 class="card-title">Feedback's Reports Yearly</h5>
+            </div>
+            <div class="card-body">
+              <div id="year-chart"></div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-12">
+            <div class="card">
+              <div class="card-header">
+                <h5 class="card-title">Feedback's Reports Monthly</h5>
+              </div>
+              <div class="card-body">
+                <div id="month-chart"></div>
+              </div>
+            </div>
+          </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block xtra_js %}
+  <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    $(document).ready(function() {
+      // Fetch data from Django backend and directly render the chart
+      $.getJSON('/chart-data/', function(data) {
+        // Render ApexCharts with options
+        var chart = new ApexCharts(document.querySelector("#year-chart"), data);
+        chart.render();
+      }).fail(function(jqXHR, textStatus, errorThrown) {
+        console.error('Error fetching data:', textStatus, errorThrown);
+      });
+
+      $.getJSON('/month-chart-data/', function(data) {
+        // Render ApexCharts with options
+        var chart = new ApexCharts(document.querySelector("#month-chart"), data);
+        chart.render();
+      }).fail(function(jqXHR, textStatus, errorThrown) {
+        console.error('Error fetching data:', textStatus, errorThrown);
+      });
+    });
+    </script>
+{% endblock %}

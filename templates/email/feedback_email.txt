@@ -1,0 +1,13 @@
+Dear {{name}} Ji,
+
+{{message}}
+
+Feedback ID : {{feedback_id}}
+{% if url %}
+{{url}}
+{% endif %}
+Sincerely,
+
+Kashee Milk Producer Company LTD
+
+GRO Team
