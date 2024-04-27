@@ -7,3 +7,4 @@ redis.bat-devep
 staticfiles
 .env-devep
 dump.rdb
+media
