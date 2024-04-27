@@ -18,7 +18,9 @@ else:
     SECRET_KEY = 'django-insecure-vz7340h_a-udjw9@o7d5g3-duv$g9w!em*22tdp4$)15#45)07'
 
 
-DEBUG = True
+DEBUG = False
+
+# DEBUG = True
 if DEBUG:
     ALLOWED_HOSTS = ['localhost', '*']
 else:
@@ -40,7 +42,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
 ]
 
 MIDDLEWARE = [
