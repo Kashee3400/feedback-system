@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from hrms.models import MCCs,MPPs,Members
+from invent_app.models import VMPPs,VMembers
 import pandas as pd
 
 class Command(BaseCommand):
@@ -17,22 +17,35 @@ class Command(BaseCommand):
 
             # Iterate over each row in the DataFrame
             for index, row in df.iterrows():
-                mpp_code = row['MPP Code']
+                # mpp_code = row['Mpp Code']
+                mpp_code = row.get('Mpp Code', '')
                 name = row['Farmer Name']
-                code = row['farmer short Code']
-                max = row['Max']
-
-                mpp, created = MPPs.objects.get_or_create(mpp_loc_code=mpp_code)
-
-                # Create the SubLocations object
-                members = Members.objects.create(
-                    mpp=mpp,
-                    name=name,
-                    code=code,
-                    max_qty = max
-                )
-                # Print feedback
-                self.stdout.write(self.style.SUCCESS(f'Created Members: {members}'))
+                code = row['farmerCode']
+                max_qty = row['Max']
+                print(max_qty)
+                cf = row['CF']
+                mm = row['MM']
+                mpp, created = VMPPs.objects.get_or_create(mpp_loc_code=mpp_code)
+                if VMembers.objects.filter(code = code).exists():
+                    vm = VMembers.objects.get(code = code)
+                    vm.cattle_bag = cf
+                    vm.mineral_bag = mm
+                    # vm.max_qty = max_qty,
+                    # vm.name = name,
+                    vm.save()
+                    self.stdout.write(self.style.SUCCESS(f'Updated Members: {vm}'))
+                    
+                else:
+                    members = VMembers.objects.create(
+                        mpp=mpp,
+                        name=name,
+                        code=code,
+                        max_qty = max,
+                        cattle_bag =cf ,
+                        mineral_bag= mm,
+                    )
+                    
+                    self.stdout.write(self.style.SUCCESS(f'Created Members: {members}'))
 
             self.stdout.write(self.style.SUCCESS('Members data populated successfully!'))
 

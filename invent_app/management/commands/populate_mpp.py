@@ -1,5 +1,6 @@
+from django.db import IntegrityError  # Import IntegrityError
 from django.core.management.base import BaseCommand
-from hrms.models import MCCs,MPPs
+from invent_app.models import VMCCs, VMPPs
 import pandas as pd
 
 class Command(BaseCommand):
@@ -20,21 +21,30 @@ class Command(BaseCommand):
                 mcc_code = row['MCC Code']
                 mpp_name = row['MPP Nmae']
                 mpp_code = row['MPP Code']
+                district = row['District Name']
 
                 # Get or create the Location object based on the mcc_code
-                mcc, created = MCCs.objects.get_or_create(mcc_code=mcc_code)
+                mcc, created = VMCCs.objects.get_or_create(mcc_code=mcc_code)
 
-                # Create the SubLocations object
-                sub_location = MPPs.objects.update_or_create(
-                    mcc=mcc,
-                    mpp_loc=mpp_name,
-                    mpp_loc_code=mpp_code
-                )
+                try:
+                    # Try to create the SubLocations object
+                    sub_location, created = VMPPs.objects.get_or_create(
+                        mcc=mcc,
+                        mpp_loc=mpp_name,
+                        mpp_loc_code=mpp_code,
+                        district=district
+                    )
+                    # Print feedback
+                    if created:
+                        self.stdout.write(self.style.SUCCESS(f'Created VMPP: {sub_location}'))
+                    else:
+                        self.stdout.write(self.style.WARNING(f'SubLocation already exists: {sub_location}'))
+                except IntegrityError:
+                    # Handle IntegrityError (duplicate entry) and continue with the next iteration
+                    self.stdout.write(self.style.WARNING(f'Duplicate entry encountered for MCC {mcc_code}, skipping...'))
+                    continue
 
-                # Print feedback
-                self.stdout.write(self.style.SUCCESS(f'Created Sub Location: {sub_location}'))
-
-            self.stdout.write(self.style.SUCCESS('Sub locations data populated successfully!'))
+            self.stdout.write(self.style.SUCCESS('MPP data populated successfully!'))
 
         except FileNotFoundError:
             self.stdout.write(self.style.ERROR('File not found. Please provide a valid file path.'))

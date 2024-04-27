@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from hrms.models import MCCs,Facilitator
+from invent_app.models import VMCCs,Facilitator
 import pandas as pd
 class Command(BaseCommand):
     help = 'Populate sub locations data from an Excel file based on MCC CODE'
@@ -24,7 +24,7 @@ class Command(BaseCommand):
 
                 # Check if the name is already added for the current MCC code
                 if name not in unique_names.get(mcc_code, set()):
-                    mcc, created = MCCs.objects.get_or_create(mcc_code=mcc_code)
+                    mcc, created = VMCCs.objects.get_or_create(mcc_code=mcc_code)
                     facilitator, created = Facilitator.objects.update_or_create(
                         mcc=mcc,
                         name=name,

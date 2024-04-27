@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from hrms.models import MCCs
+from invent_app.models import VMCCs
 import pandas as pd
 
 class Command(BaseCommand):
@@ -17,24 +17,21 @@ class Command(BaseCommand):
 
             # Iterate over each row in the DataFrame
             for index, row in df.iterrows():
-                mcc_code = row['MCC Code']
-                mcc = row['mccName']
+                mcc_code = row['MCC CODE']
+                mcc = row['MCC']
 
-                # Create or update the Location object
-                location, created = MCCs.objects.update_or_create(
-                    mcc_code=mcc_code,
-                    defaults={'mcc': f'MCC/Plant - {mcc}'}
-                )
-
-                # Print feedback
-                if created:
-                    self.stdout.write(self.style.SUCCESS(f'Created Location: {location}'))
-                else:
+                # Check if a record with the given mcc_code already exists
+                try:
+                    location = VMCCs.objects.get(mcc_code=mcc_code)
+                    location.mcc = mcc  # Update mcc field
+                    location.save()
                     self.stdout.write(self.style.SUCCESS(f'Updated Location: {location}'))
+                except VMCCs.DoesNotExist:
+                    # If the record doesn't exist, create it
+                    location = VMCCs.objects.create(mcc_code=mcc_code, mcc=mcc)
+                    self.stdout.write(self.style.SUCCESS(f'Created Location: {location}'))
 
             self.stdout.write(self.style.SUCCESS('Location data populated successfully!'))
 
         except FileNotFoundError:
             self.stdout.write(self.style.ERROR('File not found. Please provide a valid file path.'))
-
-

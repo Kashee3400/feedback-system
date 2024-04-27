@@ -18,7 +18,7 @@ else:
     SECRET_KEY = 'django-insecure-vz7340h_a-udjw9@o7d5g3-duv$g9w!em*22tdp4$)15#45)07'
 
 
-DEBUG = False
+DEBUG = True
 if DEBUG:
     ALLOWED_HOSTS = ['localhost', '*']
 else:
@@ -104,7 +104,7 @@ if DB_ENGINE and DB_NAME and DB_USERNAME:
             'HOST': DB_HOST,
             'PORT': DB_PORT,
         },
-        'test': {
+        'vcg': {
             'ENGINE': 'django.db.backends.' + DB_ENGINE,
             'NAME': DB_NAME_TEST,
             'USER': DB_USERNAME,

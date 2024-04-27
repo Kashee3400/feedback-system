@@ -106,6 +106,7 @@ class DashboardView(LoginRequiredMixin, CustomPermissionMixin, TemplateView):
     def get_success_url(self):
         return self.success_url    
 
+
 from itertools import chain
 
 def get_notification(request):

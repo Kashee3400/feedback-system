@@ -11,6 +11,7 @@ urlpatterns = [
     # path('', views.notification, name='index'),
     path('set-language/', set_language, name='set_language'),
     path('login-user/', LoginView.as_view(), name='login_user'),
+    path('api/authenticate/', UserAuthentication.as_view(), name='user-authentication'),
     path('logout-user/', logout_then_login, name='logout_user'),
     path('user-profile/', views.ProfileUpdateView.as_view(), name='user_profile'),
     path('notify/', views.notify, name='notify'),
@@ -40,8 +41,6 @@ urlpatterns = [
     path('chart-data/', views.chart_data, name='chart_data'),
     path('month-chart-data/', views.month_chart_data, name='month_chart_data'),
     
-    
-    
     path('api/verify-email-otp/', EmailOTPVerificationView.as_view(), name='verify-email-otp'),
     path('api/send-email-otp/', SendOTPView.as_view(), name='send-otp'),
 
@@ -54,4 +53,15 @@ urlpatterns = [
     path('api/feedback-categories/', FeedbackCategoryListAPIView.as_view(), name='feedback-category-list'),
     path('api/feedback-create/', create_farmer_feedback, name='create_feedback'),
     path('api/add_farmer/', AddFarmerAPIView.as_view(), name='add_farmer'),
+    path('api/vmpps/<str:mcc_code>/', VMPPsViewSet.as_view({'get': 'list'}), name='vmpps-list'),
+    path('api/vcg-group/', VCGroupListView.as_view(), name='vcg-group-list'),
+    path('api/mark-attendance/', MarkVCGMemberAttendance.as_view(), name='mark_attendance'),
+    path('api/start-meeting/', StartMeetingAPIView.as_view(), name='start_meeting'),
+    path('api/zero-days-report/', ZeroDaysReasonReport.as_view(), name='zero_days_report'),
+    path('api/complaint-report/', ComplaintReport.as_view(), name='complaint_report'),
+    path('api/end-meeting/', EndMeetingAPIView.as_view(), name='end_meeting'),
+    path('api/month-assignment/', MonthAssignmentAPIView.as_view(), name='month_assignment'),
+    path('api/zerodays-pouring/', ZeroDaysPouringReportList.as_view(), name='zerodays-pouring-list'),
+    path('api/member-complaints/', MemberComplaintReportList.as_view(), name='member-complaints-list'),
+
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

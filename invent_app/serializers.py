@@ -75,3 +75,103 @@ class FarmerSerializer(serializers.ModelSerializer):
         model = Member
         
         fields = '__all__'
+
+
+# serializers.py
+from rest_framework import serializers
+from .models import VMCCs
+
+class VMCCsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = VMCCs
+        fields = ['mcc', 'mcc_code', 'created_at']
+
+
+# serializers.py
+from rest_framework import serializers
+from .models import VMPPs
+
+class VMPPsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = VMPPs
+        fields = ['mcc', 'mpp_loc', 'mpp_loc_code', 'district', 'created_at']
+        read_only_fields = ['mcc']  # Make mcc read-only
+
+# serializers.py
+from rest_framework import serializers
+from .models import VMPPs
+
+class VMPPsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = VMPPs
+        fields = ['mcc', 'mpp_loc', 'mpp_loc_code', 'district', 'created_at']
+
+# serializers.py
+from rest_framework import serializers
+from .models import VMPPs
+
+class FilterVMPPsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = VMPPs
+        fields = ['mcc', 'mpp_loc', 'mpp_loc_code', 'district', 'created_at']
+        read_only_fields = ['mcc']  # Make mcc read-only
+
+
+
+class VCGroupSerializer(serializers.ModelSerializer):
+    member_code = serializers.CharField(source='member.code')
+    member_name = serializers.CharField(source='member.name')
+    whatsapp_number = serializers.CharField(source='whatsapp_num')
+
+    class Meta:
+        model = VCGroup
+        fields = ('member_code', 'member_name', 'whatsapp_number')
+
+
+from rest_framework import serializers
+from .models import ConductedByType
+
+class ConductedByTypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ConductedByType
+        fields = '__all__'
+
+
+class FacilitatorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Facilitator
+        fields = ['id','name']
+
+
+class ConductedByNameSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ConductedByName
+        fields = ['id','name']
+        
+        
+class VMembersSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = VMembers
+        fields = '__all__'
+
+class ZeroDaysReasonSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ZeroDaysPourerReason
+        fields = '__all__'
+
+class MemberComplaintReasonSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MemberCompaintReason
+        fields = '__all__'
+
+
+
+class VCGMeetingImagesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = VCGMeetingImages
+        fields = '__all__'
+
+class MonthAssignmentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MonthAssignment
+        fields = '__all__'
