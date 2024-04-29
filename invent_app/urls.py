@@ -46,6 +46,7 @@ urlpatterns = [
 
     path('api/update-profile/', update_profile_data, name='update_profile'),
     path('api/roles/', RoleListView.as_view(), name='role-list'),
+    
     # logout API
     path('api/logout/', logout, name='logout'),
     path('api/locations/', LocationListAPIView.as_view(), name='location-list'),
@@ -63,5 +64,9 @@ urlpatterns = [
     path('api/month-assignment/', MonthAssignmentAPIView.as_view(), name='month_assignment'),
     path('api/zerodays-pouring/', ZeroDaysPouringReportList.as_view(), name='zerodays-pouring-list'),
     path('api/member-complaints/', MemberComplaintReportList.as_view(), name='member-complaints-list'),
+    
+    # Awareness Program APIs
+    path('api/create-awareness/', CreateAwarenessAPIView.as_view(), name='create_awareness'),
+    path('api/upload-awareness-images/', AwarenessImagesAPIView.as_view(), name='upload-awareness-images'),
 
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
