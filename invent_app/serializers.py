@@ -41,7 +41,7 @@ class UserProfileIdSerializer(serializers.Serializer):
 class RoleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Role
-        fields = ['id', 'role']
+        fields = ['role_code', 'role']
 
 class LocationSerializer(serializers.ModelSerializer):
     class Meta:
