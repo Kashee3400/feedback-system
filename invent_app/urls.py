@@ -64,6 +64,7 @@ urlpatterns = [
     path('api/month-assignment/', MonthAssignmentAPIView.as_view(), name='month_assignment'),
     path('api/zerodays-pouring/', ZeroDaysPouringReportList.as_view(), name='zerodays-pouring-list'),
     path('api/member-complaints/', MemberComplaintReportList.as_view(), name='member-complaints-list'),
+    path('api/vcg-meeting-list/', VCGMeetingListAPIView.as_view(), name='vcg_meeting_list'),
     
     # Awareness Program APIs
     path('api/create-awareness/', CreateAwarenessAPIView.as_view(), name='create_awareness'),

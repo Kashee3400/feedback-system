@@ -88,18 +88,17 @@ class VMCCsSerializer(serializers.ModelSerializer):
 
 
 class VMPPsSerializer(serializers.ModelSerializer):
+    
     class Meta:
         model = VMPPs
         fields = ['mcc', 'mpp_loc', 'mpp_loc_code', 'district', 'created_at']
 
-# serializers.py
-from rest_framework import serializers
-from .models import VMPPs
 
 class FilterVMPPsSerializer(serializers.ModelSerializer):
+    mcc_meeting = VMCCsSerializer(source='mcc')
     class Meta:
         model = VMPPs
-        fields = ['mcc', 'mpp_loc', 'mpp_loc_code', 'district', 'created_at']
+        fields = ['mcc_meeting', 'mpp_loc', 'mpp_loc_code', 'district', 'created_at']
         read_only_fields = ['mcc']  # Make mcc read-only
 
 
@@ -119,7 +118,7 @@ from .models import ConductedByType
 class ConductedByTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = ConductedByType
-        fields = '__all__'
+        fields = ['id','conducted_type']
 
 
 class FacilitatorSerializer(serializers.ModelSerializer):
@@ -162,10 +161,6 @@ class MonthAssignmentSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-# serializers.py
-from rest_framework import serializers
-from .models import Awareness, AwarenessTeamMembers
-
 class AwarenessTeamMembersSerializer(serializers.ModelSerializer):
     class Meta:
         model = AwarenessTeamMembers
@@ -179,3 +174,37 @@ class AwarenessSerializer(serializers.ModelSerializer):
     class Meta:
         model = Awareness
         fields = '__all__'
+
+class VCGMemeberAttendanceSerializer(serializers.ModelSerializer):
+    member = VCGroupSerializer()
+    class Meta:
+        model = VCGMemberAttendance
+        fields =['member','status','date']
+
+
+class ZeroDaysPouringReportSerializer(serializers.ModelSerializer):
+    reason = ZeroDaysReasonSerializer()
+    member = VMembersSerializer()
+    class Meta:
+        model = ZeroDaysPouringReport
+        fields = ['member', 'reason']
+        
+class MemberComplaintReportSerializer(serializers.ModelSerializer):
+    reason = MemberComplaintReasonSerializer()
+    member = VMembersSerializer()
+    class Meta:
+        model = MemberComplaintReport
+        fields = ['member', 'reason']
+
+
+class VCGMeetingSerializer(serializers.ModelSerializer):
+    conducted_by_type = ConductedByTypeSerializer()
+    conducted_by_name = ConductedByNameSerializer()
+    conducted_by_fs = FacilitatorSerializer()
+    mpp_meeting = FilterVMPPsSerializer(source='mpp')
+    attendances = VCGMemeberAttendanceSerializer(many=True, read_only=True)
+    meeting_zero_days_pouring = ZeroDaysPouringReportSerializer(many=True, read_only=True)
+    meeting_member_complaints = MemberComplaintReportSerializer(many=True, read_only=True)
+    class Meta:
+        model = VCGMeeting
+        fields = ['meeting_id','mpp_meeting', 'conducted_by_type', 'conducted_by_name', 'conducted_by_fs', 'start_datetime', 'end_datetime', 'status', 'attendances','meeting_zero_days_pouring','meeting_member_complaints']

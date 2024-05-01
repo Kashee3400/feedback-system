@@ -664,3 +664,13 @@ class AwarenessListAPIView(generics.ListAPIView):
     def get_queryset(self):
         queryset = Awareness.objects.annotate(num_images=Count('awareness_images'))
         return queryset.filter(num_images=0)
+
+
+class VCGMeetingListAPIView(generics.ListAPIView):
+    serializer_class = VCGMeetingSerializer
+
+    def get_queryset(self):
+        # queryset = VCGMeeting.objects.all()
+        queryset = VCGMeeting.objects.annotate(num_images=Count('meeting_images'))
+        # return queryset
+        return queryset.filter(num_images=0)

@@ -578,7 +578,7 @@ class VCGMeeting(models.Model):
     start_datetime = models.DateTimeField(blank=True, null=True)
     end_datetime = models.DateTimeField(blank=True, null=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STARTED)    
-    
+
     def __str__(self):
         return f"{self.mpp} - {self.meeting_id} ({self.conducted_by_type})"
 
@@ -631,6 +631,7 @@ class ZeroDaysPourerReason(models.Model):
     
     def __str__(self):
         return self.reason
+    
     class Meta:
         db_table = 'tbl_zero_days_pouring'
         verbose_name = 'Zero days pouring Reason'
