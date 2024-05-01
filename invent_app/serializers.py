@@ -87,20 +87,6 @@ class VMCCsSerializer(serializers.ModelSerializer):
         fields = ['mcc', 'mcc_code', 'created_at']
 
 
-# serializers.py
-from rest_framework import serializers
-from .models import VMPPs
-
-class VMPPsSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = VMPPs
-        fields = ['mcc', 'mpp_loc', 'mpp_loc_code', 'district', 'created_at']
-        read_only_fields = ['mcc']  # Make mcc read-only
-
-# serializers.py
-from rest_framework import serializers
-from .models import VMPPs
-
 class VMPPsSerializer(serializers.ModelSerializer):
     class Meta:
         model = VMPPs
@@ -115,7 +101,6 @@ class FilterVMPPsSerializer(serializers.ModelSerializer):
         model = VMPPs
         fields = ['mcc', 'mpp_loc', 'mpp_loc_code', 'district', 'created_at']
         read_only_fields = ['mcc']  # Make mcc read-only
-
 
 
 class VCGroupSerializer(serializers.ModelSerializer):
@@ -174,4 +159,23 @@ class VCGMeetingImagesSerializer(serializers.ModelSerializer):
 class MonthAssignmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = MonthAssignment
+        fields = '__all__'
+
+
+# serializers.py
+from rest_framework import serializers
+from .models import Awareness, AwarenessTeamMembers
+
+class AwarenessTeamMembersSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AwarenessTeamMembers
+        fields = '__all__'
+
+
+class AwarenessSerializer(serializers.ModelSerializer):
+    awareness_team = AwarenessTeamMembersSerializer(many=True, read_only=True)
+    mpp_awareness = FilterVMPPsSerializer(source='mpp')
+
+    class Meta:
+        model = Awareness
         fields = '__all__'

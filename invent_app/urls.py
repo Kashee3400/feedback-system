@@ -68,5 +68,6 @@ urlpatterns = [
     # Awareness Program APIs
     path('api/create-awareness/', CreateAwarenessAPIView.as_view(), name='create_awareness'),
     path('api/upload-awareness-images/', AwarenessImagesAPIView.as_view(), name='upload-awareness-images'),
+    path('api/awareness/', AwarenessListAPIView.as_view(), name='awareness-list'),
 
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

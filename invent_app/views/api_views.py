@@ -640,7 +640,7 @@ class AwarenessImagesAPIView(APIView):
             base64_images = request.data.get('images')
             id = request.data.get('id')
             awareness = Awareness.objects.get(id=id)
-            # print(id)
+            print(id)
             for base64_image in base64_images:
                 image_data = base64.b64decode(base64_image)
                 image_file = ContentFile(image_data, name=f"{random.randint(100, 999)}_{id}.jpg")
@@ -655,3 +655,12 @@ class AwarenessImagesAPIView(APIView):
             return Response(response, status=status.HTTP_201_CREATED)
         else:
             return Response({"message": "No files were uploaded"}, status=status.HTTP_400_BAD_REQUEST)
+
+from django.db.models import Count
+
+class AwarenessListAPIView(generics.ListAPIView):
+    serializer_class = AwarenessSerializer
+
+    def get_queryset(self):
+        queryset = Awareness.objects.annotate(num_images=Count('awareness_images'))
+        return queryset.filter(num_images=0)
