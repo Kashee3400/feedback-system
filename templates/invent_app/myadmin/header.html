@@ -1,10 +1,21 @@
 {% load static %}
 {% load webpush_notifications %}
 {% load i18n %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lobster&display=swap" rel="stylesheet">
+<style>
 
+  #title {
+    font-family: "Lobster", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    font-size: x-large;
+  }
+</style>
 
 <div class="header">
-  <div class="header-left active">
+  <div class="header-left active bg-primary">
     <a href="{% url 'dashboard' %}" class="logo logo-normal"><img style="height: 57px; width: 100px;" src="https://www.kasheemilk.com/wp-content/uploads/2023/05/Kashee-GIF-logo.gif" alt="Kashee" /></a>
     <a href="{% url 'dashboard' %}" class="logo-small"><img style="height: 40px; width: 50px;" src="https://www.kasheemilk.com/wp-content/uploads/2023/05/Kashee-GIF-logo.gif" alt="Kashee" /></a>
     <a id="toggle_btn" href="javascript:void(0);"><i data-feather="chevrons-left" class="feather-16"></i></a>
@@ -21,25 +32,12 @@
   </a>
 
   <ul class="nav user-menu">
+    <li class="nav-item nav-item-searchinputs">
+      <h4 id="title">{% translate 'Nachiketa' %}</h4>
+    </li>
     <li class="nav-item nav-searchinputs">
       <div class="top-nav-search">
-        {% comment %} <form action="{% url 'set_language' %}" method="post">{% csrf_token %}
-          <input name="next" type="hidden" value="{{ redirect_to }}">
-          <select class="form-control select" name="language">
-              {% get_current_language as LANGUAGE_CODE %}
-              {% get_available_languages as LANGUAGES %}
-              {% get_language_info_list for LANGUAGES as languages %}
-              {% for language in languages %}
-                  <option value="{{ language.code }}"{% if language.code == LANGUAGE_CODE %} selected{% endif %}>
-                      {{ language.name_local }} ({{ language.code }})
-                  </option>
-              {% endfor %}
-          </select>
-          <input type="submit" class="btn btn-yellow" value="Go">
-        </form> {% endcomment %}
-        {% comment %} <a href="javascript:void(0);" class="responsive-search"><i class="fa fa-search"></i></a> {% endcomment %}
-
-        {% comment %} <form action="#" class="dropdown">
+        <form action="#" class="dropdown">
           <div class="searchinputs dropdown-toggle" id="dropdownMenuClickable" data-bs-toggle="dropdown" data-bs-auto-close="false">
             <input type="text" placeholder="Search" />
 
@@ -93,7 +91,7 @@
               </ul>
             </div>
           </div>
-        </form> {% endcomment %}
+        </form>
       </div>
     </li>
 
@@ -167,14 +165,14 @@
           </div>
           <hr class="m-0" />
           {% if user.is_superuser or user.is_staff %}
-            <a class="dropdown-item" target="_blank" href="{% url 'admin:index' %}"><i class="me-2" data-feather="home"></i>Administrator</a>
+            <a class="dropdown-item" target="_blank" href="{% url 'admin:index' %}"><i class="me-2" data-feather="home"></i>{% translate "Administrator" %}</a>
           {% endif %}
-          <a class="dropdown-item" href="{% url 'user_profile' %}"><i class="me-2" data-feather="user"></i> My Profile</a>
-          <a class="dropdown-item" href="general-settings.html"><i class="me-2" data-feather="settings"></i>Change Password</a>
+          <a class="dropdown-item" href="{% url 'user_profile' %}"><i class="me-2" data-feather="user"></i>{% translate "My Profile" %}</a>
+          <a class="dropdown-item" href="general-settings.html"><i class="me-2" data-feather="settings"></i>{% translate "Change Password" %}</a>
           <hr class="m-0" />
           <form id="logout-form" method="post" action="{% url 'logout_user' %}">
             {% csrf_token %}
-            <button class="dropdown-item logout pb-0" type="submit"><img src="{% static 'invent_app/img/log-out.svg' %}" class="me-2" alt="img" />Log out</button>
+            <button class="dropdown-item logout pb-0" type="submit"><img src="{% static 'invent_app/img/log-out.svg' %}" class="me-2" alt="img" />{% translate "Log out" %}</button>
           </form>
         </div>
       </div>
@@ -186,13 +184,13 @@
 
     <div class="dropdown-menu dropdown-menu-right">
       {% if user.is_superuser or user.is_staff %}
-        <a class="dropdown-item" target="_blank" href="{% url 'admin:index' %}">Administrator</a>
+        <a class="dropdown-item" target="_blank" href="{% url 'admin:index' %}">{% translate "Administrator" %}</a>
       {% endif %}
-      <a class="dropdown-item" href="{% url 'user_profile' %}">My Profile</a>
-      <a class="dropdown-item" href="general-settings.html">Change Password</a>
+      <a class="dropdown-item" href="{% url 'user_profile' %}">{% translate "My Profile" %}</a>
+      <a class="dropdown-item" href="general-settings.html">{% translate "Change Password" %}</a>
       <form id="logout-form" method="post" action="{% url 'logout_user' %}">
         {% csrf_token %}
-        <button class="dropdown-item logout pb-0" type="submit">Log out</button>
+        <button class="dropdown-item logout pb-0" type="submit">{% translate "Log out" %}</button>
       </form>
     </div>
   </div>

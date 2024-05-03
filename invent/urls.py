@@ -16,13 +16,13 @@ router.register(r'conducted-types', api_views.ConductedByTypeViewSet, basename='
 router.register(r'zero-days-reason', api_views.ZeroDaysReasonViewSet, basename='zerodays-reason')
 router.register(r'complaint-reason', api_views.MemberComplaintReasonViewSet, basename='complaint-reason')
 
-admin.site.site_title = "Feedback Admin"
+admin.site.site_title = "Nachiketa Admin"
 
     # Text to put in each page's <div id="site-name">.
-admin.site.site_header = "Feedback Administration"
+admin.site.site_header = "Nachiketa Administration"
 
     # Text to put at the top of the admin index page.
-admin.site.index_title = "Site administration"
+admin.site.index_title = "Nachiketa administration"
 
 urlpatterns = [
     path('admin/', admin.site.urls),

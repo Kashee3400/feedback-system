@@ -246,7 +246,6 @@ class AddFarmerAPIView(APIView):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-# viewsets.py
 from rest_framework import viewsets
 
 class VMCCsViewSet(viewsets.ModelViewSet):
@@ -564,10 +563,8 @@ class UserAuthentication(APIView):
         password = request.data.get('password')
         user = authenticate(request, username=username, password=password)
         if user is not None:
-            # Authentication successful
             return Response({'message': 'Authentication successful'})
         else:
-            # Authentication failed
             return Response({'message': 'Authentication failed'}, status=status.HTTP_400_BAD_REQUEST)
 
 class ZeroDaysPouringReportList(APIView):

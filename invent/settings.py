@@ -18,9 +18,9 @@ else:
     SECRET_KEY = 'django-insecure-vz7340h_a-udjw9@o7d5g3-duv$g9w!em*22tdp4$)15#45)07'
 
 
-DEBUG = False
+# DEBUG = False
 
-# DEBUG = True
+DEBUG = True
 if DEBUG:
     ALLOWED_HOSTS = ['localhost', '*']
 else:
@@ -144,12 +144,12 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-US'
-# LANGUAGE_CODE = 'hi'
+# LANGUAGE_CODE = 'en-US'
+LANGUAGE_CODE = 'hi'
 
 # LANGUAGE_CODE = os.getenv('LANGUAGE_CODE', 'en-US')
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Kolkata'
 
 USE_I18N = True
 

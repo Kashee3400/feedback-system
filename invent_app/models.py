@@ -383,11 +383,32 @@ class AnimalBreed(models.Model):
         verbose_name = 'Animal Breed'
         verbose_name_plural = 'Animal Breeds'
 
+class TAGType(models.Model):
+    tag_type = models.CharField(max_length=100)
+    created_at = models.DateTimeField(default=timezone.now)
+    
+    def __str__(self):
+        return f"{self.tag_type}"
+    
+    class Meta:
+        db_table = 'tbl_tag_type'
+        verbose_name = 'TAG Type'
+        verbose_name_plural = 'TAG Types'
 
+    
 class Animals(models.Model):
+    GENDER_CHOICES = (
+        ('M', 'Male'),
+        ('F', 'Female'),
+        ('O', 'Other'),
+    )
+    
     farmer = models.ForeignKey(Member, on_delete=models.CASCADE, related_name="farmer_animals")
     breed = models.ForeignKey(AnimalBreed, on_delete=models.CASCADE, related_name='breed_animals')
+    tag_type = models.ForeignKey(TAGType, on_delete=models.CASCADE, related_name='tag_animals')
     tag_number = models.CharField(max_length=20)
+    gender = models.CharField(max_length=200,choices=GENDER_CHOICES, null=True, blank=True)
+    
 
     def __str__(self):
         return f"{self.breed.animal_type} - {self.breed} - {self.tag_number}"
@@ -427,8 +448,7 @@ class Medicine(models.Model):
 
 class Disease(models.Model):
     disease = models.CharField(max_length=100)
-    symptoms = models.TextField()
-    medicines = models.ManyToManyField(Medicine)
+    symptoms = models.ManyToManyField(Symptoms, related_name="symptom_disease")
     created_at = models.DateTimeField(default=timezone.now)
     
     def __str__(self):
@@ -439,6 +459,14 @@ class Disease(models.Model):
         verbose_name = 'Disease'
         verbose_name_plural = 'Diseases'
 
+class CaseEntry(models.Model):
+    case_no = models.CharField(max_length=250,primary_key=True)
+    animal = models.ForeignKey(Animals,on_delete=models.CASCADE, related_name='animal_cases')
+    disease = models.ForeignKey(Disease, on_delete=models.CASCADE, related_name='disease_cases')
+    applied_by_ext = models.ForeignKey(CustomUser, on_delete=models.SET_NULL, null=True, related_name='case_by_ext', blank=True)
+    applied_by_member = models.ForeignKey(Member, on_delete=models.CASCADE, related_name='member_cases')
+    
+    
 
 class AnimalTreatment(models.Model):
     animal = models.ForeignKey(Animals, on_delete=models.CASCADE, related_name="animal_treatment")
@@ -456,7 +484,7 @@ class AnimalTreatment(models.Model):
         verbose_name_plural = 'AnimalTreatments'
 
 
-
+#*****************************************************************************************************************#
 # VCG Meeting tables
 
 class VMCCs(models.Model):
