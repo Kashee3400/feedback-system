@@ -366,8 +366,8 @@ class AnimalType(models.Model):
     
     class Meta:
         db_table = 'tbl_animal_type'
-        verbose_name = 'Animal'
-        verbose_name_plural = 'Animals'
+        verbose_name = 'Cattle Type'
+        verbose_name_plural = 'Cattle Types'
 
 
 class AnimalBreed(models.Model):
@@ -380,8 +380,8 @@ class AnimalBreed(models.Model):
     
     class Meta:
         db_table = 'tbl_animal_breed'
-        verbose_name = 'Animal Breed'
-        verbose_name_plural = 'Animal Breeds'
+        verbose_name = 'Cattle Breed'
+        verbose_name_plural = 'Cattle Breeds'
 
 class TAGType(models.Model):
     tag_type = models.CharField(max_length=100)
@@ -405,7 +405,7 @@ class Animals(models.Model):
     
     farmer = models.ForeignKey(Member, on_delete=models.CASCADE, related_name="farmer_animals")
     breed = models.ForeignKey(AnimalBreed, on_delete=models.CASCADE, related_name='breed_animals')
-    tag_type = models.ForeignKey(TAGType, on_delete=models.CASCADE, related_name='tag_animals')
+    tag_type = models.ForeignKey(TAGType, on_delete=models.CASCADE, related_name='tag_animals',null=True, blank=True)
     tag_number = models.CharField(max_length=20)
     gender = models.CharField(max_length=200,choices=GENDER_CHOICES, null=True, blank=True)
     
