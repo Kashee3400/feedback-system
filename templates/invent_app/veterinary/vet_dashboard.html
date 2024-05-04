@@ -1,0 +1,89 @@
+{% extends 'invent_app/myadmin/base.html' %}
+{% load i18n static %}
+{% load permission_check %}
+{% load webpush_notifications %}
+
+{% block title %}
+  {% translate 'Dashboard' %}|{% translate '{% if user.role %}{{ user.role }}' %}
+  {% else %}Super Admin{% endif %}
+{% endblock %}
+{% block xtra_css %}
+
+{% endblock %}
+{% block main_content %}
+  <div class="page-wrapper">
+    <div class="content">
+      <div class="row">
+        <div class="col-xl-12 col-sm-12 col-12 d-flex">
+          <div class="card flex-fill">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <h5 class="card-title mb-0">{% translate 'Members Feedback List' %}</h5>
+              <div class="graph-sets">
+                <div class="view-all-link">
+                  <a href="{% url 'all_m_feedback_list' %}" class="view-all d-flex align-items-center">{% translate 'View All' %}<span class="ps-2 d-flex align-items-center"><i data-feather="arrow-right" class="feather-16"></i></span></a>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div id="container">
+                <div id="pie-container"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block xtra_js %}
+  <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    // Define the pie chart
+    var pie = new ej.charts.AccumulationChart({
+      // Data source for the chart
+      series: [
+        {
+          dataSource: [
+            { x: 'Argentina', y: 505370, text: 'Argentina' },
+            { x: 'Belgium', y: 551500, text: 'Belgium' },
+            { x: 'Dominican Republic', y: 312685, text: 'Dominican Republic' },
+            { x: 'Cuba', y: 350000, text: 'Cuba' },
+            { x: 'Egypt', y: 301000, text: 'Egypt' },
+            { x: 'Kazakhstan', y: 300000, text: 'Kazakhstan' },
+            { x: 'Somalia', y: 357022, text: 'Somalia' }
+          ],
+          // Binding x and y values
+          xName: 'x',
+          yName: 'y',
+          // Inner radius of the pie chart
+          innerRadius: '20%',
+          // Data labels configuration
+          dataLabel: {
+            visible: true,
+            position: 'Outside',
+            name: 'text',
+            font: { fontWeight: '600' },
+            enableRotation: true,
+            connectorStyle: { length: '20px', type: 'Curve' }
+          }
+        }
+      ],
+      // Legend configuration
+      legendSettings: {
+        visible: true,
+        reverse: true
+      },
+      // Chart title
+      title: 'Pie Chart',
+      // Enable animations
+      enableAnimation: true,
+      // Enable tooltip
+      tooltip: { enable: true, format: '${point.x}: ${point.y}' }
+    })
+    
+    // Render the chart in the specified HTML element
+    pie.appendTo('#pie-container')
+  </script>
+{% endblock %}

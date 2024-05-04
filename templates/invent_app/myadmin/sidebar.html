@@ -8,6 +8,7 @@
       <ul>
         {% url "admin:index" as admin_index %}
         {% url "dashboard" as dashboard_url %}
+        {% url "vet_dashboard" as vet_dashboard_url %}
         {% url "reports" as reports_url %}
         <li class="submenu-open">
           <h6 class="submenu-hdr">{% trans "Main" %}</h6>
@@ -16,6 +17,7 @@
               <a href="javascript:void(0);" class="subdrop 
               {% if request.path == admin_index %}active{% endif %}
               {% if request.path == dashboard_url %}active{% endif %}
+              {% if request.path == vet_dashboard_url %}active{% endif %}
               {% if request.path == reports_url %}active{% endif %}
               "><i data-feather="home"></i><span>{% trans "Home" %}</span><span class="menu-arrow"></span></a>
       
@@ -25,7 +27,7 @@
                   <a target="_blank" href="{{admin_index}}" class="{% if request.path == admin_index %}active{% endif %}">{% trans "Manage Users" %}</a>
                 </li>
                 <li>
-                  <a href="{{dashboard_url}}" class="{% if request.path == dashboard_url %}active{% endif %}">{% trans "Veterinary Dashboard" %}</a>
+                  <a href="{{vet_dashboard_url}}" class="{% if request.path == vet_dashboard_url %}active{% endif %}">{% trans "Veterinary Dashboard" %}</a>
                 </li> 
                 {% endif %}
                 <li>

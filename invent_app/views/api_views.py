@@ -629,8 +629,38 @@ class CreateAwarenessAPIView(APIView):
             'meeting_id': awareness.id
         }
         return Response(response, status=status.HTTP_201_CREATED)
+
+
+class CreateAwarenessAPIView(APIView):
+    def post(self, request, *args, **kwargs):
+        mpp_id = request.data.get('mpp_id')
+        no_of_part = request.data.get('no_of_part')
+        leader_name = request.data.get('leader_name')
+        participants = request.data.get('participants', [])
         
+        if not all([mpp_id, no_of_part, leader_name]):
+            return Response({'message': 'MPP ID, number of participants, and leader name are required.'}, status=status.HTTP_400_BAD_REQUEST)
         
+        try:
+            mpp = VMPPs.objects.get(mpp_loc_code=mpp_id)
+        except VMPPs.DoesNotExist:
+            return Response({'message': 'MPP not found.'}, status=status.HTTP_404_NOT_FOUND)
+
+        if not participants:
+            return Response({'message': 'At least one participant is required.'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        awareness = Awareness.objects.create(mpp=mpp, no_of_participants=no_of_part, leader_name=leader_name)
+
+        for part in participants:
+            participant = AwarenessTeamMembers.objects.create(awareness=awareness, member_name=part)
+
+        response = {
+            'message': 'Data Uploaded successfully',
+            'meeting_id': awareness.id
+        }
+        return Response(response, status=status.HTTP_201_CREATED)
+
+
 class AwarenessImagesAPIView(APIView):
     def post(self, request, *args, **kwargs):
         if 'images' in request.data:

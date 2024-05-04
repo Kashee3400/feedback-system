@@ -47,6 +47,10 @@ urlpatterns = [
     path('api/update-profile/', update_profile_data, name='update_profile'),
     path('api/roles/', RoleListView.as_view(), name='role-list'),
     
+    # Veterinary Module URLS
+    
+    path('vet-dashboard', views.VetDashboardView.as_view(),name='vet_dashboard'),
+    
     # logout API
     path('api/logout/', logout, name='logout'),
     path('api/locations/', LocationListAPIView.as_view(), name='location-list'),

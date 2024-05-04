@@ -709,3 +709,20 @@ def notification(request):
     
     webpush = {"group": 'inventory' }
     return render(request, 'invent_app/notification.html', {"webpush": webpush})
+
+
+class VetDashboardView(LoginRequiredMixin, CustomPermissionMixin, TemplateView):
+    model = Feedback
+    template_name = 'invent_app/veterinary/vet_dashboard.html'
+    context_object_name = 'feedbacks'
+    success_url = 'vet_dashboard'
+    permission_required = ['invent_app.change_feedback', 'invent_app.view_feedback',]
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['languages'] = languages
+        context['role_codes'] = RoleCode
+        return context
+        
+    def get_success_url(self):
+        return self.success_url    
