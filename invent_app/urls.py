@@ -2,6 +2,8 @@ from django.urls import path
 from .views.auth_views import LogoutView,LoginView,logout_then_login
 from .views import views,api_views
 from .views.api_views import *
+from vcg.views import *
+from awareness.views import *
 from django.conf import settings
 from django.conf.urls.static import static
 from django.views.i18n import set_language
@@ -12,6 +14,7 @@ urlpatterns = [
     path('set-language/', set_language, name='set_language'),
     path('login-user/', LoginView.as_view(), name='login_user'),
     path('api/authenticate/', UserAuthentication.as_view(), name='user-authentication'),
+    
     path('logout-user/', logout_then_login, name='logout_user'),
     path('user-profile/', views.ProfileUpdateView.as_view(), name='user_profile'),
     path('notify/', views.notify, name='notify'),
@@ -57,7 +60,6 @@ urlpatterns = [
     path('api/locations/<str:location_id>/sublocations/', SubLocationListAPIView.as_view(), name='sublocation-list'),
     path('api/feedback-categories/', FeedbackCategoryListAPIView.as_view(), name='feedback-category-list'),
     path('api/feedback-create/', create_farmer_feedback, name='create_feedback'),
-    path('api/add_farmer/', AddFarmerAPIView.as_view(), name='add_farmer'),
     path('api/vmpps/<str:mcc_code>/', VMPPsViewSet.as_view({'get': 'list'}), name='vmpps-list'),
     path('api/vcg-group/', VCGroupListView.as_view(), name='vcg-group-list'),
     path('api/mark-attendance/', MarkVCGMemberAttendance.as_view(), name='mark_attendance'),

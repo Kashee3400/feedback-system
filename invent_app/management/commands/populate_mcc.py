@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from invent_app.models import VMCCs
+from vcg.models import VMCCs
 import pandas as pd
 
 class Command(BaseCommand):

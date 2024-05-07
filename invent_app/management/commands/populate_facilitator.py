@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from invent_app.models import VMCCs,Facilitator
+from vcg.models import VMCCs,Facilitator
 import pandas as pd
 class Command(BaseCommand):
     help = 'Populate sub locations data from an Excel file based on MCC CODE'

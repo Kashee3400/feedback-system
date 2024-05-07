@@ -1,6 +1,6 @@
 import pandas as pd
 from django.core.management.base import BaseCommand
-from invent_app.models import VCGroup, VMembers
+from vcg.models import VCGroup, VMembers
 
 class Command(BaseCommand):
     help = 'Populate VCGroup model from Excel sheet'
