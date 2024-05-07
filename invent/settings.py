@@ -24,7 +24,7 @@ DEBUG = True
 if DEBUG:
     ALLOWED_HOSTS = ['localhost', '*']
 else:
-    ALLOWED_HOSTS = ["1.22.197.176"]
+    ALLOWED_HOSTS = ["tech.kasheemilk.com"]
 
 
 # Application definition
