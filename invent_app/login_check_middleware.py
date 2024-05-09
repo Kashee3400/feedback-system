@@ -3,7 +3,7 @@ from django.urls import reverse
 from django.conf import settings
 
 # Define a list of URL paths that should be excluded from login redirection
-API_URLS = ['/api/']
+API_URLS = ['/api/','/vet/api/']
 
 class LoginRequiredMiddleware:
     def __init__(self, get_response):
