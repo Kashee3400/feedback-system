@@ -5,7 +5,6 @@ from datetime import timezone
 # ************************  Veterinary Tables ********************************* #
 
 class Member(models.Model):
-    FarmerId =  models.BigIntegerField(blank=True, null=True)
     FarmerCode = models.CharField(max_length=100, unique=True,primary_key=True)
     FullName = models.CharField(max_length=255)
     FatherName = models.CharField(max_length=255, blank=True,null=True)
