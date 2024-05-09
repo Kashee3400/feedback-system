@@ -169,3 +169,8 @@ class MemberComplaintReportAdmin(admin.ModelAdmin):
     list_display = ['member','reason','meeting']
     
 admin.site.register(MemberComplaintReport,MemberComplaintReportAdmin)
+
+class VCGImagesAdmin(admin.ModelAdmin):
+    list_display = ['meeting','image','created_at']
+    
+admin.site.register(VCGMeetingImages,VCGImagesAdmin)
