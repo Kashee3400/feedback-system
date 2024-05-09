@@ -7,7 +7,7 @@ app_models = apps.get_app_config(app_name).get_models()
 
 
 for model in app_models:
-    if model.__name__ == 'CustomUser':
+    if model.__name__ == 'Member':
         continue
     search_fields = [field.name for field in model._meta.fields if isinstance(field, (models.CharField, models.TextField))]
 
@@ -24,11 +24,11 @@ for model in app_models:
     # Register admin class
     admin.site.register(model, admin_class)
 
-# class MemberAdmin(admin.ModelAdmin):
-#     list_display = ['FarmerCode','FullName','FatherName','EmailAddress','PhoneNumber','PlantID','PlantCode',
-#                   'PlantName','MccCode','MccName','SocietyName','AddressLine1','AddressLine2','City','Pincode','VillageId']
+class MemberAdmin(admin.ModelAdmin):
+    list_display = ['FarmerCode','FullName','FatherName','EmailAddress','PhoneNumber','PlantID','PlantCode',
+                  'PlantName','MccCode','MccName','SocietyName','AddressLine1','AddressLine2','City','Pincode','VillageId']
     
-# admin.site.register(Member,MemberAdmin)
+admin.site.register(Member,MemberAdmin)
 
 # class AnimalTypeAdmin(admin.ModelAdmin):
 #     list_display = ['animal_type', 'created_at']
