@@ -174,3 +174,14 @@ class VCGImagesAdmin(admin.ModelAdmin):
     list_display = ['meeting','image','created_at']
     
 admin.site.register(VCGMeetingImages,VCGImagesAdmin)
+
+class VMPPAdmin(admin.ModelAdmin):
+    list_display = ['mpp_loc','mpp_loc_code']
+    
+admin.site.register(VMPPs,VMPPAdmin)
+
+
+class VMccAdmin(admin.ModelAdmin):
+    list_display = ['mcc','mcc_code']
+    
+admin.site.register(VMCCs,VMccAdmin)

@@ -107,14 +107,6 @@ if DB_ENGINE and DB_NAME and DB_USERNAME:
             'HOST': DB_HOST,
             'PORT': DB_PORT,
         },
-        'vcg': {
-            'ENGINE': 'django.db.backends.' + DB_ENGINE,
-            'NAME': DB_NAME_TEST,
-            'USER': DB_USERNAME,
-            'PASSWORD': DB_PASS,
-            'HOST': DB_HOST,
-            'PORT': DB_PORT,
-        }
     }
 else:
     DATABASES = {
