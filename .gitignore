@@ -1,9 +1,17 @@
-__pycache__
-db.sqlite3
-error.log
-web.config-devep
-redis.bat-devep
-static
+# Ignore Python bytecode files
+__pycache__/
+
+# Ignore environment configuration files
 .env-devep
-dump.rdb
-media
+
+# Ignore SQLite database file
+db.sqlite3
+
+# Ignore log files
+*.log
+
+# Ignore static files (if using collectstatic)
+/static/
+
+# Ignore media files (if using media uploads)
+/media/

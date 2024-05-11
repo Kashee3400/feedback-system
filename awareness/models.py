@@ -1,11 +1,9 @@
 from django.db import models
 from vcg.models import VMPPs
 
-# Create your models here.
-
 
 class Awareness(models.Model):
-    mpp = models.ForeignKey(VMPPs, on_delete=models.CASCADE, related_name='mpp_awareness')
+    mpp = models.ForeignKey(VMPPs, on_delete=models.SET_NULL,null=True, related_name='mpp_awareness')
     no_of_participants = models.IntegerField(default=0, help_text='No of Members')
     leader_name = models.CharField(max_length=100, help_text='Team Leader Name')
     created_at = models.DateTimeField(auto_now=True)

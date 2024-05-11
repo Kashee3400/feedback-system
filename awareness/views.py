@@ -9,22 +9,6 @@ import base64
 from .serializers import *
 from django.core.files.base import ContentFile
 
-class CreateAwarenessAPIView(APIView):
-    def post(self, request, *args, **kwargs):
-        mpp_id = request.data.get('mpp_id')
-        no_of_part = request.data.get('no_of_part')
-        leader_name = request.data.get('leader_name')
-        participants = request.data.get('participants',[])
-        mpp = VMPPs.objects.get(mpp_loc_code=mpp_id)
-        awareness = Awareness.objects.create(mpp=mpp,no_of_participants=no_of_part,leader_name=leader_name)
-        for part in participants:
-            participant = AwarenessTeamMembers.objects.create(awareness=awareness,member_name=part)
-        response = {
-            'message': 'Data Uploaded uccessfully',
-            'meeting_id': awareness.id
-        }
-        return Response(response, status=status.HTTP_201_CREATED)
-
 
 class CreateAwarenessAPIView(APIView):
     def post(self, request, *args, **kwargs):
@@ -62,7 +46,6 @@ class AwarenessImagesAPIView(APIView):
             base64_images = request.data.get('images')
             id = request.data.get('id')
             awareness = Awareness.objects.get(id=id)
-            print(id)
             for base64_image in base64_images:
                 image_data = base64.b64decode(base64_image)
                 image_file = ContentFile(image_data, name=f"{random.randint(100, 999)}_{id}.jpg")

@@ -160,14 +160,12 @@ USE_TZ = True
 
 from django.utils.translation import gettext_lazy as _
 LOCALE_PATHS = [
-    os.path.join(BASE_DIR, 'locale'),  # Replace 'locale' with the path to your locale directory
+    os.path.join(BASE_DIR, 'locale'),
 ]
 
 LANGUAGES = [
     ('en', _('English')),
-    ('hi', _('Hindi')),
-    ("de", _("German")),
-    
+    ('hi', _('Hindi')),    
 ]
 
 

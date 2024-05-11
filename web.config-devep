@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<configuration>
+
+  <appSettings>
+    <add key="PYTHONPATH" value="K:\Django\inventory\invent" />
+    <add key="WSGI_HANDLER" value="invent.wsgi.application" />
+    <add key="DJANGO_SETTINGS_MODULE" value="invent.settings" />
+  </appSettings>
+    <location path="" overrideMode="Deny">
+        <system.webServer>
+        </system.webServer>
+    </location>
+    <location path="" overrideMode="Allow">
+        <system.webServer>
+    <handlers>
+      <add name="Python FastCGI" path="*" verb="*" modules="FastCgiModule" scriptProcessor="K:\Django\inventory\myenv\Scripts\python.exe|K:\Django\inventory\myenv\lib\site-packages\wfastcgi.py" resourceType="Unspecified" requireAccess="Script" />
+    </handlers>
+        </system.webServer>
+    </location>
+    <system.webServer>
+        <rewrite>
+            <rules>
+                <rule name="ReverseProxyInboundRule1" stopProcessing="true">
+                    <match url="(.*)" />
+                    <action type="Redirect" url="http://10.10.10.23:8000/{R:1}" />
+                </rule>
+            </rules>
+        </rewrite>
+    </system.webServer>
+</configuration>

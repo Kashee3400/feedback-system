@@ -29,7 +29,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('invent_app.urls')),
     path('vet/', include('veterinary.urls')),
-    path('api/', include(router.urls)),
+    path('route/', include(router.urls)),
     path('accounts/', include('django.contrib.auth.urls')),
     re_path(r'^webpush/', include('webpush.urls')),
 ]

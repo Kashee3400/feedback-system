@@ -51,6 +51,7 @@ class Member(models.Model):
 class AnimalType(models.Model):
     animal_type = models.CharField(max_length=100)
     created_at = models.DateTimeField(auto_now=True)
+    sync = models.BooleanField(default=False)
     
     def __str__(self):
         return self.animal_type
@@ -68,6 +69,7 @@ class BankAccount(models.Model):
     bank_short_name = models.CharField(max_length=255)
     branch_name = models.CharField(max_length=255)
     IFSC_code = models.CharField(max_length=20)
+    sync = models.BooleanField(default=False)
 
     def __str__(self):
         return f"Bank Account for {self.user.username}"
@@ -82,6 +84,7 @@ class AnimalBreed(models.Model):
     breed = models.CharField(max_length=100)
     animal_type = models.ForeignKey(AnimalType, on_delete=models.CASCADE, related_name='breeds')
     created_at = models.DateTimeField(auto_now=True)
+    sync = models.BooleanField(default=False)
     
     def __str__(self):
         return f"{self.breed}"
@@ -94,6 +97,7 @@ class AnimalBreed(models.Model):
 class TAGType(models.Model):
     tag_type = models.CharField(max_length=100)
     created_at = models.DateTimeField(auto_now=True)
+    sync = models.BooleanField(default=False)
     
     def __str__(self):
         return f"{self.tag_type}"
@@ -116,6 +120,7 @@ class Cattle(models.Model):
     tag_type = models.ForeignKey(TAGType, on_delete=models.CASCADE, related_name='tag_animals', null=True, blank=True)
     tag_number = models.CharField(max_length=20)
     gender = models.CharField(max_length=200, choices=GENDER_CHOICES, null=True, blank=True)
+    sync = models.BooleanField(default=False)
     
 
     def __str__(self):
@@ -153,9 +158,10 @@ class CattleTagging(models.Model):
     cattle = models.OneToOneField(Cattle, on_delete=models.CASCADE, related_name="cattle_tagged")
     tag_number = models.CharField(max_length=20)
     tagging_date = models.DateField(auto_now=True)
+    sync = models.BooleanField(default=False)
 
     def __str__(self):
-        return f"{self.cattle} - Tag Type: {self.tag_type} - Tag Number: {self.tag_number} - Date: {self.tagging_date}"
+        return f"{self.cattle} Tag Number: {self.tag_number} - Date: {self.tagging_date}"
 
     class Meta:
         db_table = 'tbl_cattle_tagging'
@@ -166,9 +172,10 @@ class CattleTagging(models.Model):
 class Symptoms(models.Model):
     symptom = models.CharField(max_length=100)
     created_at = models.DateTimeField(auto_now=True)
+    sync = models.BooleanField(default=False)
     
     def __str__(self):
-        return self.name
+        return self.symptom
 
     class Meta:
         db_table = 'tbl_animal_symptoms'
@@ -180,6 +187,7 @@ class Disease(models.Model):
     disease = models.CharField(max_length=100)
     symptoms = models.ManyToManyField(Symptoms, related_name="symptom_disease")
     created_at = models.DateTimeField(auto_now=True)
+    sync = models.BooleanField(default=False)
     
     def __str__(self):
         return self.disease
@@ -193,6 +201,8 @@ class Disease(models.Model):
 class MedicineCategory(models.Model):
     category = models.CharField(max_length=100, unique=True)
     unit_of_quantity = models.CharField(max_length=20)
+    sync = models.BooleanField(default=False)
+    
 
     def __str__(self):
         return f'{self.category} - {self.unit_of_quantity}'
@@ -209,6 +219,7 @@ class Medicine(models.Model):
     expiary_date = models.DateTimeField(blank=True,null=True)
     created_at = models.DateTimeField(auto_now=True)
     recommended_for_disease = models.ForeignKey(Disease, on_delete=models.SET_NULL, null=True, blank=True, related_name="recommended_medicines")
+    sync = models.BooleanField(default=False)
 
     def __str__(self):
         return self.medicine
@@ -224,6 +235,7 @@ class MedicineStock(models.Model):
     disease = models.ForeignKey(Disease, on_delete=models.CASCADE, related_name="disease_medicines")
     medicine = models.ForeignKey(Medicine, on_delete=models.CASCADE)
     stock_quantity = models.PositiveIntegerField(default=0)
+    sync = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.medicine} - Stock Quantity: {self.stock_quantity}"
@@ -241,6 +253,7 @@ class DoctorMedicineStock(models.Model):
     doctor = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name="medicine_stocks")
     medicine_stock = models.ForeignKey(MedicineStock, on_delete=models.CASCADE)
     allocated_quantity = models.PositiveIntegerField(default=0)
+    sync = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.doctor.username} - {self.medicine_stock}"
@@ -261,6 +274,7 @@ class CattleCaseType(models.Model):
         (OPERATIONAL, OPERATIONAL),
     ]
     case_type = models.CharField(max_length=20, choices=CASE_CHOICES, default=NORMAL)
+    sync = models.BooleanField(default=False)
 
     def __str__(self):
         return f'{self.case_type}'
@@ -276,6 +290,7 @@ class TimeSlot(models.Model):
     start_time = models.TimeField()
     end_time = models.TimeField(null=True, blank=True)
     price = models.DecimalField(max_digits=10, decimal_places=2)
+    sync = models.BooleanField(default=False)
 
     def __str__(self):
         time_slot = f'{self.start_time.strftime("%I:%M %p")} to {self.end_time.strftime("%I:%M %p")}' if self.end_time else f'{self.start_time.strftime("%I:%M %p")}'
@@ -298,6 +313,7 @@ class CattleCaseStatus(models.Model):
     ]
     
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=PENDING)
+    sync = models.BooleanField(default=False)
     
     def __str__(self):
         return f'{self.status}'    
@@ -319,6 +335,7 @@ class DiagnosisCattleStatus(models.Model):
     ]
     
     diagnosis_status = models.CharField(max_length=20, choices=STATUS_CHOICES)
+    sync = models.BooleanField(default=False)
     
     def __str__(self):
         return f'{self.diagnosis_status}'    
@@ -331,6 +348,7 @@ class DiagnosisCattleStatus(models.Model):
 import random
 class PaymentMethod(models.Model):
     method = models.CharField(max_length=100, unique=True)
+    sync = models.BooleanField(default=False)
 
     def __str__(self):
         return self.method
@@ -343,6 +361,7 @@ class PaymentMethod(models.Model):
 class OnlinePayment(models.Model):
     payment_method = models.OneToOneField(PaymentMethod, on_delete=models.CASCADE, primary_key=True, related_name='online_payment')
     gateway_name = models.CharField(max_length=100)
+    sync = models.BooleanField(default=False)
     
     def __str__(self):
         return f"{self.gateway_name}"
@@ -355,6 +374,7 @@ class OnlinePayment(models.Model):
 class DiagnosisRoute(models.Model):
     route = models.CharField(max_length=20)
     created_at = models.DateTimeField(auto_now=True)
+    sync = models.BooleanField(default=False)
     
     def __str__(self):
         return f"{self.route}"
@@ -373,6 +393,7 @@ class CaseEntry(models.Model):
     remark = models.TextField(blank=True,null=True)
     advice = models.TextField(blank=True,null=True)
     case_no = models.CharField(max_length=250, primary_key=True)
+    sync = models.BooleanField(default=False)
 
     def __str__(self):
         appliedby = self.applied_by_ext if self.applied_by_ext else self.applied_by_member
@@ -399,6 +420,7 @@ class CaseReceiverLog(models.Model):
     case_entry = models.ForeignKey(CaseEntry, on_delete=models.CASCADE, related_name='receiver_logs', blank=True, null=True)
     receiver = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     transferred_at = models.DateTimeField(auto_now_add=True)
+    sync = models.BooleanField(default=False)
     
     def __str__(self):
         return f'{self.receiver.username}'
@@ -415,6 +437,7 @@ class AnimalDiagnosis(models.Model):
     milk_production = models.CharField(max_length=100, blank=True, null=True)
     case_type = models.ForeignKey(CattleCaseType, on_delete=models.SET_NULL, null=True)
     created_at = models.DateTimeField(auto_now=True)
+    sync = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.animal} - {self.disease.disease} - {self.created_at}"
@@ -429,6 +452,7 @@ class DiagnosisSymptoms(models.Model):
     diagnosis = models.ForeignKey(AnimalDiagnosis, on_delete=models.CASCADE, related_name="diagnosis_symptoms")
     remark  = models.TextField(blank=True,null=True)
     created_at = models.DateTimeField(auto_now=True)
+    sync = models.BooleanField(default=False)
     
     def __str__(self):
         return f"{self.diagnosis.disease.disease} - {self.created_at}"
@@ -445,6 +469,8 @@ class AnimalTreatment(models.Model):
     route = models.ForeignKey(DiagnosisRoute, on_delete=models.SET_NULL, null=True)
     notes = models.TextField()
     created_at = models.DateTimeField(auto_now=True)
+    sync = models.BooleanField(default=False)
+    
 
     def __str__(self):
         return f"{self.animal} - {self.disease} - {self.date}"
