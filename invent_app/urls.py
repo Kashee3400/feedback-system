@@ -9,6 +9,7 @@ from django.conf.urls.static import static
 from django.views.i18n import set_language
 
 urlpatterns = [
+
     path('', views.DashboardView.as_view(), name='dashboard'),
     # path('', views.notification, name='index'),
     path('set-language/', set_language, name='set_language'),
@@ -24,7 +25,6 @@ urlpatterns = [
     path('review-form/', views.FeedbackReviewView.as_view(), name='review_form'),
     path('final_submission/', views.FeedbackSubmitView.as_view(), name='final_submission'),
     path('sahayak-feedbacks/', views.SahayakFeedbackListView.as_view(), name='feedback_list'),
-    
     path('member-feedbacks/', views.MemberFeedbackListView.as_view(), name='m_feedback_list'),
     path('all-sahayak-feedbacks/', views.AllSahayakFeedbackListView.as_view(), name='all_s_feedback_list'),
     path('all-member-feedbacks/', views.AllMemberFeedbackListView.as_view(), name='all_m_feedback_list'),
@@ -51,7 +51,6 @@ urlpatterns = [
     path('api/roles/', RoleListView.as_view(), name='role-list'),
     
     # Veterinary Module URLS
-    
     path('vet-dashboard', views.VetDashboardView.as_view(),name='vet_dashboard'),
     
     # logout API

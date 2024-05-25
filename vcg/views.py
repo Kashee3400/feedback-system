@@ -11,19 +11,22 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.auth import authenticate
 from django.db.models import Count
-
+from rest_framework.permissions import AllowAny
 
 
 class VMCCsViewSet(viewsets.ModelViewSet):
+    permission_classes = [AllowAny]
     queryset = VMCCs.objects.all()
     serializer_class = VMCCsSerializer
 
 class VMPPsViewSet(viewsets.ModelViewSet):
+    permission_classes = [AllowAny]
     queryset = VMPPs.objects.all()
     serializer_class = VMPPsSerializer
 
 
 class FilterVMPPsViewSet(viewsets.ModelViewSet):
+    permission_classes = [AllowAny]
     queryset = VMPPs.objects.all()
     serializer_class = FilterVMPPsSerializer
 
@@ -38,6 +41,7 @@ class FilterVMPPsViewSet(viewsets.ModelViewSet):
 from rest_framework import generics
 
 class VCGroupListView(generics.ListAPIView):
+    permission_classes = [AllowAny]
     serializer_class = VCGroupSerializer
 
     def get_queryset(self):
@@ -53,6 +57,7 @@ class VCGroupListView(generics.ListAPIView):
 
 
 class MarkVCGMemberAttendance(APIView):
+    permission_classes = [AllowAny]
     def post(self, request, format=None):
         member_codes = request.data.get('member_codes', [])
         meeting_id = request.data.get('meeting_id')
@@ -81,6 +86,7 @@ class MarkVCGMemberAttendance(APIView):
         return Response({'message': 'Attendance Marked Successfully'}, status=status_code)
 
 class ZeroDaysReasonReport(APIView):
+    permission_classes = [AllowAny]
     def post(self, request):
         data = request.data
         status_code = status.HTTP_200_OK
@@ -106,6 +112,7 @@ class ZeroDaysReasonReport(APIView):
         return Response(response, status=status_code)
 
 class MonthAssignmentAPIView(APIView):
+    permission_classes = [AllowAny]
     def post(self, request):
         data = request.data
         status_code = status.HTTP_200_OK
@@ -139,7 +146,8 @@ class MonthAssignmentAPIView(APIView):
             return Response({'message': 'MonthAssignment for the provided VMPP ID does not exist'}, status=status.HTTP_404_NOT_FOUND)
 
 class ComplaintReport(APIView):
-  def post(self, request):
+    permission_classes = [AllowAny]
+    def post(self, request):
         data = request.data
         status_code = status.HTTP_200_OK
         meeting_id = data['meeting_id']
@@ -167,6 +175,7 @@ class ComplaintReport(APIView):
 from django.db.utils import IntegrityError
 
 class StartMeetingAPIView(APIView):
+    permission_classes = [AllowAny]
     def post(self, request, format=None):
         data = request.data
         status_code = status.HTTP_200_OK
@@ -229,19 +238,23 @@ class StartMeetingAPIView(APIView):
         return Response(response, status=status_code)
 
 class ConductedByTypeViewSet(viewsets.ModelViewSet):
+    permission_classes = [AllowAny]
     queryset = ConductedByType.objects.all()
     serializer_class = ConductedByTypeSerializer
 
 class ZeroDaysReasonViewSet(viewsets.ModelViewSet):
+    permission_classes = [AllowAny]
     queryset = ZeroDaysPourerReason.objects.all()
     serializer_class = ZeroDaysReasonSerializer
 
 class MemberComplaintReasonViewSet(viewsets.ModelViewSet):
+    permission_classes = [AllowAny]
     queryset = MemberCompaintReason.objects.all()
     serializer_class = MemberComplaintReasonSerializer
 
 
 class FacilitatorListView(viewsets.ModelViewSet):
+    permission_classes = [AllowAny]
     queryset = Facilitator.objects.all()
     serializer_class = FacilitatorSerializer
 
@@ -253,6 +266,7 @@ class FacilitatorListView(viewsets.ModelViewSet):
         return queryset
 
 class ConductedByNmeListView(viewsets.ModelViewSet):
+    permission_classes = [AllowAny]
     queryset = ConductedByName.objects.all()
     serializer_class = ConductedByNameSerializer
 
@@ -265,6 +279,7 @@ class ConductedByNmeListView(viewsets.ModelViewSet):
 
 
 class VMembersMobileViewSet(viewsets.ViewSet):
+    permission_classes = [AllowAny]
     serializer_class = VMembersSerializer
 
     def list(self, request):
@@ -286,6 +301,7 @@ class VMembersMobileViewSet(viewsets.ViewSet):
 
 
 class EndMeetingAPIView(APIView):
+    permission_classes = [AllowAny]
     def post(self, request, *args, **kwargs):
         if 'images' in request.data:
             base64_images = request.data.get('images')
@@ -312,6 +328,7 @@ class EndMeetingAPIView(APIView):
 
 
 class UserAuthentication(APIView):
+    permission_classes = [AllowAny]
     def post(self, request):
         username = request.data.get('username')
         password = request.data.get('password')
@@ -322,6 +339,7 @@ class UserAuthentication(APIView):
             return Response({'message': 'Authentication failed'}, status=status.HTTP_400_BAD_REQUEST)
 
 class ZeroDaysPouringReportList(APIView):
+    permission_classes = [AllowAny]
     def post(self, request):
         meeting_id = request.data.get('meeting_id')
         if meeting_id:
@@ -345,6 +363,7 @@ class ZeroDaysPouringReportList(APIView):
             return Response({'message': 'Meeting ID not provided'}, status=status.HTTP_400_BAD_REQUEST)
 
 class MemberComplaintReportList(APIView):
+    permission_classes = [AllowAny]
     def post(self, request):
         meeting_id = request.data.get('meeting_id')
         if meeting_id:
@@ -369,6 +388,7 @@ class MemberComplaintReportList(APIView):
 
 
 class VCGMeetingListAPIView(generics.ListAPIView):
+    permission_classes = [AllowAny]
     serializer_class = VCGMeetingSerializer
 
     def get_queryset(self):

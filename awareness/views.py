@@ -19,17 +19,12 @@ class CreateAwarenessAPIView(APIView):
         
         if not all([mpp_id, no_of_part, leader_name]):
             return Response({'message': 'MPP ID, number of participants, and leader name are required.'}, status=status.HTTP_400_BAD_REQUEST)
-        
-        try:
-            mpp = VMPPs.objects.get(mpp_loc_code=mpp_id)
-        except VMPPs.DoesNotExist:
-            return Response({'message': 'MPP not found.'}, status=status.HTTP_404_NOT_FOUND)
 
         if not participants:
             return Response({'message': 'At least one participant is required.'}, status=status.HTTP_400_BAD_REQUEST)
         
-        awareness = Awareness.objects.create(mpp=mpp, no_of_participants=no_of_part, leader_name=leader_name)
-
+        awareness = Awareness.objects.create(mpp_id=mpp_id, no_of_participants=no_of_part, leader_name=leader_name)
+        print(awareness);
         for part in participants:
             participant = AwarenessTeamMembers.objects.create(awareness=awareness, member_name=part)
 

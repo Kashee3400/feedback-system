@@ -14,7 +14,6 @@ class CustomLanguageMiddleware:
         # Activate the user's preferred language
         if user_language:
             activate(user_language)
-            print('Activating the language')
         # Continue processing the request
         response = self.get_response(request)
         

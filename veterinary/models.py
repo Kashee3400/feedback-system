@@ -110,9 +110,8 @@ class TAGType(models.Model):
 
 class Cattle(models.Model):
     GENDER_CHOICES = (
-        ('M', 'Male'),
-        ('F', 'Female'),
-        ('O', 'Other'),
+        ('Male', 'Male'),
+        ('Female', 'Female'),
     )
     
     farmer = models.ForeignKey(Member, on_delete=models.CASCADE, related_name="farmer_animals")
@@ -120,8 +119,9 @@ class Cattle(models.Model):
     tag_type = models.ForeignKey(TAGType, on_delete=models.CASCADE, related_name='tag_animals', null=True, blank=True)
     tag_number = models.CharField(max_length=20)
     gender = models.CharField(max_length=200, choices=GENDER_CHOICES, null=True, blank=True)
+    age = models.PositiveBigIntegerField(null=True, blank=True)
     sync = models.BooleanField(default=False)
-    
+ 
 
     def __str__(self):
         return f"{self.breed.animal_type} - {self.breed} - {self.tag_number}"
@@ -286,15 +286,15 @@ class CattleCaseType(models.Model):
 
 
 class TimeSlot(models.Model):
-    case_type = models.ForeignKey(CattleCaseType, on_delete=models.CASCADE)
     start_time = models.TimeField()
     end_time = models.TimeField(null=True, blank=True)
-    price = models.DecimalField(max_digits=10, decimal_places=2)
+    normal_cost = models.DecimalField(max_digits=10, decimal_places=2)
+    operational_cost = models.DecimalField(max_digits=10, decimal_places=2,blank=True,null=True)
     sync = models.BooleanField(default=False)
 
     def __str__(self):
         time_slot = f'{self.start_time.strftime("%I:%M %p")} to {self.end_time.strftime("%I:%M %p")}' if self.end_time else f'{self.start_time.strftime("%I:%M %p")}'
-        return f'{self.case_type} - {time_slot} - ${self.price}'
+        return f'{time_slot} - ${self.normal_cost}'
     
     class Meta:
         db_table = 'tbl_time_slot'
@@ -346,17 +346,22 @@ class DiagnosisCattleStatus(models.Model):
         verbose_name_plural = 'Diagnosis Cattle Statuses'
     
 import random
+from django.db import models
+
+class PaymentMethodChoices(models.TextChoices):
+    ONLINE = 'online', 'Online'
+    MILKBILLPAYMENT = 'milkbillpayment', 'Milk Bill Payment'
+
 class PaymentMethod(models.Model):
-    method = models.CharField(max_length=100, unique=True)
+    method = models.CharField(
+        max_length=100,
+        choices=PaymentMethodChoices.choices,
+        unique=True
+    )
     sync = models.BooleanField(default=False)
 
     def __str__(self):
-        return self.method
-    
-    class Meta:
-        db_table = 'tbl_payment_methods'
-        verbose_name = 'Payment Method'
-        verbose_name_plural = 'Payment Methods'
+        return self.get_method_display()
 
 class OnlinePayment(models.Model):
     payment_method = models.OneToOneField(PaymentMethod, on_delete=models.CASCADE, primary_key=True, related_name='online_payment')

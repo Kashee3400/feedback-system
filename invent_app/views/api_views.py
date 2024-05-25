@@ -200,7 +200,10 @@ def logout(request):
     token.delete()
     return Response({'message': 'Logged out successfully.'}, status=status.HTTP_200_OK)
 
+from rest_framework.permissions import AllowAny
+
 class RoleListView(APIView):
+    permission_classes = [AllowAny]
     def get(self, request):
         roles = Role.objects.all()
         serializer = RoleSerializer(roles, many=True)
