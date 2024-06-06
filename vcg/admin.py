@@ -65,9 +65,26 @@ admin.site.register(VMembers,VMembersAdmin)
 
 
 class VCGMeetingAdmin(admin.ModelAdmin):
-    search_fields = ['mpp__mpp_loc','conducted_by_type__conducted_type', 'milch_animal', 'per_day_surplus', 'pouring_in_kashee', 'pouring_in_others']  # Assuming 'facilitator' and 'member' have a 'name' field
-    list_display = ['meeting_id','mcc_name','mcc_code','mpp_name','mpp_code','conducted_type','conducted_by','start_datetime','end_datetime','status']
-
+    search_fields = [
+        'mpp__mpp_loc',
+        'mpp__mcc__mcc',
+        'mpp__mcc__mcc_code',
+        'mpp__mpp_loc_code',
+    ]
+    list_display = [
+        'meeting_id',
+        'mcc_name',
+        'mcc_code',
+        'mpp_name',
+        'mpp_code',
+        'conducted_type',
+        'conducted_by',
+        'start_datetime',
+        'end_datetime',
+        'status'
+    ]
+    list_filter = ['status']
+    
     def conducted_by(self, obj):
         if obj.conducted_by_fs:
             return obj.conducted_by_fs.name
@@ -75,7 +92,6 @@ class VCGMeetingAdmin(admin.ModelAdmin):
             return obj.conducted_by_name.name
         else: 
             return None
-
     conducted_by.short_description = 'Conducted By Name'
 
     def conducted_type(self, obj):
@@ -83,7 +99,7 @@ class VCGMeetingAdmin(admin.ModelAdmin):
     conducted_type.short_description = 'Conducted By'
     
     def mcc_name(self, obj):
-        return obj.mpp.mcc.mcc if obj.mpp else None
+        return obj.mpp.mcc.mcc if obj.mpp and obj.mpp.mcc else None
     mcc_name.short_description = 'MCC'
 
     def mpp_name(self, obj):
@@ -91,13 +107,13 @@ class VCGMeetingAdmin(admin.ModelAdmin):
     mpp_name.short_description = 'MPP'
     
     def mcc_code(self, obj):
-        return obj.mpp.mcc.mcc_code if obj.mpp else None
+        return obj.mpp.mcc.mcc_code if obj.mpp and obj.mpp.mcc else None
     mcc_code.short_description = 'MCC Code'
 
     def mpp_code(self, obj):
         return obj.mpp.mpp_loc_code if obj.mpp else None
     mpp_code.short_description = 'MPP Code'
-    
+
     def export_to_excelbook(self, request, queryset):
             response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
             response['Content-Disposition'] = 'attachment; filename="vcg_meeting_report.xlsx"'

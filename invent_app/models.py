@@ -59,6 +59,7 @@ class Role(models.Model):
 class CustomUser(AbstractUser):
     role = models.ForeignKey(Role, on_delete=models.CASCADE,blank=True,null=True)
     department = models.ForeignKey(Department, on_delete=models.CASCADE,blank=True,null=True)
+    mobile = models.CharField(max_length=20,blank=True,null=True)
     
     def __str__(self):
         if self.first_name or self.last_name:
@@ -82,6 +83,7 @@ class EmailConfirmation(models.Model):
         managed = True
         verbose_name = 'Email Confirmation'
         verbose_name_plural = 'Email Confirmations'
+
 
 class OTPToken(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, default=None)

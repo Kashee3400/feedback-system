@@ -1,30 +1,15 @@
 from django.db import models
 from invent_app.models import CustomUser
+from vcg.models import VMCCs,VMPPs
 from datetime import timezone
 
 # ************************  Veterinary Tables ********************************* #
 
 class Member(models.Model):
+    user = models.OneToOneField(CustomUser,on_delete=models.SET_NULL,blank=True,null=True)
     FarmerCode = models.CharField(max_length=100, unique=True,primary_key=True)
-    FullName = models.CharField(max_length=255)
     FatherName = models.CharField(max_length=255, blank=True,null=True)
-    EmailAddress = models.EmailField(blank=True,null=True)
-    PhoneNumber = models.CharField(max_length=20,null=True)
-    PlantID = models.IntegerField(blank=True, null=True)
-    PlantCode = models.CharField(max_length=20, blank=True,null=True)
-    PlantName = models.CharField(max_length=100)
-    MccID = models.IntegerField(blank=True, null=True)
-    MccCode = models.CharField(max_length=20, blank=True,null=True)
-    MccName = models.CharField(max_length=100)
-    MstCenterCode = models.IntegerField()
-    BmcName = models.CharField(max_length=100)
-    SocietyCode = models.IntegerField(blank=True, null=True)
-    SocietyName = models.CharField(max_length=100)
-    CompanyId = models.IntegerField(blank=True, null=True)
-    AddressLine1 = models.CharField(max_length=255, blank=True,null=True)
-    AddressLine2 = models.CharField(max_length=255, blank=True,null=True)
-    City = models.CharField(max_length=100, blank=True,null=True)
-    Pincode = models.CharField(max_length=20, blank=True,null=True)
+    mpp = models.ForeignKey(VMPPs,blank=True, null=True,on_delete=models.SET_NULL)
     VillageId = models.IntegerField(blank=True, null=True)
     DistrictId = models.IntegerField(blank=True, null=True)
     DistrictName = models.CharField(max_length=100)
@@ -33,8 +18,6 @@ class Member(models.Model):
     VillageName = models.CharField(max_length=100)
     IsRegistered = models.BooleanField(default=False)
     RegistrationDate = models.DateTimeField(blank=True, null=True)
-    OTP = models.CharField(max_length=255, blank=True,null=True)
-    EncToken = models.TextField(blank=True,null=True)
     DefaultLanguage = models.IntegerField(blank=True, null=True)
     otpsms = models.TextField(blank=True, null=True)
     opt_status = models.CharField(max_length=255, blank=True, null=True)
@@ -419,7 +402,6 @@ class CaseEntry(models.Model):
                 case_id = f'{farmer_code}{random_number}'
             self.case_no = case_id
         super().save(*args, **kwargs)
-        
 
 class CaseReceiverLog(models.Model):
     case_entry = models.ForeignKey(CaseEntry, on_delete=models.CASCADE, related_name='receiver_logs', blank=True, null=True)
@@ -429,7 +411,7 @@ class CaseReceiverLog(models.Model):
     
     def __str__(self):
         return f'{self.receiver.username}'
-        
+    
     class Meta:
         db_table = 'tbl_case_reciever_logs'
         verbose_name = 'Case Receiver Log'

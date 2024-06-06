@@ -2,7 +2,6 @@ from rest_framework import generics, status
 from io import BytesIO
 from django.core.files.base import ContentFile
 from PIL import Image
-from rest_framework.decorators import api_view
 import base64
 from rest_framework.views import APIView
 from rest_framework.authtoken.models import Token
@@ -19,7 +18,7 @@ from invent_app.models import *
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
-
+from veterinary.models import Member
 
 
 def generate_otp():
@@ -29,12 +28,66 @@ def generate_otp():
 
 def create_otp(user):
     expiry_time = timezone.now() + timedelta(minutes=1)    
-    # Generate the OTP token
     otp_token = generate_otp()
-    # Create the OTPToken object with user, token, and expiry time
     otp_token_obj = OTPToken.objects.create(user=user, token=otp_token, expiry_time=expiry_time)
-    
     return otp_token_obj
+
+
+import requests
+
+def send_sms_api(mobile,user):
+    url = "https://alerts.cbis.in/SMSApi/send"
+    params = {
+        "userid": "kashee",
+        "output": "json",
+        "password": "Kash@12",
+        "sendMethod": "quick",
+        "mobile": f"{mobile}",
+        "msg": f"आपका काशी ई-डेयरी लॉगिन ओटीपी कोड 123456 है। किसी के साथ साझा न करें- काशी डेरी",
+        "senderid": "KMPCLV",
+        "msgType": "unicode",
+        "dltEntityId": "1001453540000074525",
+        "dltTemplateId": "1007171661975556092",
+        "duplicatecheck": "true"
+    }
+    response = requests.get(url, params=params)    
+    if response.status_code == 200:
+        data = response.json()
+        print(data)
+    else:
+        print("Failed to call the API")
+
+# class UserAuthentication(APIView):
+    
+#     permission_classes = [AllowAny]
+    
+#     def post(self, request):
+#         mobile = request.data.get('mobile')
+#         roleCode = request.data.get('roleCode')
+#         device_id = request.data.get('device_id')
+#         user = CustomUser.objects.get_or_create(username=mobile,mobile=mobile)
+#         if user is not None:
+#             refresh = RefreshToken.for_user(user)
+#             access_token = str(refresh.access_token)
+#             refresh_token = str(refresh)
+#             UserDevice.objects.filter(cuser=user).delete()
+#             UserDevice.objects.create(cuser=user, device_code=device_id)    
+#             response = {
+#                 "status": status.HTTP_200_OK,
+#                 "user_id": user.pk,
+#                 "role": user.role.role_code,
+#                 'message': "Authentication successful",
+#                 'access_token': access_token,
+#                 'refresh_token':refresh_token,
+#                 'device_id': device_id 
+#             }
+#             return Response(response, status=status.HTTP_200_OK)
+#         else:
+#             response = {
+#                 "status": status.HTTP_400_BAD_REQUEST,
+#                 'message': "Authentication Failed. Please check credential",
+#             }
+#             return Response(response, status=status.HTTP_400_BAD_REQUEST)
 
 class SendOTPView(APIView):
     def post(self, request):
@@ -46,6 +99,7 @@ class SendOTPView(APIView):
                     user = CustomUser.objects.get(email=email)
                 else:    
                     return JsonResponse({'message': f'User {email} not exists. Please contact admin'}, status=400)
+                                
                 otp = create_otp(user)
                 subject = 'Feedbacks System OTP verification'
                 to_email = [email]

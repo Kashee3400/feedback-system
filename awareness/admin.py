@@ -3,11 +3,43 @@ from django.http import HttpResponse
 import csv
 import xlsxwriter
 from .models import *
+from django.db.models import Count
+from django.http import HttpResponseRedirect
+from django.contrib.admin import SimpleListFilter
+from django.db.models import Count
 
+class HasImagesFilter(SimpleListFilter):
+    title = 'Images'
+    parameter_name = 'has_images'
+
+    def lookups(self, request, model_admin):
+        queryset = model_admin.get_queryset(request)
+        no_images_count = queryset.annotate(num_images=Count('awareness_images')).filter(num_images=0).count()
+        has_images_count = queryset.annotate(num_images=Count('awareness_images')).filter(num_images__gt=0).count()
+
+        return (
+            ('yes', f'Yes ({has_images_count})'),
+            ('no', f'No ({no_images_count})'),
+        )
+
+    def queryset(self, request, queryset):
+        if self.value() == 'yes':
+            return queryset.annotate(num_images=Count('awareness_images')).filter(num_images__gt=0)
+        if self.value() == 'no':
+            return queryset.annotate(num_images=Count('awareness_images')).filter(num_images=0)
+        return queryset
 
 class AwarenessAdmin(admin.ModelAdmin):
-    search_fields = ['mpp__mpp_loc','leader_name']  # Assuming 'facilitator' and 'member' have a 'name' field
+    search_fields = [
+        'mpp__mpp_loc',
+        'mpp__mcc__mcc',
+        'mpp__mcc__mcc_code',
+        'mpp__mpp_loc_code',
+    ]
+        
     list_display = ['id','mcc_name','mcc_code','mpp_name','mpp_code','leader_name','no_of_participants','created_at']
+    # list_filter = ['status']
+    list_filter = [HasImagesFilter]  # Add the custom filter here
     
     def mcc_name(self, obj):
         return obj.mpp.mcc.mcc if obj.mpp else None
@@ -24,7 +56,7 @@ class AwarenessAdmin(admin.ModelAdmin):
     def mpp_code(self, obj):
         return obj.mpp.mpp_loc_code if obj.mpp else None
     mpp_code.short_description = 'MPP Code'
-    
+  
     def export_to_excelbook(self, request, queryset):
             response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
             response['Content-Disposition'] = 'attachment; filename="awareness_report.xlsx"'
@@ -51,9 +83,19 @@ class AwarenessAdmin(admin.ModelAdmin):
                 row += 1
             workbook.close()
             return response
+    def get_queryset(self, request):
+        queryset = super().get_queryset(request)
+        queryset = queryset.annotate(num_images=Count('awareness_images'))
+        return queryset
+
+    def fetch_awareness_without_images(self, request, queryset):
+        queryset = self.get_queryset(request).filter(num_images=0)
+        self.message_user(request, f"Found {queryset.count()} awareness records without images.")
+        return HttpResponseRedirect(request.get_full_path())
+    fetch_awareness_without_images.short_description = "Fetch Awareness without images"
 
     export_to_excelbook.short_description = "Export to xlsx"
-    actions = ['export_to_excelbook']
+    actions = ['export_to_excelbook','fetch_awareness_without_images']
 
 admin.site.register(Awareness,AwarenessAdmin)
 
@@ -69,3 +111,4 @@ class AwarenessImagesMembersAdmin(admin.ModelAdmin):
     
     
 admin.site.register(AwarenessImages,AwarenessImagesMembersAdmin)
+

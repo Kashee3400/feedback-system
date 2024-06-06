@@ -25,8 +25,7 @@ for model in app_models:
     admin.site.register(model, admin_class)
 
 class MemberAdmin(admin.ModelAdmin):
-    list_display = ['FarmerCode','FullName','FatherName','EmailAddress','PhoneNumber','PlantID','PlantCode',
-                  'PlantName','MccCode','MccName','SocietyName','AddressLine1','AddressLine2','City','Pincode','VillageId']
+    list_display = ['FarmerCode','FatherName','VillageId']
     
 admin.site.register(Member,MemberAdmin)
 

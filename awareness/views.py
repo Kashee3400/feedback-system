@@ -24,7 +24,6 @@ class CreateAwarenessAPIView(APIView):
             return Response({'message': 'At least one participant is required.'}, status=status.HTTP_400_BAD_REQUEST)
         
         awareness = Awareness.objects.create(mpp_id=mpp_id, no_of_participants=no_of_part, leader_name=leader_name)
-        print(awareness);
         for part in participants:
             participant = AwarenessTeamMembers.objects.create(awareness=awareness, member_name=part)
 
