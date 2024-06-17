@@ -58,7 +58,6 @@ urlpatterns = [
     path('api/locations/', LocationListAPIView.as_view(), name='location-list'),
     path('api/locations/<str:location_id>/sublocations/', SubLocationListAPIView.as_view(), name='sublocation-list'),
     path('api/feedback-categories/', FeedbackCategoryListAPIView.as_view(), name='feedback-category-list'),
-    path('api/feedback-create/', create_farmer_feedback, name='create_feedback'),
     path('api/vmpps/<str:mcc_code>/', VMPPsViewSet.as_view({'get': 'list'}), name='vmpps-list'),
     path('api/vcg-group/', VCGroupListView.as_view(), name='vcg-group-list'),
     path('api/mark-attendance/', MarkVCGMemberAttendance.as_view(), name='mark_attendance'),

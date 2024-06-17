@@ -41,7 +41,7 @@ class ConductedByNameAdmin(admin.ModelAdmin):
 admin.site.register(ConductedByName,ConductedByNameAdmin)
 
 class VMembersAdmin(admin.ModelAdmin):
-    search_fields = ['type__conducted_type','name']
+    search_fields = ['mpp__mpp_loc_code','mpp__mpp_loc','mpp__mcc__mcc','mpp__mcc__mcc_code','name']
     list_display = ['mcc_name', 'mcc_code','mpp_name','mpp_code','name','code','mineral_bag','cattle_bag','created_at']
     
     def mcc_name(self, obj):

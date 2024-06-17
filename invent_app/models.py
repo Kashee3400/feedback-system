@@ -162,20 +162,6 @@ class Location(models.Model):
         db_table = 'tbl_location'
         verbose_name = 'Location'
         verbose_name_plural = 'Locations'
-    
-class FeedbackCategory(models.Model):
-    category = models.CharField(max_length=50)
-    days = models.IntegerField(default=0)
-
-    def __str__(self):
-        return f"{self.category}"
-    
-    class Meta:
-        db_table = 'tbl_feedback_categories'
-        verbose_name = 'Feedback Category'
-        verbose_name_plural = 'Feedback Categories'
-
-
 class SubLocations(models.Model):
     mcc = models.ForeignKey(Location, on_delete = models.CASCADE)
     mpp_loc = models.CharField(max_length = 100)
@@ -189,8 +175,33 @@ class SubLocations(models.Model):
         verbose_name = 'Sub Location'
         verbose_name_plural = 'Sub Locations'
 
+
+class FeedbackCategory(models.Model):
+    category = models.CharField(max_length=50)
+    days = models.IntegerField(default=0)
+
+    def __str__(self):
+        return f"{self.category}"
+    
+    class Meta:
+        db_table = 'tbl_feedback_categories'
+        verbose_name = 'Feedback Category'
+        verbose_name_plural = 'Feedback Categories'
+
+
+
+import uuid
+from django.db import models
+from django.utils import timezone
+
 class BaseFeedback(models.Model):
-    message = models.TextField()
+    # Fields related to feedback
+    mcc_code = models.CharField(max_length=5, blank=True, null=True)
+    mcc_ex_code = models.CharField(max_length=20, blank=True, null=True)
+    mcc_name = models.CharField(max_length=255, blank=True, null=True)
+    mpp_code = models.CharField(max_length=9, blank=True, null=True)
+    mpp_ex_code = models.CharField(max_length=20, blank=True, null=True)
+    mpp_short_name = models.CharField(max_length=50, blank=True, null=True)
     mobile = models.CharField(max_length=50, blank=True)
     re_message = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -198,9 +209,8 @@ class BaseFeedback(models.Model):
     reopened_at = models.DateTimeField(null=True, blank=True)
     is_closed = models.BooleanField(default=False)
     feedback_id = models.CharField(max_length=50, unique=True, blank=True, editable=False)
-    remark =  models.TextField(blank=True, editable=False)
-    file = models.FileField(upload_to='feedback_files/', null=True, blank=True)
-
+    remark = models.TextField(blank=True, editable=False)
+    message = models.TextField()
 
     def close_feedback(self):
         self.is_closed = True
@@ -210,34 +220,36 @@ class BaseFeedback(models.Model):
         self.is_closed = False
         self.reopened_at = timezone.now()
 
-        
     def save(self, *args, **kwargs):
-        # Generate a random feedback ID starting with "Feed"
         if not self.feedback_id:
             self.feedback_id = 'Feed' + str(uuid.uuid4().hex)[:6]  # Generate random text
-        
         super().save(*args, **kwargs)
-        
+
     class Meta:
         abstract = True
 
 class FarmerFeedback(BaseFeedback):
-    sender = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='sent_farmer_feedbacks',blank=True, null=True)
+    sender = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='sent_farmer_feedbacks', blank=True, null=True)
     name = models.CharField(max_length=50, blank=True, null=True)
+    code = models.CharField(max_length=50, blank=True, null=True)
     receiver_farmer = models.ForeignKey(CustomUser, on_delete=models.CASCADE, blank=True, null=True, related_name='farmer_feedbacks_received')
     mpp = models.ForeignKey(SubLocations, on_delete=models.CASCADE, blank=True, null=True)
     district = models.CharField(max_length=50, blank=True, null=True)
 
     def __str__(self):
         if self.sender:
-            return f"Feedback from {self.sender.username} "
+            return f"Feedback from {self.sender.username}"
         else:
-            return f"Feedback from {self.name} "
+            return f"Feedback from {self.name}"
 
     def forward_to_hod(self, role, department=None):
         hod = CustomUser.objects.filter(role=role, department=department).first() if department else CustomUser.objects.filter(is_superuser=True).first()
         if hod:
             self.receiver_farmer = hod
+
+class FarmerFeedbackFile(models.Model):
+    feedback = models.ForeignKey(FarmerFeedback, on_delete=models.CASCADE, related_name='farmer_files')
+    file = models.FileField(upload_to='feedback_files/')
 
 class Feedback(BaseFeedback):
     sender = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='sent_feedbacks')
@@ -247,12 +259,14 @@ class Feedback(BaseFeedback):
 
     def forward_to_hod(self, role, department=None):
         hod = CustomUser.objects.filter(role=role, department=department).first() if department else CustomUser.objects.filter(is_superuser=True).first()
-        print(hod)
         if hod:
             self.receiver_feedback = hod
 
     def __str__(self):
         return f"Feedback from {self.sender.username} - {self.message}"
+
+
+
 
 class LanguageSopported(models.Model):
     title = models.CharField(max_length=30)

@@ -55,14 +55,55 @@ class SubLocationSerializer(serializers.ModelSerializer):
         fields = ['mpp_loc', 'mpp_loc_code']
 
 
+# class FarmerFeedbackSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = FarmerFeedback
+#         fields = '__all__'
+
+import base64
+from django.core.files.base import ContentFile
+from rest_framework import serializers
+
+import base64
+from django.core.files.base import ContentFile
+from rest_framework import serializers
+from .models import FarmerFeedback, FarmerFeedbackFile
+
+class Base64FileField(serializers.FileField):
+    """
+    A custom file field to handle base64 encoded files.
+    """
+    def to_internal_value(self, data):
+        if isinstance(data, str):
+            try:
+                decoded_file = base64.b64decode(data)
+                return ContentFile(decoded_file, name='uploaded_file')
+            except Exception as e:
+                raise serializers.ValidationError(f'Invalid base64 format: {e}')
+        else:
+            return super().to_internal_value(data)
+
+class FeedbackFileSerializer(serializers.Serializer):
+    file = Base64FileField()
+
+    def create(self, validated_data):
+        return validated_data
+
 class FarmerFeedbackSerializer(serializers.ModelSerializer):
+    files = FeedbackFileSerializer(many=True, required=False)
+
     class Meta:
         model = FarmerFeedback
         fields = '__all__'
 
+    def create(self, validated_data):
+        files_data = validated_data.pop('files', [])
+        feedback = FarmerFeedback.objects.create(**validated_data)
+        for file_data in files_data:
+            file = file_data['file']
+            FarmerFeedbackFile.objects.create(feedback=feedback, file=file)
+        return feedback
 
-from rest_framework import serializers
-from .models import FeedbackCategory
 
 class FeedbackCategorySerializer(serializers.ModelSerializer):
     class Meta:

@@ -20,20 +20,20 @@ class FeedbackForm(forms.ModelForm):
                                       widget=forms.Select(attrs={'class': 'custom-select'}))
     class Meta:
         model = Feedback
-        fields = [ 'mobile', 'sub_location', 'message','feedback_cat', 'file']
+        fields = [ 'mobile', 'sub_location', 'message','feedback_cat']
         widgets = {
             'message': forms.Textarea(attrs={'rows': 2, 'class': 'form-control'}),
             'mobile': forms.TextInput(attrs={'class': 'form-control'}),
             'sub_location': forms.Select(attrs={'class': 'custom-select'}),
             'feedback_cat': forms.Select(attrs={'class': 'form-control'}),
-            'file': forms.FileInput(attrs={'class': 'form-control-file'}),
+            # 'file': forms.FileInput(attrs={'class': 'form-control-file'}),
         }
 
 class MemberFeedbackForm(forms.ModelForm):
     file = forms.FileField(required=False)
     class Meta:
         model = FarmerFeedback
-        fields = ['name', 'mobile', 'mpp', 'district','message', 'file']
+        fields = ['name', 'mobile', 'mpp', 'district','message']
         widgets = {
             'message': forms.Textarea(attrs={'rows': 2,'class':'form-control'}),
         }

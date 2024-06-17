@@ -277,16 +277,109 @@ class SubLocationListAPIView(generics.ListAPIView):
         return SubLocations.objects.filter(mcc=mcc).order_by('mpp_loc')
 
 
-@api_view(['POST'])
-def create_farmer_feedback(request):
-    if request.method == 'POST':
-        serializer = FarmerFeedbackSerializer(data=request.data)
-        if serializer.is_valid():
-            print(serializer)
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+from rest_framework import viewsets, status
+from rest_framework.response import Response
+from rest_framework.exceptions import ValidationError
 
+class FarmerFeedbackViewSet(viewsets.ModelViewSet):
+    queryset = FarmerFeedback.objects.all()
+    serializer_class = FarmerFeedbackSerializer
+    permission_classes = [AllowAny]
+
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        print(serializer)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({
+                "status": 200,
+                "message": "Feedback created successfully",
+                "data": serializer.data
+            }, status=status.HTTP_201_CREATED)
+        else:
+            return Response({
+                "status": 400,
+                "message": "Validation error",
+                "data": serializer.errors
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        try:
+            serializer.is_valid(raise_exception=True)
+            self.perform_update(serializer)
+            return Response({
+                "status": 200,
+                "message": "Feedback updated successfully",
+                "data": serializer.data
+            }, status=status.HTTP_200_OK)
+        except ValidationError as e:
+            return Response({
+                "status": 400,
+                "message": "Validation error",
+                "data": e.detail
+            }, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({
+                "status": 500,
+                "message": str(e),
+                "data": {}
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    def destroy(self, request, *args, **kwargs):
+        try:
+            instance = self.get_object()
+            self.perform_destroy(instance)
+            return Response({
+                "status": 200,
+                "message": "Feedback deleted successfully",
+                "data": {}
+            }, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({
+                "status": 500,
+                "message": str(e),
+                "data": {}
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    def retrieve(self, request, *args, **kwargs):
+        try:
+            instance = self.get_object()
+            serializer = self.get_serializer(instance)
+            return Response({
+                "status": 200,
+                "message": "Feedback retrieved successfully",
+                "data": serializer.data
+            }, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({
+                "status": 500,
+                "message": str(e),
+                "data": {}
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    def list(self, request, *args, **kwargs):
+        try:
+            queryset = self.filter_queryset(self.get_queryset())
+            page = self.paginate_queryset(queryset)
+            if page is not None:
+                serializer = self.get_serializer(page, many=True)
+                return self.get_paginated_response(serializer.data)
+
+            serializer = self.get_serializer(queryset, many=True)
+            return Response({
+                "status": 200,
+                "message": "Feedback list retrieved successfully",
+                "data": serializer.data
+            }, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({
+                "status": 500,
+                "message": str(e),
+                "data": {}
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class FeedbackCategoryListAPIView(generics.ListAPIView):
     queryset = FeedbackCategory.objects.all()

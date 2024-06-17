@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.urls import path,include,re_path
+from invent_app.views.api_views import FarmerFeedbackViewSet
 from invent_app.views import views
 from vcg import views
 # urls.py
@@ -16,6 +17,7 @@ router.register(r'members', views.VMembersMobileViewSet, basename='members_list'
 router.register(r'conducted-types', views.ConductedByTypeViewSet, basename='conducted-types')
 router.register(r'zero-days-reason', views.ZeroDaysReasonViewSet, basename='zerodays-reason')
 router.register(r'complaint-reason', views.MemberComplaintReasonViewSet, basename='complaint-reason')
+router.register(r'farmer-feedback', FarmerFeedbackViewSet, basename="farmer_feedback")
 
 admin.site.site_title = "Nachiketa Admin"
 
