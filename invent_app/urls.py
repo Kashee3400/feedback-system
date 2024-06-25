@@ -75,4 +75,11 @@ urlpatterns = [
     path('api/upload-awareness-images/', AwarenessImagesAPIView.as_view(), name='upload-awareness-images'),
     path('api/awareness/', AwarenessListAPIView.as_view(), name='awareness-list'),
 
+
+    path('feedback/create/emp/', views.EmpFeedbackCreateView.as_view(), name='feedback_emp_create'),
+    path('feedback/<int:pk>/change-status/', views.FeedbackChangeStatusView.as_view(), name='feedback_emp_change_status'),
+    path('feedback/<int:pk>/forward/emp/', views.FeedbackForwardView.as_view(), name='feedback_emp_detail'),
+    path('feedback/list/emp/', views.AllEMPFeedbackListView.as_view(), name='feedback_emp_list'),
+    path('search-feedback-logs/', views.search_feedback_logs, name='search_feedback_logs'),
+
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

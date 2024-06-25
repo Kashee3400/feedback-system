@@ -41,8 +41,8 @@
               <span><img src="{% static 'invent_app/img/secretary.png' %}" alt="img" /></span>
             </div>
             <div class="dash-widgetcontent">
-              <h5><span class="counters" data-count="{{ s_feedback_count }}">{{ s_feedback_count }}</span></h5>
-              <h6>{% translate 'Total Sahayak Feedbacks' %}</h6>
+              <h5><span class="counters" data-count="{{ employee_total_feedback_count }}">{{ employee_total_feedback_count }}</span></h5>
+              <h6>{% translate 'Total Feedbacks' %}</h6>
             </div>
           </div>
         </div>
@@ -65,7 +65,7 @@
               <span><img src="{% static 'invent_app/img/open-feedback.png' %}" alt="img" /></span>
             </div>
             <div class="dash-widgetcontent">
-              <h5><span class="counters" data-count="{{ open_feedback }}">{{ open_feedback }}</span></h5>
+              <h5><span class="counters" data-count="{{ employee_feedback_count }}">{{ employee_feedback_count }}</span></h5>
               <h6>{% translate "Open Feedbacks" %}</h6>
             </div>
           </div>
@@ -76,7 +76,7 @@
               <span><img src="{% static 'invent_app/img/closed-feedback.png' %}" alt="img" /></span>
             </div>
             <div class="dash-widgetcontent">
-              <h5><span class="counters" data-count="{{ closed_feedback }}">{{ closed_feedback }}</span></h5>
+              <h5><span class="counters" data-count="{{ employee_closed_feedback_count }}">{{ employee_closed_feedback_count }}</span></h5>
               <h6>{% translate "Closed Feedbacks" %}</h6>
             </div>
           </div>
@@ -199,9 +199,60 @@
           </div>
         </div>
       {% endif %}
+      {% if user|has_permission:'invent_app.view_employeefeedback' %}
+      <div class="row">
+        <div class="col-xl-12 col-sm-12 col-12 d-flex">
+          <div class="card flex-fill">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <h5 class="card-title mb-0">{% translate "Feedbacks" %}</h5>
+              <div class="graph-sets">
+                <div class="view-all-link">
+                  <a href="{% url 'all_m_feedback_list' %}" class="view-all d-flex align-items-center">{% translate "View All" %}<span class="ps-2 d-flex align-items-center"><i data-feather="arrow-right" class="feather-16"></i></span></a>
+                </div>
+              </div>
+            </div>
+            <div class="card-body">
+              <div class="table-responsive dataview">
+                <table class="table dashboard-recent-products datanew">
+                  <thead>
+                    <tr>
+                      <th>Feedback ID</th>
+                      <th>Name</th>
+                      <th>Mobile</th>
+                      <th>Created at</th>
+                      <th>Reason</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    {% for feedback in feedbacks %}
+                      <tr>
+                        <td><a href="{% url 'feedback_emp_detail' feedback.pk %}">{{feedback.feedback_id}}</a></td>
+                        <td>{{feedback.sender.first_name}}{{feedback.sender.last_name}}</td>
+                        <td>{{feedback.sender.email}}</td>
+                        <td>{{feedback.created_at}}</td>
+                        <td>{{feedback.feedback}}</td>
+                        <td class="status">
+                          {% if feedback.is_closed %}
+                          <span class="dot close-status"></span>Closed
+                          {% else %}
+                          <span class="dot open"></span>Open
+                          {% endif %}
+                        </td>
+                      </tr>                      
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endif %}
     </div>
 
-    <form action="{% url 'set_language' %}" method="post">{% csrf_token %}
+    {% comment %} <form action="{% url 'set_language' %}" method="post">{% csrf_token %}
       <input name="next" type="hidden" value="{{ redirect_to }}">
       <select name="language">
           {% get_current_language as LANGUAGE_CODE %}
@@ -214,7 +265,7 @@
           {% endfor %}
       </select>
       <input type="submit" value="Go">
-  </form>
+  </form> {% endcomment %}
   </div>
 {% endblock %}
 

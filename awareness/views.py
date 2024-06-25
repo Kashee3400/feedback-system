@@ -8,9 +8,11 @@ from rest_framework import status,generics
 import base64
 from .serializers import *
 from django.core.files.base import ContentFile
-
+from rest_framework.permissions import AllowAny
 
 class CreateAwarenessAPIView(APIView):
+    permission_classes = [AllowAny]
+    
     def post(self, request, *args, **kwargs):
         mpp_id = request.data.get('mpp_id')
         no_of_part = request.data.get('no_of_part')
@@ -35,6 +37,8 @@ class CreateAwarenessAPIView(APIView):
 
 
 class AwarenessImagesAPIView(APIView):
+    permission_classes = [AllowAny]
+    
     def post(self, request, *args, **kwargs):
         if 'images' in request.data:
             base64_images = request.data.get('images')
@@ -58,6 +62,7 @@ class AwarenessImagesAPIView(APIView):
 from django.db.models import Count
 
 class AwarenessListAPIView(generics.ListAPIView):
+    permission_classes = [AllowAny]
     serializer_class = AwarenessSerializer
 
     def get_queryset(self):

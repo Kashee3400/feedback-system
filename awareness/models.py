@@ -14,7 +14,7 @@ class Awareness(models.Model):
     class Meta:
         db_table = 'tbl_awareness'
         verbose_name = 'Awareness'
-        verbose_name_plural = 'Awarenesse'
+        verbose_name_plural = 'Awareness'
 
 
 class AwarenessImages(models.Model):

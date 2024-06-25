@@ -1,0 +1,25 @@
+<!-- forward_feedback_form.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Forward Feedback</title>
+</head>
+<body>
+    <h2>Forward Feedback</h2>
+    <form method="post">
+        {% csrf_token %}
+        <p>Feedback from: {{ feedback.sender.username }}</p>
+        <p>To: {{ feedback.receivers.all|join:", " }}</p>
+        <label for="forward_to_user">Forward to:</label>
+        <select id="forward_to_user" name="forward_to_user">
+            {% for user in users_to_forward %}
+                <option value="{{ user.id }}">{{ user.username }}</option>
+            {% endfor %}
+        </select>
+
+        <button type="submit">Forward Feedback</button>
+    </form>
+</body>
+</html>

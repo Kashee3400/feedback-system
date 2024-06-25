@@ -57,12 +57,13 @@ class CustomPermissionMixin(PermissionRequiredMixin):
         return HttpResponseForbidden(self.permission_denied_message)
 
 
-class DashboardView(LoginRequiredMixin, CustomPermissionMixin, TemplateView):
+class DashboardView(LoginRequiredMixin, TemplateView):
     model = Feedback
     template_name = 'invent_app/myadmin/dashboard.html'
     context_object_name = 'feedbacks'
     success_url = 'dashboard'
-    permission_required = ['invent_app.change_feedback', 'invent_app.view_feedback',]
+    
+    # permission_required = ['invent_app.change_feedback', 'invent_app.view_feedback','invent_app.change_employeefeedback', 'invent_app.view_employeefeedback', 'invent_app.add_employeefeedback']
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -70,10 +71,21 @@ class DashboardView(LoginRequiredMixin, CustomPermissionMixin, TemplateView):
         context['feedbacks'] = feedbacks
         user_permissions = self.request.user.get_all_permissions()
         context['user_permissions'] = user_permissions
+        
         member_feedback_list, member_feedback_count = self.get_member_feedback_data(False)
         member_closed_feedback_list, member_closed_feedback_count = self.get_member_feedback_data(True)
         context['m_feedback_list'] = member_feedback_list
         context['m_feedback_count'] = member_feedback_count
+
+        employee_feedback_list, employee_feedback_count = self.get_employee_feedback_data(EmployeeFeedback.OPENED)
+        employee_closed_feedback_list, employee_closed_feedback_count = self.get_employee_feedback_data(EmployeeFeedback.CLOSED)
+        context['employee_feedback_list'] = employee_feedback_list
+        context['employee_feedback_count'] = employee_feedback_count
+        context['employee_closed_feedback_list'] = employee_closed_feedback_list
+        context['employee_closed_feedback_count'] = employee_closed_feedback_count
+        context['employee_total_feedback_count'] = employee_closed_feedback_count + employee_feedback_count
+
+       
         sahayak_feedback_list, sahayak_feedback_count = self.get_sahayak_feedback_data(False)
         sahayak_closed_feedback_list, sahayak_closed_feedback_count = self.get_sahayak_feedback_data(True)
         context['s_feedback_list'] = sahayak_feedback_list
@@ -102,7 +114,16 @@ class DashboardView(LoginRequiredMixin, CustomPermissionMixin, TemplateView):
         else:
             sahyak_feedback_list = Feedback.objects.filter(sender=self.request.user,is_closed=is_closed)
         return sahyak_feedback_list, sahyak_feedback_list.count()
-    
+
+    def get_employee_feedback_data(self,status):
+        if self.request.user.is_superuser:
+            employee_feedback_list = EmployeeFeedback.objects.filter(status=status)
+        elif self.request.user.role.role_code == RoleCode.HOD.value:
+            employee_feedback_list = EmployeeFeedback.objects.filter(status=status,receivers=self.request.user)
+        else:
+            employee_feedback_list = EmployeeFeedback.objects.filter(sender=self.request.user,status=status)
+        return employee_feedback_list, employee_feedback_list.count()
+
     def get_success_url(self):
         return self.success_url    
 
@@ -131,7 +152,7 @@ def get_notification(request):
         
         notification_dict = {
             "title":f'{obj.sender.first_name} {obj.sender.last_name}' if obj.sender is not None else obj.name,
-            'task':obj.feedback_cat.category,
+            'task':"",
             'time':obj.created_at.strftime("%Y-%m-%d %H:%M:%S"),
             'url':url
         }
@@ -726,3 +747,86 @@ class VetDashboardView(LoginRequiredMixin, CustomPermissionMixin, TemplateView):
         
     def get_success_url(self):
         return self.success_url    
+
+from django.views.generic import View
+
+class EmpFeedbackCreateView(LoginRequiredMixin, CustomPermissionMixin, CreateView):
+    
+    model = EmployeeFeedback
+    template_name = 'invent_app/emp_feedback_form.html'
+    fields = ['feedback']
+    permission_required = ['invent_app.change_employeefeedback', 'invent_app.view_employeefeedback', 'invent_app.add_employeefeedback']
+
+    
+    def form_valid(self, form):
+        form.instance.sender = self.request.user
+        response = super().form_valid(form)
+        try:            
+            send_feedback_created_mail(request=self.request, feedback=self.object)
+        except:
+            messages.error(self.request, 'Error while sending email')
+        return response
+    
+    def get_success_url(self):
+        return reverse_lazy('feedback_emp_list')  # Replace with your success URL
+
+
+class FeedbackChangeStatusView(LoginRequiredMixin, CustomPermissionMixin, View):
+    permission_required = ['invent_app.change_employeefeedback']
+    
+    def post(self, request, pk):
+        feedback = get_object_or_404(EmployeeFeedback, pk=pk)
+        if 'close' in request.POST:
+            feedback.close_feedback()
+        elif 'reopen' in request.POST:
+            feedback.reopen()
+        return redirect('feedback_emp_detail', pk=pk)
+
+
+class FeedbackForwardView(LoginRequiredMixin, CustomPermissionMixin, View):
+    permission_required = ['invent_app.change_employeefeedback', 'invent_app.view_employeefeedback', 'invent_app.add_employeefeedback']
+    
+    def get(self, request, pk):
+        feedback = get_object_or_404(EmployeeFeedback, pk=pk)
+        department = Department.objects.filter(department = 'IT')
+        department = request.user.department
+        users_to_forward = CustomUser.objects.filter(department=department).exclude(pk=request.user.pk)
+        return render(request, 'invent_app/emp_detail_feedback.html', {'object': feedback, 'users_to_forward': users_to_forward})
+
+    def post(self, request, pk):
+        feedback = get_object_or_404(EmployeeFeedback, pk=pk)
+        forward_to_user_id = request.POST.get('forward_to_user')
+        if forward_to_user_id:
+            forward_to_user = get_object_or_404(CustomUser, pk=forward_to_user_id)
+            feedback.forward_to(forward_to_user)
+        return redirect('feedback-detail', pk=pk)  # Replace with your feedback detail URL
+
+
+   
+class AllEMPFeedbackListView(LoginRequiredMixin, CustomPermissionMixin, ListView):
+    model = EmployeeFeedback
+    template_name = 'invent_app/emp_feedback_list.html'
+    context_object_name = 'feedbacks'
+    permission_required = ['invent_app.change_employeefeedback', 'invent_app.view_employeefeedback', 'invent_app.add_employeefeedback']
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user_permissions = self.request.user.get_all_permissions()
+        context['user_permissions'] = user_permissions
+        context['languages'] = languages
+        return context
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        if self.request.user.is_superuser or self.request.user.is_staff:
+            return queryset.filter(status=EmployeeFeedback.OPENED)
+        else:
+            return queryset.filter(sender=self.request.user,status=EmployeeFeedback.OPENED)
+
+
+def search_feedback_logs(request):
+    if 'term' in request.GET:
+        qs = EmployeeRecentFeedbackLog.objects.filter(recent_feedback__icontains=request.GET.get('term'))
+        suggestions = list(qs.values('recent_feedback'))
+        return JsonResponse(suggestions, safe=False)
+    return JsonResponse([], safe=False)

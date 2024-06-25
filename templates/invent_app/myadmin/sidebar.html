@@ -42,9 +42,10 @@
         </li>
 
         {% if not user.role.role_code == 'sahayak' %}
-        {% if user|has_permission:'invent_app.view_feedback' or user|has_permission:'invent_app.view_farmerfeedback' %}
+        {% if user|has_permission:'invent_app.view_feedback' or user|has_permission:'invent_app.view_farmerfeedback' or user|has_permission:'invent_app.view_employeefeedback' %}
         {% url "all_m_feedback_list" as all_m_feedback_list %}
         {% url "all_s_feedback_list" as all_s_feedback_list %}
+        {% url "feedback_emp_list" as feedback_emp_list %}
         <li class="submenu-open">
           <h6 class="submenu-hdr">{% trans "View Feedbacks" %}</h6>
           <ul>
@@ -52,11 +53,16 @@
               <a href="javascript:void(0);" class="subdrop
               {% if request.path == all_m_feedback_list %}active{% endif %}
               {% if request.path == all_s_feedback_list %}active{% endif %}
+              {% if request.path == feedback_emp_list %}active{% endif %}
               "><i data-feather="eye"></i><span>{% trans "View Feedback" %}</span><span class="menu-arrow"></span></a>
               <ul>
                 {% if user|has_permission:'invent_app.view_farmerfeedback' %}
                 <li>
                   <a href="{% url "all_m_feedback_list" %}" class="{% if request.path == all_m_feedback_list %}active{% endif %}"><i data-feather="list"></i><span>{% trans "Members' Feedbacks" %}</span></a>
+                </li>{% endif %}
+                {% if user|has_permission:'invent_app.view_employeefeedback' %}
+                <li>
+                  <a href="{% url "feedback_emp_list" %}" class="{% if request.path == feedback_emp_list %}active{% endif %}"><i data-feather="list"></i><span>{% trans "Employees' Feedbacks" %}</span></a>
                 </li>{% endif %}
                 {% if user|has_permission:'invent_app.view_feedback' %}
                 <li>
@@ -70,8 +76,11 @@
 
         {% endif %}
 
-        {% if user|has_permission:'invent_app.add_feedback' or user|has_permission:'invent_app.add_farmerfeedback' %}
+        
+
+        {% if user|has_permission:'invent_app.add_feedback' or user|has_permission:'invent_app.add_farmerfeedback' or user|has_permission:'invent_app.add_employeefeedback' %}
         {% url "feedback_create" as feedback_create %}
+        {% url "feedback_emp_create" as feedback_emp_create %}
         {% url "m_feedback_create" as m_feedback_create %}
         {% url "feedback_list" as feedback_list %}
         {% url "m_feedback_list" as m_feedback_list %}
@@ -82,9 +91,11 @@
               <a href="javascript:void(0);" 
               class="subdrop 
               {% if request.path == feedback_create %}active{% endif %}
+              {% if request.path == feedback_emp_create %}active{% endif %}
               {% if request.path == m_feedback_create %}active{% endif %}
               {% if request.path == feedback_list %}active{% endif %}
               {% if request.path == m_feedback_list %}active{% endif %}
+              {% if request.path == feedback_emp_list %}active{% endif %}
               "><i data-feather="grid"></i><span>{% trans "Create Feedback" %}</span><span class="menu-arrow"></span></a>
               <ul>
                 {% if user|has_permission:'invent_app.add_feedback' %}
@@ -92,9 +103,19 @@
                   <a href="{% url "feedback_create" %}" class="{% if request.path == feedback_create %}active{% endif %}"><i data-feather="plus-square"></i><span>{% trans "Create Feedback" %}</span></a>
                 </li>
                 {% endif %}
+                {% if user|has_permission:'invent_app.add_employeefeedback' %}
+                <li>
+                  <a href="{% url "feedback_emp_create" %}" class="{% if request.path == feedback_emp_create %}active{% endif %}"><i data-feather="plus-square"></i><span>{% trans "Create Feedback" %}</span></a>
+                </li>
+                {% endif %}
                 {% if user|has_permission:'invent_app.view_feedback' %}
                 <li>
                   <a href="{% url "feedback_list" %}" class="{% if request.path == feedback_list %}active{% endif %}"><i data-feather="list"></i><span>{% trans "My Feedbacks" %}</span></a>
+                </li>
+                {% endif %}
+                {% if user|has_permission:'invent_app.view_employeefeedback' %}
+                <li>
+                  <a href="{% url "feedback_emp_list" %}" class="{% if request.path == feedback_emp_list %}active{% endif %}"><i data-feather="list"></i><span>{% trans "My Feedbacks" %}</span></a>
                 </li>
                 {% endif %}
                 {% if user|has_permission:'invent_app.add_farmerfeedback' %}

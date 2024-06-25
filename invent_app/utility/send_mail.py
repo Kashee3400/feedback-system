@@ -27,7 +27,6 @@ def send_feedback_created_mail(request, feedback):
     try:
         emp_email = EmailMessage(subject, emp_email_html_message, settings.EMAIL_HOST_USER, [feedback.sender.email])
         emp_email.send()
-        print("Email sent successfully")
     except Exception as e:
         print(f"Error sending email: {e}")
 

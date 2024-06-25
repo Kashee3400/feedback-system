@@ -1,7 +1,7 @@
 # forms.py
 from django import forms
 from django.apps import apps
-from invent_app.models import CustomUser
+from invent_app.models import CustomUser, EmployeeFeedback
 
 def generate_dynamic_model_forms():
     dynamic_forms = {}
@@ -94,3 +94,15 @@ class ProfileUpdateForm(forms.ModelForm):
             'gender': forms.Select(attrs={'class': 'form-control'}),
             'profile_image': forms.ClearableFileInput(attrs={'class': 'form-control-file'}),
         }
+
+
+class EmployeeFeedbackForm(forms.ModelForm):
+    feedback = forms.CharField(max_length=200, required=True, widget=forms.TextInput(attrs={
+        'class': 'form-control',
+        'id': 'feedback-input',
+        'autocomplete': 'off'
+    }))
+    
+    class Meta:
+        model = EmployeeFeedback
+        fields = ['feedback']

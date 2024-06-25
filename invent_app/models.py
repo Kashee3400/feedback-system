@@ -16,6 +16,7 @@ class RoleCode(Enum):
     GRO = 'gro'
     HOD = 'hod'
     MEMBER = 'member'
+    USER = 'user'
     CE = 'ce'
 
 
@@ -352,3 +353,62 @@ class MPPs(models.Model):
         db_table = 'tbl_mpp'
         verbose_name = 'MPP'
         verbose_name_plural = 'MPPs'
+
+class EmployeeRecentFeedbackLog(models.Model):
+    recent_feedback = models.CharField(max_length=200)
+    
+    def __str__(self):
+        return self.recent_feedback
+    
+    class Meta:
+        db_table = 'tbl_employee_feedback'
+        verbose_name = 'Employee Recent FeedbackLog'
+        verbose_name_plural = 'Employee Recent FeedbackLogs'
+    
+class EmployeeFeedback(models.Model):
+    CLOSED,OPENED, OK =  'Closed','Open', 'OK'
+    status_choices = [
+        (OPENED, 'Open'),
+        (CLOSED, 'Closed'),
+        (OK, 'Ok'),
+    ]
+    sender = models.ForeignKey(CustomUser, related_name='emp_sent_feedbacks', on_delete=models.CASCADE)
+    receivers = models.ForeignKey(CustomUser,on_delete=models.SET_NULL, null=True, related_name='emp_received_feedbacks')
+    forwarded_to = models.ForeignKey(CustomUser,on_delete=models.SET_NULL, null=True, related_name='emp_forwarded_feedbacks', blank=True)
+    status = models.CharField(max_length=10, choices=status_choices, default=OPENED)
+    feedback = models.CharField(max_length=200,)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    re_message = models.TextField(null=True, blank=True)
+    resolved_at = models.DateTimeField(null=True, blank=True)
+    reopened_at = models.DateTimeField(null=True, blank=True)
+    feedback_id = models.CharField(max_length=50, unique=True, blank=True, editable=False)
+    
+    def reopen(self):
+        if self.status == self.CLOSED:
+            self.status = self.OPENED
+            self.save()
+
+    def close_feedback(self):
+        if self.status == self.OPENED:
+            self.status = self.CLOSED
+            self.save()
+            
+    def ok_feedback(self):
+        self.status = self.OK
+        self.save()
+
+    def forward_to(self, user):
+        if user != self.sender and user not in self.receivers.all():
+            self.forwarded_to.add(user)
+            self.save()
+
+    def __str__(self):
+        return f"Feedback from {self.sender} to {', '.join(str(user) for user in self.receivers.all())} ({self.status})"
+    
+    def save(self, *args, **kwargs):
+        if not self.feedback_id:
+            self.feedback_id = 'Feed' + str(uuid.uuid4().hex)[:6] 
+        super().save(*args, **kwargs)
+
+
