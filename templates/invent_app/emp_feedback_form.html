@@ -1,5 +1,5 @@
 {% extends 'invent_app/myadmin/base.html' %}
-{% load static %}
+{% load i18n static %}
 {% block title %}
   Dashboard | {{ user.role }}
 {% endblock %}
@@ -16,7 +16,7 @@
       <div class="col-xl-12 col-sm-12 col-12 d-flex">
         <div class="card flex-fill">
           <div class="card-header d-flex justify-content-between align-items-center">
-            <h5 class="card-title mb-0">Create Feedback</h5>
+            <h5 class="card-title mb-0">{% translate 'Raise Ticket' %}</h5>
             <div class="graph-sets">
               <div class="view-all-link">
                 <a href="javascript:void(0);" class="view-all d-flex align-items-center">View All<span class="ps-2 d-flex align-items-center"><i data-feather="arrow-right" class="feather-16"></i></span></a>
@@ -28,7 +28,7 @@
             <form method="post">
               {% csrf_token %}
               {{ form.as_p }}
-              <button type="submit" class="btn btn-primary">Submit Feedback</button>
+              <button type="submit" class="btn btn-primary">{% translate 'Raise Ticket' %}</button>
             </form>
           </div>
         </div>
@@ -41,7 +41,7 @@
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
     <script type="text/javascript">
       $(document).ready(function () {
-        $('#feedback-input').autocomplete({
+        $('#id_feedback').autocomplete({
           source: function (request, response) {
             $.ajax({
               url: "{% url 'search_feedback_logs' %}",
@@ -50,6 +50,7 @@
               },
               dataType: 'json',
               success: function (data) {
+                console.log(data)
                 response(
                   $.map(data, function (item) {
                     return {

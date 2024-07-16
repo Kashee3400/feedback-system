@@ -201,3 +201,10 @@ class VMccAdmin(admin.ModelAdmin):
     list_display = ['mcc','mcc_code']
     
 admin.site.register(VMCCs,VMccAdmin)
+
+
+class MonthAssignmentAdmin(admin.ModelAdmin):
+    list_display =['mpp','milk_collection','no_of_members','no_of_pourers','pourers_15_days','pourers_25_days','zero_days_pourers','cattle_feed_sale','mineral_mixture_sale','sahayak_recovery']
+    search_fields = ['mpp__mpp_loc','mpp__mpp_loc_code']
+    
+admin.site.register(MonthAssignment,MonthAssignmentAdmin)

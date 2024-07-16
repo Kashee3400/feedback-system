@@ -133,7 +133,8 @@ class MonthAssignmentAPIView(APIView):
             cattle_feed_member_data = cattle_feed_member_serializer.data
             mnrl_mxr_member_data = mnrl_mxr_member_serializer.data
             response = {
-                'message': 'Submitted Successfully',
+                'status':status_code,
+                'message': 'Successful',
                 'data': response_data,
                 'max_pouring_member':max_pouring_member_data,
                 'cattle_feed':cattle_feed_member_data,
@@ -396,3 +397,108 @@ class VCGMeetingListAPIView(generics.ListAPIView):
         queryset = VCGMeeting.objects.annotate(num_images=Count('meeting_images'))
         # return queryset
         return queryset.filter(num_images=0)
+    
+    
+from django.views.generic import ListView
+from .models import VCGMeeting
+from django.db.models import Q
+
+class VCGMeetingDetailedReport(ListView):
+    model = VCGMeeting
+    template_name = 'vcg/report.html'
+    context_object_name = 'vcg_meetings'
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        status = self.request.GET.get('status')
+        if status:
+            queryset = queryset.filter(status=status)
+       
+        return queryset
+    
+    def post(self, request, *args, **kwargs):
+        # Custom logic for POST request
+        self.object_list = self.get_queryset()
+        context = self.get_context_data()
+        return self.render_to_response(context)
+
+    def put(self, request, *args, **kwargs):
+        # Custom logic for PUT request
+        self.object_list = self.get_queryset()
+        context = self.get_context_data()
+        return self.render_to_response(context)
+
+    def delete(self, request, *args, **kwargs):
+        # Custom logic for DELETE request
+        self.object_list = self.get_queryset()
+        context = self.get_context_data()
+        return self.render_to_response(context)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        vmpps_without_vcg_meetings = VMPPs.objects.filter(mpp_vcg_meetings__isnull=True)
+        context['vmpps_without_vcg_meetings'] = vmpps_without_vcg_meetings
+        context['status_choices'] = VCGMeeting.STATUS_CHOICES
+        context['status_filter'] = self.request.GET.get('status', '')
+        return context
+    
+    
+    def render_to_response(self, context, **response_kwargs):
+        # Custom logic for rendering the response
+        response = super().render_to_response(context, **response_kwargs)
+        response['Custom-Header'] = 'CustomValue'
+        return response
+
+from django.views.generic import DetailView
+from django.http import Http404, HttpResponse
+
+class VCGMeetingDetailView(DetailView):
+    model = VCGMeeting
+    template_name = 'vcg/vcgmeeting_detail.html'
+    context_object_name = 'vcg_meeting'
+
+    def get(self, request, *args, **kwargs):
+        # Custom logic for GET request
+        self.object = self.get_object()
+        context = self.get_context_data(object=self.object)
+        return self.render_to_response(context)
+
+    def post(self, request, *args, **kwargs):
+        # Custom logic for POST request
+        return HttpResponse('POST request is not allowed for this view', status=405)
+
+    def put(self, request, *args, **kwargs):
+        # Custom logic for PUT request
+        return HttpResponse('PUT request is not allowed for this view', status=405)
+
+    def delete(self, request, *args, **kwargs):
+        # Custom logic for DELETE request
+        return HttpResponse('DELETE request is not allowed for this view', status=405)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Add any additional context data here
+        context['extra_info'] = 'Additional context if needed'
+        return context
+
+    def get_object(self, queryset=None):
+        # Custom logic to get the object
+        return super().get_object(queryset)
+
+    def get_queryset(self):
+        # Custom logic to get the queryset
+        return super().get_queryset()
+
+    def get_template_names(self):
+        # Custom logic to get the template names
+        return [self.template_name]
+
+    def render_to_response(self, context, **response_kwargs):
+        # Custom logic for rendering the response
+        response = super().render_to_response(context, **response_kwargs)
+        response['Custom-Header'] = 'CustomValue'
+        return response
+
+    def handle_no_permission(self):
+        # Custom logic for handling no permission
+        return HttpResponse('You do not have permission to view this page', status=403)

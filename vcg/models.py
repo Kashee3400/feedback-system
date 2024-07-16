@@ -35,7 +35,7 @@ class VMPPs(models.Model):
         
 
 class Facilitator(models.Model):
-    mcc = models.ForeignKey(VMCCs, on_delete=models.SET_NULL, null=True)
+    mcc = models.ForeignKey(VMCCs, on_delete=models.SET_NULL, null=True, related_name="facilitators")
     name = models.CharField(max_length=200)
     created_at = models.DateTimeField(auto_now_add=True)
     
@@ -135,6 +135,7 @@ class VCGMeeting(models.Model):
         db_table = 'tbl_vcg_meeting'
         verbose_name = 'VCG Meeting'
         verbose_name_plural = 'VCG Meetings'
+
 
 class VCGMemberAttendance(models.Model):
     PRESENT = 'present'

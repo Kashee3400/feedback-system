@@ -1,0 +1,41 @@
+{% extends 'invent_app/myadmin/base.html' %}
+{% load i18n static %}
+{% load permission_check %}
+{% load webpush_notifications %}
+
+{% block title %}
+  {% translate 'Dashboard' %}|{% if user.role %}
+    {{ user.role }}
+  {% else %}
+    Super Admin
+  {% endif %}
+{% endblock %}
+{% block xtra_css %}
+<style>
+    .custom-select {
+        flex-grow: 1;
+    }
+</style>
+{% endblock %}
+{% block main_content %}
+<div class="page-wrapper">
+    <div class="content">
+      <div class="container bg-white p-3">
+        <div class="row">
+            <div class="col-xl-6 col-sm-6 col-md-6 col-12">
+                <h1>VCG Meeting Detail</h1>
+                <p><strong>Meeting ID:</strong> {{ vcg_meeting.meeting_id }}</p>
+                <p><strong>Status:</strong> {{ vcg_meeting.get_status_display }}</p>
+                <p><strong>Conducted By Type:</strong> {{ vcg_meeting.conducted_by_type }}</p>
+                <p><strong>Conducted By Name:</strong> {{ vcg_meeting.conducted_by_name }}</p>
+                <p><strong>Conducted By Facilitator:</strong> {{ vcg_meeting.conducted_by_fs }}</p>
+                <p><strong>Start DateTime:</strong> {{ vcg_meeting.start_datetime }}</p>
+                <p><strong>End DateTime:</strong> {{ vcg_meeting.end_datetime }}</p>
+                <p><strong>Extra Info:</strong> {{ extra_info }}</p>    
+            </div>
+          </div>
+      </div>
+    </div>
+</div>
+{% endblock main_content %}
+

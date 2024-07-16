@@ -105,7 +105,7 @@
                 {% endif %}
                 {% if user|has_permission:'invent_app.add_employeefeedback' %}
                 <li>
-                  <a href="{% url "feedback_emp_create" %}" class="{% if request.path == feedback_emp_create %}active{% endif %}"><i data-feather="plus-square"></i><span>{% trans "Create Feedback" %}</span></a>
+                  <a href="{% url "feedback_emp_create" %}" class="{% if request.path == feedback_emp_create %}active{% endif %}"><i data-feather="plus-square"></i><span>{% trans "Raise Ticket" %}</span></a>
                 </li>
                 {% endif %}
                 {% if user|has_permission:'invent_app.view_feedback' %}
@@ -115,7 +115,7 @@
                 {% endif %}
                 {% if user|has_permission:'invent_app.view_employeefeedback' %}
                 <li>
-                  <a href="{% url "feedback_emp_list" %}" class="{% if request.path == feedback_emp_list %}active{% endif %}"><i data-feather="list"></i><span>{% trans "My Feedbacks" %}</span></a>
+                  <a href="{% url "feedback_emp_list" %}" class="{% if request.path == feedback_emp_list %}active{% endif %}"><i data-feather="list"></i><span>{% trans "Your Tickets" %}</span></a>
                 </li>
                 {% endif %}
                 {% if user|has_permission:'invent_app.add_farmerfeedback' %}

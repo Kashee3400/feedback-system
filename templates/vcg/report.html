@@ -1,0 +1,199 @@
+{% extends 'invent_app/myadmin/base.html' %}
+{% load i18n static %}
+{% load permission_check %}
+{% load webpush_notifications %}
+
+{% block title %}
+  {% translate 'Dashboard' %}|{% if user.role %}
+    {{ user.role }}
+  {% else %}
+    Super Admin
+  {% endif %}
+{% endblock %}
+{% block xtra_css %}
+<style>
+    .custom-select {
+        flex-grow: 1;
+    }
+</style>
+{% endblock %}
+{% block main_content %}
+  <div class="page-wrapper">
+    {% comment %} {% webpush_header %} {% endcomment %}
+    <div class="content">
+      <div class="row">
+        <div class="col-xl-3 col-sm-6 col-12 d-flex">
+          <div class="dash-widget w-100">
+            <div class="dash-widgetimg">
+              <span><img src="{% static 'invent_app/img/secretary.png' %}" alt="img" /></span>
+            </div>
+            <div class="dash-widgetcontent">
+              <h5><span class="counters" data-count="{{ vcg_meetings.count }}">{{ vcg_meetings.count }}</span></h5>
+              <h6>{% translate 'Total Implemented' %}</h6>
+            </div>
+          </div>
+        </div>
+        {% if user.role.role_code == RoleCode.SAHAYAK.value %}
+          <div class="col-xl-3 col-sm-6 col-12 d-flex">
+            <div class="dash-widget dash1 w-100">
+              <div class="dash-widgetimg">
+                <span><img src="{% static 'invent_app/img/farmer.png' %}" alt="img" /></span>
+              </div>
+              <div class="dash-widgetcontent">
+                <h5><span class="counters" data-count="{{ vmpps_without_vcg_meetings.count }}">{{ vmpps_without_vcg_meetings.count }}</span></h5>
+                <h6>{% translate "Total Not Implemented" %}</h6>
+              </div>
+            </div>
+          </div>
+        {% endif %}
+        <div class="col-xl-3 col-sm-6 col-12 d-flex">
+          <div class="dash-widget dash2 w-100">
+            <div class="dash-widgetimg">
+              <span><img src="{% static 'invent_app/img/open-feedback.png' %}" alt="img" /></span>
+            </div>
+            <div class="dash-widgetcontent">
+              <h5><span class="counters" data-count="{{ employee_feedback_count }}">{{ employee_feedback_count }}</span></h5>
+              <h6>{% translate "Open Feedbacks" %}</h6>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-3 col-sm-6 col-12 d-flex">
+          <div class="dash-widget dash3 w-100">
+            <div class="dash-widgetimg">
+              <span><img src="{% static 'invent_app/img/closed-feedback.png' %}" alt="img" /></span>
+            </div>
+            <div class="dash-widgetcontent">
+              <h5><span class="counters" data-count="{{ employee_closed_feedback_count }}">{{ employee_closed_feedback_count }}</span></h5>
+              <h6>{% translate "Closed Feedbacks" %}</h6>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% if user|has_permission:'invent_app.view_feedback' %}
+        <div class="row">
+            <div class="col-xl-12 col-sm-12 col-12 d-flex bg-white">
+                <div class="col">
+                    <form method="get">
+                        <div class="input-group">
+                            <select class="custom-select" name="status" id="status">
+                                <option value="">All</option>
+                                {% for value, label in status_choices %}
+                                    <option value="{{ value }}" {% if status_filter == value %}selected{% endif %}>{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-dark" type="submit">Filter</button>
+                                <a href="{% url 'vcg_dashboard' %}" class="btn btn-outline-dark text-dark">Clear</a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+          <div class="col-xl-12 col-sm-12 col-12 d-flex">
+            <div class="card flex-fill">
+              <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">
+                  <p>
+                    {% translate 'VCG Meetings' %}
+                  </p>
+                </h5>
+                <div class="graph-sets">
+                  <div class="view-all-link">
+                    <a href="#!" class="view-all d-flex align-items-center">{% translate "" %}<span class="ps-2 d-flex align-items-center"><i data-feather="arrow-right" class="feather-16"></i></span></a>
+                  </div>
+                </div>
+              </div>
+              <div class="card-body">
+                <div class="table-responsive">
+                  <table class="table datanew">
+                    <thead>
+                      <tr>
+                        <th>{% trans "Meeting ID" %}</th>
+                        <th>{% trans "MCC" %}</th>
+                        <th>{% trans "MCC Code" %}</th>
+                        <th>{% trans "MPP" %}</th>
+                        <th>{% trans "MPP Code" %}</th>
+                        <th>{% trans "Conducted By" %}</th>
+                        <th>{% trans "Conducted By Name" %}</th>
+                        <th>{% trans "Status" %}</th>
+                        <th>{% trans "Start Date" %}</th>
+                        <th>{% trans "End Date" %}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for meeting in vcg_meetings %}
+                        <tr>
+                          <td>
+                            <a href="{% url 'vcgmeeting_detail' meeting.pk %}">{{ meeting.meeting_id }}</a>
+                          </td>
+                          <td>{{ meeting.mpp.mcc.mcc }}</td>
+                          <td>{{ meeting.mpp.mcc.mcc_code }}</td>
+                          <td>{{ meeting.mpp.mpp_loc }}</td>
+                          <td>{{ meeting.mpp.mpp_loc_code }}</td>
+                          <td>{{ meeting.conducted_by_type }}</td>
+                          <td>{% if meeting.conducted_by_fs %} {{ meeting.conducted_by_fs.name }} {% else %} {{ meeting.conducted_by_name.name }}{% endif %}</td>
+                          <td class="status">{{ meeting.status}}</td>
+                          <td class="status">{{ meeting.start_datetime}}</td>
+                          <td class="status">{{ meeting.end_datetime}}</td>
+                        </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-xl-12 col-sm-12 col-12 d-flex">
+            <div class="card flex-fill">
+              <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">
+                  <p>
+                    {% translate 'VCG Meetings Not Implemented' %}
+                  </p>
+                </h5>
+                <div class="graph-sets">
+                  <div class="view-all-link">
+                    <a href="#!" class="view-all d-flex align-items-center">{% translate "" %}<span class="ps-2 d-flex align-items-center"><i data-feather="arrow-right" class="feather-16"></i></span></a>
+                  </div>
+                </div>
+              </div>
+              <div class="card-body">
+                <div class="table-responsive">
+                  <table class="table datanew">
+                    <thead>
+                      <tr>
+                        <th>{% trans "MCC" %}</th>
+                        <th>{% trans "MCC Code" %}</th>
+                        <th>{% trans "MPP" %}</th>
+                        <th>{% trans "MPP Code" %}</th>
+                        <th>{% trans "Facilitator" %}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {% for vmpps_without_vcg_meeting in vmpps_without_vcg_meetings %}
+                        <tr>
+                          <td>{{ vmpps_without_vcg_meeting.mcc.mcc }}</td>
+                          <td>{{ vmpps_without_vcg_meeting.mcc.mcc_code }}</td>
+                          <td>{{ vmpps_without_vcg_meeting.mpp_loc }}</td>
+                          <td>{{ vmpps_without_vcg_meeting.mpp_loc_code }}</td>
+                          <td>{{ vmpps_without_vcg_meeting.mcc.facilitators.first.name}}</td>
+                        </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+
+
+  </div>
+{% endblock %}
+
+{% block xtra_js %}
+
+{% endblock %}

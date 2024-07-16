@@ -27,7 +27,6 @@ if DEBUG:
 else:
     ALLOWED_HOSTS = ["tech.kasheemilk.com"]
 
-
 INSTALLED_APPS = [
     'invent_app',
     'awareness',

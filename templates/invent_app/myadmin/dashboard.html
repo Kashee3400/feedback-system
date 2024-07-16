@@ -199,6 +199,7 @@
           </div>
         </div>
       {% endif %}
+
       {% if user|has_permission:'invent_app.view_employeefeedback' %}
       <div class="row">
         <div class="col-xl-12 col-sm-12 col-12 d-flex">
@@ -216,11 +217,11 @@
                 <table class="table dashboard-recent-products datanew">
                   <thead>
                     <tr>
-                      <th>Feedback ID</th>
+                      <th>Ticket ID</th>
                       <th>Name</th>
                       <th>Mobile</th>
                       <th>Created at</th>
-                      <th>Reason</th>
+                      <th>Issue</th>
                       <th>Status</th>
                     </tr>
                   </thead>
