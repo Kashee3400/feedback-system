@@ -193,12 +193,14 @@ admin.site.register(VCGMeetingImages,VCGImagesAdmin)
 
 class VMPPAdmin(admin.ModelAdmin):
     list_display = ['mpp_loc','mpp_loc_code']
+    search_fields = ['mcc__mcc','mcc__mcc_code','mpp_loc','mpp_loc_code']
     
 admin.site.register(VMPPs,VMPPAdmin)
 
 
 class VMccAdmin(admin.ModelAdmin):
     list_display = ['mcc','mcc_code']
+    search_fields = ['mcc','mcc_code']
     
 admin.site.register(VMCCs,VMccAdmin)
 
