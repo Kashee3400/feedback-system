@@ -65,13 +65,17 @@ class AwarenessAdmin(admin.ModelAdmin):
             worksheet = workbook.add_worksheet()
 
             # Write column headers
-            headers = ['Id','MCC Code','MCC','MPP','MPP Code', 'Leader Name', 'No Of Participants', 'created_at']
+            headers = ['Id','MCC Code','MCC','MPP','MPP Code', 'Leader Name', 'No Of Participants', 'Date', 'Time']
             for col, header in enumerate(headers):
                 worksheet.write(0, col, header)
 
             # Write data rows
             row = 1
+            import pytz
+            desired_timezone = pytz.timezone('Asia/Kolkata')
+            
             for obj in queryset:
+                start_datetime_local = obj.created_at.astimezone(desired_timezone)
                 worksheet.write(row, 0, obj.id)
                 worksheet.write(row, 1, obj.mpp.mcc.mcc)
                 worksheet.write(row, 2, obj.mpp.mcc.mcc_code)
@@ -79,7 +83,8 @@ class AwarenessAdmin(admin.ModelAdmin):
                 worksheet.write(row, 4, obj.mpp.mpp_loc_code)
                 worksheet.write(row, 5, obj.leader_name)
                 worksheet.write(row, 6, obj.no_of_participants)
-                worksheet.write(row, 7, obj.created_at.strftime('%Y-%m-%d %H:%M:%S'))
+                worksheet.write(row, 7, start_datetime_local.strftime('%Y-%m-%d'))
+                worksheet.write(row, 8, start_datetime_local.strftime('%I:%M %p'))
                 row += 1
             workbook.close()
             return response

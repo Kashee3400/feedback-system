@@ -123,17 +123,23 @@ class VCGMeetingAdmin(admin.ModelAdmin):
 
             # Write column headers
             headers = ['Meeting Id','MCC Code','MCC','MPP','MPP Code', 'Conducted By', 'Conducted By Name',
-                       'Start Date', 'End Date', 'Status']
+                       'Start Date','Start Time', 'End Date','End Time', 'Status']
             for col, header in enumerate(headers):
                 worksheet.write(0, col, header)
 
             # Write data rows
             row = 1
+            import pytz
             for obj in queryset:
+                desired_timezone = pytz.timezone('Asia/Kolkata')
+                start_datetime_local = obj.start_datetime.astimezone(desired_timezone)
                 if obj.end_datetime:
-                    end_date = obj.end_datetime.strftime('%Y-%m-%d %H:%M:%S')
+                    end_datetime_local = obj.end_datetime.astimezone(desired_timezone)
+                    end_date = end_datetime_local.strftime('%Y-%m-%d')
+                    end_time = end_datetime_local.strftime('%I:%M %p')
                 else:
                     end_date = ''
+                    end_time=''
                 if obj.conducted_by_fs:
                     name =  obj.conducted_by_fs.name
                 elif obj.conducted_by_name:
@@ -145,9 +151,11 @@ class VCGMeetingAdmin(admin.ModelAdmin):
                 worksheet.write(row, 4, obj.mpp.mpp_loc_code)
                 worksheet.write(row, 5, obj.conducted_by_type.conducted_type)
                 worksheet.write(row, 6, name)
-                worksheet.write(row, 7, obj.start_datetime.strftime('%Y-%m-%d %H:%M:%S'))
-                worksheet.write(row, 8, end_date)
-                worksheet.write(row, 9, obj.status)
+                worksheet.write(row, 7,start_datetime_local.date().strftime('%Y-%m-%d'))
+                worksheet.write(row, 8,start_datetime_local.time().strftime('%I:%M %p'))
+                worksheet.write(row, 9, end_date)
+                worksheet.write(row, 10, end_time)
+                worksheet.write(row, 11, obj.status)
                 row += 1
             workbook.close()
             return response
