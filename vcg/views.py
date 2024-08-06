@@ -11,7 +11,8 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.auth import authenticate
 from django.db.models import Count
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny,IsAuthenticated
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
 
 class VMCCsViewSet(viewsets.ModelViewSet):
@@ -57,7 +58,9 @@ class VCGroupListView(generics.ListAPIView):
 
 
 class MarkVCGMemberAttendance(APIView):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+
     def post(self, request, format=None):
         member_codes = request.data.get('member_codes', [])
         meeting_id = request.data.get('meeting_id')
@@ -86,7 +89,10 @@ class MarkVCGMemberAttendance(APIView):
         return Response({'message': 'Attendance Marked Successfully'}, status=status_code)
 
 class ZeroDaysReasonReport(APIView):
-    permission_classes = [AllowAny]
+    
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+    
     def post(self, request):
         data = request.data
         status_code = status.HTTP_200_OK
@@ -112,7 +118,9 @@ class ZeroDaysReasonReport(APIView):
         return Response(response, status=status_code)
 
 class MonthAssignmentAPIView(APIView):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+
     def post(self, request):
         data = request.data
         status_code = status.HTTP_200_OK
@@ -147,7 +155,10 @@ class MonthAssignmentAPIView(APIView):
             return Response({'message': 'MonthAssignment for the provided VMPP ID does not exist'}, status=status.HTTP_404_NOT_FOUND)
 
 class ComplaintReport(APIView):
-    permission_classes = [AllowAny]
+    
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+
     def post(self, request):
         data = request.data
         status_code = status.HTTP_200_OK
@@ -176,7 +187,10 @@ class ComplaintReport(APIView):
 from django.db.utils import IntegrityError
 
 class StartMeetingAPIView(APIView):
-    permission_classes = [AllowAny]
+
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+
     def post(self, request, format=None):
         data = request.data
         status_code = status.HTTP_200_OK
@@ -198,6 +212,7 @@ class StartMeetingAPIView(APIView):
                 if meeting.status == VCGMeeting.COMPLETED:
                     return Response({'message': 'Meeting Already Conducted'}, status=status.HTTP_400_BAD_REQUEST)
                 meeting.mpp = mpp
+                meeting.user = self.request.user
                 meeting.conducted_by_type = c_type
                 meeting.start_datetime = date_time_obj
                 if type == 'Facilitator':
@@ -207,9 +222,11 @@ class StartMeetingAPIView(APIView):
                 else:
                     conducted_by_name = ConductedByName.objects.get(id=conducted_by_name_id)
                     meeting.conducted_by_fs = None
+                    meeting.conducted_by_name = conducted_by_name.name
+                    
                 meeting.save()
                 response = {
-                    'message': f'{meeting.meeting_id} created successfully',
+                    'message': f'{meeting.meeting_id} updated successfully',
                     'meeting_id': meeting.meeting_id
                 }
             else:
@@ -219,6 +236,7 @@ class StartMeetingAPIView(APIView):
                     conducted_by_name = ConductedByName.objects.get(id=conducted_by_name_id)
                 
                 meeting = VCGMeeting.objects.create(
+                    user=self.request.user,
                     mpp=mpp,
                     conducted_by_type=c_type,
                     conducted_by_fs=facilitator,
@@ -239,23 +257,31 @@ class StartMeetingAPIView(APIView):
         return Response(response, status=status_code)
 
 class ConductedByTypeViewSet(viewsets.ModelViewSet):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+
     queryset = ConductedByType.objects.all()
     serializer_class = ConductedByTypeSerializer
 
 class ZeroDaysReasonViewSet(viewsets.ModelViewSet):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+
     queryset = ZeroDaysPourerReason.objects.all()
     serializer_class = ZeroDaysReasonSerializer
 
 class MemberComplaintReasonViewSet(viewsets.ModelViewSet):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+
     queryset = MemberCompaintReason.objects.all()
     serializer_class = MemberComplaintReasonSerializer
 
 
 class FacilitatorListView(viewsets.ModelViewSet):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+
     queryset = Facilitator.objects.all()
     serializer_class = FacilitatorSerializer
 
@@ -267,7 +293,9 @@ class FacilitatorListView(viewsets.ModelViewSet):
         return queryset
 
 class ConductedByNmeListView(viewsets.ModelViewSet):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+
     queryset = ConductedByName.objects.all()
     serializer_class = ConductedByNameSerializer
 
@@ -280,7 +308,9 @@ class ConductedByNmeListView(viewsets.ModelViewSet):
 
 
 class VMembersMobileViewSet(viewsets.ViewSet):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+
     serializer_class = VMembersSerializer
 
     def list(self, request):
@@ -302,7 +332,9 @@ class VMembersMobileViewSet(viewsets.ViewSet):
 
 
 class EndMeetingAPIView(APIView):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+
     def post(self, request, *args, **kwargs):
         if 'images' in request.data:
             base64_images = request.data.get('images')
@@ -323,7 +355,7 @@ class EndMeetingAPIView(APIView):
                 'message': 'Images uploaded successfully',
                 'meeting_id': meeting.meeting_id
             }
-            return Response(response, status=status.HTTP_201_CREATED)
+            return Response(response, status=status.HTTP_200_OK)
         else:
             return Response({"message": "No files were uploaded"}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -338,9 +370,12 @@ class UserAuthentication(APIView):
             return Response({'message': 'Authentication successful'})
         else:
             return Response({'message': 'Authentication failed'}, status=status.HTTP_400_BAD_REQUEST)
+        
 
 class ZeroDaysPouringReportList(APIView):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+
     def post(self, request):
         meeting_id = request.data.get('meeting_id')
         if meeting_id:
@@ -364,7 +399,9 @@ class ZeroDaysPouringReportList(APIView):
             return Response({'message': 'Meeting ID not provided'}, status=status.HTTP_400_BAD_REQUEST)
 
 class MemberComplaintReportList(APIView):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+
     def post(self, request):
         meeting_id = request.data.get('meeting_id')
         if meeting_id:
@@ -389,15 +426,17 @@ class MemberComplaintReportList(APIView):
 
 
 class VCGMeetingListAPIView(generics.ListAPIView):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
     serializer_class = VCGMeetingSerializer
 
+
     def get_queryset(self):
-        # queryset = VCGMeeting.objects.all()
+        user = self.request.user
         queryset = VCGMeeting.objects.annotate(num_images=Count('meeting_images'))
-        # return queryset
-        return queryset.filter(num_images=0)
-    
+        if user.is_staff or user.is_superuser:
+            return queryset
+        return queryset.filter(user=user,num_images=0)
     
 from django.views.generic import ListView
 from .models import VCGMeeting

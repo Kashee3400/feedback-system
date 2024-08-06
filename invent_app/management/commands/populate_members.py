@@ -22,7 +22,6 @@ class Command(BaseCommand):
                 name = row['Farmer Name']
                 code = row['farmerCode']
                 max_qty = row['Max']
-                print(max_qty)
                 cf = row['CF']
                 mm = row['MM']
                 mpp, created = VMPPs.objects.get_or_create(mpp_loc_code=mpp_code)

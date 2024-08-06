@@ -2,7 +2,7 @@ from django.shortcuts import redirect
 from django.urls import reverse
 from django.conf import settings
 
-API_URLS = ['/api/', '/vet/api/', '/route/']
+API_URLS = ['/api/', '/vet/api/','/vcg/api/', '/route/']
 
 class LoginRequiredMiddleware:
     def __init__(self, get_response):

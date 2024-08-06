@@ -7,6 +7,11 @@ from awareness.views import *
 from django.conf import settings
 from django.conf.urls.static import static
 from django.views.i18n import set_language
+from rest_framework_simplejwt.views import (
+    TokenObtainPairView,
+    TokenRefreshView,
+    TokenVerifyView
+)
 
 urlpatterns = [
 
@@ -53,7 +58,7 @@ urlpatterns = [
     # Veterinary Module URLS
     path('vet-dashboard', views.VetDashboardView.as_view(),name='vet_dashboard'),
     
-    # logout API
+    # VCG Urs
     path('api/logout/', logout, name='logout'),
     path('api/locations/', LocationListAPIView.as_view(), name='location-list'),
     path('api/locations/<str:location_id>/sublocations/', SubLocationListAPIView.as_view(), name='sublocation-list'),
@@ -69,7 +74,10 @@ urlpatterns = [
     path('api/zerodays-pouring/', ZeroDaysPouringReportList.as_view(), name='zerodays-pouring-list'),
     path('api/member-complaints/', MemberComplaintReportList.as_view(), name='member-complaints-list'),
     path('api/vcg-meeting-list/', VCGMeetingListAPIView.as_view(), name='vcg_meeting_list'),
-    
+    path('api/token/verify/', TokenVerifyView.as_view(), name='token_verify'),
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+
     # Awareness Program APIs
     path('api/create-awareness/', CreateAwarenessAPIView.as_view(), name='create_awareness'),
     path('api/upload-awareness-images/', AwarenessImagesAPIView.as_view(), name='upload-awareness-images'),

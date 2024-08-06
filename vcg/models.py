@@ -1,5 +1,8 @@
 from django.db import models
+from django.contrib.auth import get_user_model
+from django.utils.translation import gettext_lazy as _
 
+User = get_user_model()
 
 #*****************************************************************************************************************#
 # VCG Meeting tables
@@ -105,6 +108,7 @@ class ConductedByName(models.Model):
         verbose_name = 'Conducted By Name'
         verbose_name_plural = 'Conducted By Names'
 
+import uuid
 
 class VCGMeeting(models.Model):
     STARTED = 'started'
@@ -113,6 +117,7 @@ class VCGMeeting(models.Model):
         (STARTED, 'Started'),
         (COMPLETED, 'Completed'),
     )
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='meetings',verbose_name=_('User'))
     mpp = models.ForeignKey(VMPPs, on_delete=models.CASCADE, related_name="mpp_vcg_meetings")
     conducted_by_type = models.ForeignKey(ConductedByType, on_delete=models.CASCADE, related_name="vcg_meeting_conducted_type",blank=True, null=True)
     conducted_by_name = models.ForeignKey(ConductedByName, on_delete=models.CASCADE, related_name="vcg_meeting_conducted_name",blank=True, null=True)
@@ -128,9 +133,11 @@ class VCGMeeting(models.Model):
         return f"{self.meeting_id}"
 
     def save(self, *args, **kwargs):
-        self.meeting_id = f"{self.mpp.mcc.mcc_code}_{self.mpp.mpp_loc_code}_{self.start_datetime}"
+        if not self.meeting_id:
+            unique_suffix = uuid.uuid4().hex[:6]  # Unique suffix for ensuring meeting_id is unique
+            self.meeting_id = f"{self.mpp.mcc.mcc}_{self.mpp.mpp_loc}_{unique_suffix}"
         super().save(*args, **kwargs)
-
+        
     class Meta:
         db_table = 'tbl_vcg_meeting'
         verbose_name = 'VCG Meeting'
