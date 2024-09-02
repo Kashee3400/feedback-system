@@ -184,77 +184,58 @@ class ComplaintReport(APIView):
         return Response(response, status=status_code)
 
 
-from django.db.utils import IntegrityError
+from django.core.exceptions import ObjectDoesNotExist
 
 class StartMeetingAPIView(APIView):
-
     permission_classes = [IsAuthenticated]
     authentication_classes = [JWTAuthentication]
 
     def post(self, request, format=None):
-        data = request.data
-        status_code = status.HTTP_200_OK
         try:
-            mpp_id = data['mpp_id']
-            type = data['type']
-            meeting_id = data['meeting_id']
-            type_id = data['type_id']
-            conducted_by_name_id = data['conducted_by_name_id']
-            date_time = data['date_time']
+            data = request.data
+            mpp_id = data.get('mpp_id')
+            type = data.get('type')
+            type_id = data.get('type_id')
+            conducted_by_name_id = data.get('conducted_by_name_id')
+            date_time = data.get('date_time')
+
+            # Validate required fields
+            if not all([mpp_id, type, type_id, conducted_by_name_id, date_time]):
+                return Response({'error': 'Missing required fields'}, status=status.HTTP_400_BAD_REQUEST)
+
             date_time_obj = datetime.strptime(date_time, '%Y-%m-%d %H:%M:%S.%f')
-            facilitator = None
-            conducted_by_name = None
+
+            # Get required objects
             mpp = VMPPs.objects.get(mpp_loc_code=mpp_id)
             c_type = ConductedByType.objects.get(id=type_id)
-
-            if VCGMeeting.objects.filter(meeting_id=meeting_id).exists():
-                meeting = VCGMeeting.objects.get(meeting_id=meeting_id)
-                if meeting.status == VCGMeeting.COMPLETED:
-                    return Response({'message': 'Meeting Already Conducted'}, status=status.HTTP_400_BAD_REQUEST)
-                meeting.mpp = mpp
-                meeting.user = self.request.user
-                meeting.conducted_by_type = c_type
-                meeting.start_datetime = date_time_obj
-                if type == 'Facilitator':
+            facilitator = None
+            conducted_by_name = None
+            if type == 'Facilitator':
                     facilitator = Facilitator.objects.get(id=conducted_by_name_id)
-                    meeting.conducted_by_fs = facilitator
-                    meeting.conducted_by_name = None
-                else:
-                    conducted_by_name = ConductedByName.objects.get(id=conducted_by_name_id)
-                    meeting.conducted_by_fs = None
-                    meeting.conducted_by_name = conducted_by_name.name
-                    
-                meeting.save()
-                response = {
-                    'message': f'{meeting.meeting_id} updated successfully',
-                    'meeting_id': meeting.meeting_id
-                }
             else:
-                if type == 'Facilitator':
-                    facilitator = Facilitator.objects.get(id=conducted_by_name_id)
-                else:
-                    conducted_by_name = ConductedByName.objects.get(id=conducted_by_name_id)
-                
-                meeting = VCGMeeting.objects.create(
-                    user=self.request.user,
-                    mpp=mpp,
-                    conducted_by_type=c_type,
-                    conducted_by_fs=facilitator,
-                    conducted_by_name=conducted_by_name,
-                    start_datetime=date_time_obj,
-                )
-                response = {
-                    'message': f'{meeting.meeting_id} created successfully',
-                    'meeting_id': meeting.meeting_id
-                }
+                    conducted_by_name = ConductedByName.objects.get(id=conducted_by_name_id)                    
+            # Create a new meeting
+            meeting = VCGMeeting.objects.create(
+                user=self.request.user,
+                mpp=mpp,
+                conducted_by_type=c_type,
+                conducted_by_fs=facilitator,
+                conducted_by_name=conducted_by_name,
+                start_datetime=date_time_obj,
+            )
 
-        except IntegrityError:
             response = {
-                'message': 'Meeting Already Exists'
+                'message': f'{meeting.meeting_id} created successfully',
+                'meeting_id': meeting.meeting_id
             }
-            status_code = status.HTTP_400_BAD_REQUEST
+            return Response(response, status=status.HTTP_200_OK)
 
-        return Response(response, status=status_code)
+        except ObjectDoesNotExist as e:
+            return Response({'error': str(e)}, status=status.HTTP_404_NOT_FOUND)
+        except ValueError as e:
+            return Response({'error': f'Invalid date format: {str(e)}'}, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response({'error': f'An unexpected error occurred: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 class ConductedByTypeViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]

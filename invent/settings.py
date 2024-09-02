@@ -108,12 +108,12 @@ if not DEBUG:
 else:
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.' + DB_ENGINE,
-            'NAME': 'nachiketa_test',
-            'USER': DB_USERNAME,
-            'PASSWORD': DB_PASS,
-            'HOST': DB_HOST,
-            'PORT': DB_PORT,
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': 'nachiketa',
+            'USER': 'root',
+            'PASSWORD': '@Kashee#12345',
+            'HOST': 'localhost',
+            'PORT': 3307,
         },
     }
 
