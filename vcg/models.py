@@ -248,3 +248,399 @@ class MonthAssignment(models.Model):
         db_table = 'tbl_month_assignment'
         verbose_name = 'Month Assignment'
         verbose_name_plural = 'Month Assignments'
+
+
+from django.db import models
+from django.utils.timezone import now
+import random
+import string
+from django.db import models
+from django.utils.translation import gettext_lazy as _  # For internationalization
+
+class EventSession(models.Model):
+    session_name = models.CharField(
+        max_length=255, 
+        unique=True, 
+        blank=True, 
+        verbose_name=_('Session Name'),
+        help_text=_('Unique name for the event session.')
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True, 
+        verbose_name=_('Created At'),
+        help_text=_('Timestamp when the session was created.')
+    )
+    updated_at = models.DateTimeField(
+        auto_now=True, 
+        verbose_name=_('Updated At'),
+        help_text=_('Timestamp when the session was last updated.')
+    )
+
+    def generate_session_name(self):
+        # Get the current month and year
+        current_month = now().strftime('%B')  # e.g., "September"
+        current_year = now().strftime('%Y')   # e.g., "2024"
+
+        # Generate a random 4-digit number to ensure uniqueness
+        random_number = ''.join(random.choices(string.digits, k=4))
+
+        # Create the session name
+        return f"MPP Visit Report - {current_month} {current_year} - {random_number}"
+
+    def save(self, *args, **kwargs):
+        if not self.session_name:
+            self.session_name = self.generate_session_name()
+        
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.session_name
+
+
+class MppVisitBy(models.Model):
+    session = models.ForeignKey(
+        EventSession, 
+        on_delete=models.CASCADE, 
+        verbose_name=_('Session'),
+        help_text=_('Associated event session.')
+    )
+    facilitator_name = models.CharField(
+        max_length=255, 
+        verbose_name=_('Facilitator Name'),
+        help_text=_('Name of the facilitator.')
+    )
+    mcc = models.CharField(
+        max_length=255, 
+        verbose_name=_('MCC'),
+        help_text=_('MCC code or name.')
+    )
+    mcc_code = models.CharField(
+        max_length=50, 
+        verbose_name=_('MCC Code'),
+        help_text=_('MCC code.')
+    )
+    mpp = models.CharField(
+        max_length=255, 
+        verbose_name=_('MPP'),
+        help_text=_('MPP code or name.')
+    )
+    mpp_name = models.CharField(
+        max_length=255, 
+        verbose_name=_('MPP Name'),
+        help_text=_('Name of the MPP.')
+    )
+    no_of_pourer = models.IntegerField(
+        verbose_name=_('Number of Pourer'),
+        help_text=_('Number of pourers.')
+    )
+    no_of_non_member_pourer = models.IntegerField(
+        blank=True, 
+        null=True, 
+        verbose_name=_('Number of Non-Member Pourers'),
+        help_text=_('Number of pourers who are not members.')
+    )
+    sahayak_code = models.CharField(
+        max_length=50, 
+        blank=True,
+        null=True,
+        verbose_name=_('Sahayak Code'),
+        help_text=_('Code for sahayak.')
+    )
+    non_pourer_names = models.TextField(
+        blank=True, 
+        null=True, 
+        verbose_name=_('Non-Pourer Names'),
+        help_text=_('Names of non-pourers, if any.')
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True, 
+        verbose_name=_('Created At'),
+        help_text=_('Timestamp when the record was created.')
+    )
+    updated_at = models.DateTimeField(
+        auto_now=True, 
+        verbose_name=_('Updated At'),
+        help_text=_('Timestamp when the record was last updated.')
+    )
+
+    def __str__(self):
+        return self.facilitator_name
+
+
+class CompositeData(models.Model):
+    session = models.ForeignKey(
+        EventSession, 
+        on_delete=models.CASCADE, 
+        verbose_name=_('Session'),
+        help_text=_('Associated event session.')
+    )
+    qty = models.FloatField(
+        verbose_name=_('Quantity'),
+        help_text=_('Quantity of the composite data.')
+    )
+    fat = models.FloatField(
+        verbose_name=_('Fat'),
+        help_text=_('Fat content in the composite data.')
+    )
+    snf = models.FloatField(
+        verbose_name=_('SNF'),
+        help_text=_('SNF content in the composite data.')
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True, 
+        verbose_name=_('Created At'),
+        help_text=_('Timestamp when the record was created.')
+    )
+    updated_at = models.DateTimeField(
+        auto_now=True, 
+        verbose_name=_('Updated At'),
+        help_text=_('Timestamp when the record was last updated.')
+    )
+
+    def __str__(self):
+        return f"Qty: {self.qty}, Fat: {self.fat}, SNF: {self.snf}"
+
+
+class DispatchData(models.Model):
+    session = models.ForeignKey(
+        EventSession, 
+        on_delete=models.CASCADE, 
+        verbose_name=_('Session'),
+        help_text=_('Associated event session.')
+    )
+    qty = models.FloatField(
+        verbose_name=_('Quantity'),
+        help_text=_('Quantity of the dispatched data.')
+    )
+    fat = models.FloatField(
+        verbose_name=_('Fat'),
+        help_text=_('Fat content in the dispatched data.')
+    )
+    snf = models.FloatField(
+        verbose_name=_('SNF'),
+        help_text=_('SNF content in the dispatched data.')
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True, 
+        verbose_name=_('Created At'),
+        help_text=_('Timestamp when the record was created.')
+    )
+    updated_at = models.DateTimeField(
+        auto_now=True, 
+        verbose_name=_('Updated At'),
+        help_text=_('Timestamp when the record was last updated.')
+    )
+
+    def __str__(self):
+        return f"Dispatch Qty: {self.qty}, Fat: {self.fat}, SNF: {self.snf}"
+
+
+class MaintenanceChecklist(models.Model):
+    session = models.ForeignKey(
+        EventSession, 
+        on_delete=models.CASCADE, 
+        verbose_name=_('Session'),
+        help_text=_('Associated event session.')
+    )
+    battery_water_level = models.BooleanField(
+        default=False, 
+        verbose_name=_('Battery Water Level'),
+        help_text=_('Indicates if the battery water level is checked.')
+    )
+    weekly_cleaning_done = models.BooleanField(
+        default=False, 
+        verbose_name=_('Weekly Cleaning Done'),
+        help_text=_('Indicates if weekly cleaning has been done.')
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True, 
+        verbose_name=_('Created At'),
+        help_text=_('Timestamp when the record was created.')
+    )
+    updated_at = models.DateTimeField(
+        auto_now=True, 
+        verbose_name=_('Updated At'),
+        help_text=_('Timestamp when the record was last updated.')
+    )
+
+    def __str__(self):
+        return f"Battery Level: {self.battery_water_level}, Cleaning Done: {self.weekly_cleaning_done}"
+
+
+class ZeroPourerMembers(models.Model):
+    mpp = models.CharField(
+        max_length=200, 
+        verbose_name=_('MPP'),
+        help_text=_('MPP related to the member.')
+    )
+    name = models.CharField(
+        max_length=200, 
+        verbose_name=_('Name'),
+        help_text=_('Name of the member.')
+    )
+    code = models.CharField(
+        max_length=100, 
+        verbose_name=_('Code'),
+        help_text=_('Code associated with the member.')
+    )
+    updated_at = models.DateTimeField(
+        auto_now_add=True, 
+        verbose_name=_('Updated At'),
+        help_text=_('Timestamp when the member record was last updated.')
+    )
+    created_at = models.DateTimeField(
+        auto_now=True, 
+        verbose_name=_('Created At'),
+        help_text=_('Timestamp when the member record was created.')
+    )
+
+    def __str__(self):
+        return f"{self.name} - {self.code}"
+
+    class Meta:
+        db_table = 'tbl_zero_pourer_members'
+        verbose_name = _('Zero Pourer Member')
+        verbose_name_plural = _('Zero Pourer Members')
+
+
+class NonPourerMeet(models.Model):
+    session = models.ForeignKey(
+        EventSession, 
+        on_delete=models.CASCADE, 
+        verbose_name=_('Session'),
+        help_text=_('Associated event session.')
+    )
+    member = models.ForeignKey(
+        ZeroPourerMembers, 
+        on_delete=models.SET_NULL,
+        null=True, 
+        blank=True,
+        verbose_name=_('Member'),
+        help_text=_('Member who is a zero pourer.')
+    )
+    cow_in_milk = models.IntegerField(
+        default=0,
+        blank=True,
+        null=True,
+        verbose_name=_('Cows in Milk'),
+        help_text=_('Number of cows in milk.')
+    )
+    cow_dry = models.IntegerField(
+        default=0,
+        blank=True,
+        null=True,
+        verbose_name=_('Dry Cows'),
+        help_text=_('Number of dry cows.')
+    )
+    buff_in_milk = models.IntegerField(
+        default=0,
+        blank=True,
+        null=True,
+        verbose_name=_('Buffaloes in Milk'),
+        help_text=_('Number of buffaloes in milk.')
+    )
+    buff_dry = models.IntegerField(
+        default=0,
+        blank=True,
+        null=True,
+        verbose_name=_('Dry Buffaloes'),
+        help_text=_('Number of dry buffaloes.')
+    )
+    surplus = models.FloatField(
+        default=0,
+        blank=True,
+        null=True,
+        verbose_name=_('Surplus'),
+        help_text=_('Surplus amount.')
+    )
+    reason = models.TextField(
+        blank=True,
+        null=True,
+        verbose_name=_('Reason'),
+        help_text=_('Reason for the surplus or other notes.')
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True, 
+        verbose_name=_('Created At'),
+        help_text=_('Timestamp when the record was created.')
+    )
+    updated_at = models.DateTimeField(
+        auto_now=True, 
+        verbose_name=_('Updated At'),
+        help_text=_('Timestamp when the record was last updated.')
+    )
+
+    # def __str__(self):
+    #     return str(self.member.name) if self.member else _('No Member')
+
+
+class SessionVcgMeeting(models.Model):
+    session = models.ForeignKey(
+        EventSession, 
+        on_delete=models.CASCADE, 
+        verbose_name=_('Session'),
+        help_text=_('Associated event session.')
+    )
+    meeting_done = models.BooleanField(
+        default=False, 
+        verbose_name=_('Meeting Done'),
+        help_text=_('Indicates if the VCG meeting was done.')
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True, 
+        verbose_name=_('Created At'),
+        help_text=_('Timestamp when the record was created.')
+    )
+    updated_at = models.DateTimeField(
+        auto_now=True, 
+        verbose_name=_('Updated At'),
+        help_text=_('Timestamp when the record was last updated.')
+    )
+
+    def __str__(self):
+        return f"VCG Meeting Done: {self.meeting_done}"
+
+
+class MembershipApp(models.Model):
+    session = models.ForeignKey(
+        EventSession, 
+        on_delete=models.CASCADE, 
+        verbose_name=_('Session'),
+        help_text=_('Associated event session.')
+    )
+    no_of_installs = models.IntegerField(
+        verbose_name=_('Number of Installs'),
+        help_text=_('Number of installations.')
+    )
+    created_at = models.DateTimeField(
+        auto_now_add=True, 
+        verbose_name=_('Created At'),
+        help_text=_('Timestamp when the record was created.')
+    )
+    updated_at = models.DateTimeField(
+        auto_now=True, 
+        verbose_name=_('Updated At'),
+        help_text=_('Timestamp when the record was last updated.')
+    )
+
+    def __str__(self):
+        return f"Installs: {self.no_of_installs}"
+
+
+class FormProgress(models.Model):
+    STATUS_CHOICES = [
+        ('in-progress', 'In Progress'),
+        ('completed', 'Completed'),
+    ]
+
+    session = models.ForeignKey(EventSession, on_delete=models.CASCADE)
+    step = models.CharField(max_length=255)
+    data = models.JSONField()
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='in-progress')
+    timestamp = models.DateTimeField(auto_now=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"Session {self.session.session_name} - Step {self.step} ({self.status})"
+

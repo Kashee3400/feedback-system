@@ -1,0 +1,113 @@
+{% load static i18n %}
+{{ wizard.form.media }}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Form Wizard</title>
+
+    <!-- Include Metro UI CSS and JS -->
+    <link rel="stylesheet" href="https://cdn.metroui.org.ua/v4/css/metro-all.min.css" />
+    <style>
+      /* Style for the message container */
+      ul.messages {
+        list-style-type: none;
+        padding: 0;
+        margin: 10px 0;
+      }
+      
+      /* General style for each message */
+      ul.messages .message {
+        padding: 10px 15px;
+        border-radius: 5px;
+        margin-bottom: 10px;
+        font-size: 14px;
+        line-height: 1.5;
+      }
+      
+      /* Specific style for success messages */
+      ul.messages .success {
+        background-color: #d4edda;
+        border-left: 5px solid #28a745;
+        color: #155724;
+      }
+      
+      /* Specific style for error messages */
+      ul.messages .error {
+        background-color: #f8d7da;
+        border-left: 5px solid #dc3545;
+        color: #721c24;
+      }
+      
+      /* Specific style for info messages */
+      ul.messages .info {
+        background-color: #d1ecf1;
+        border-left: 5px solid #17a2b8;
+        color: #0c5460;
+      }
+      
+      /* Specific style for warning messages */
+      ul.messages .warning {
+        background-color: #fff3cd;
+        border-left: 5px solid #ffc107;
+        color: #856404;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>MPP Visit Report {{ current_date|date:'F' }}</h1>
+      {% if messages %}
+        <div class="container bg-secondary">
+          <ul class="messages">
+            {% for message in messages %}
+              <li class="{% if message.tags %}{{ message.tags }}{% endif %} message">{{ message }}</li>
+            {% endfor %}
+          </ul>
+        </div>
+      {% endif %}
+      <div class="container m-5">
+        <div data-role="stepper" data-steps="{{ wizard.steps.count }}" data-step="{{ wizard.steps.step1 }}" data-view="cycle" data-cls-complete="bg-green" data-cls-current="bg-red"></div>
+      </div>
+      <form id="submit-form" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ wizard.management_form }}
+
+        <div class="container">
+          {% block content %}
+
+          {% endblock %}
+        </div>
+
+        <div class="row m-3">
+          {% if wizard.steps.prev %}
+            <!-- Hidden field to indicate navigation -->
+            <input type="hidden" name="is_navigation" value="true" />
+            <button name="wizard_goto_step" type="submit" class="button secondary" value="{{ wizard.steps.first }}">{% translate 'First step' %}</button>
+            <button name="wizard_goto_step" type="submit" class="button secondary" value="{{ wizard.steps.prev }}">{% translate 'Previous step' %}</button>
+          {% endif %}
+          <button type="button" onclick="Metro.dialog.open('#openDailog')" class="button primary">{% translate 'Next' %}</button>
+        </div>
+      </form>
+    </div>
+    <div class="dialog" data-role="dialog" id="openDailog">
+      <div class="dialog-title bg-alert">Are you sure?</div>
+      <div class="dialog-content">You want submit. Please Check details before you submit.</div>
+      <div class="dialog-actions">
+        <div class="row">
+          <div class="dialog-actions">
+            <button type="reset" class="button js-dialog-close">Cancel</button>
+            <button type="button" class="button primary js-dialog-close" onclick="submitForm()">Submit</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="https://cdn.metroui.org.ua/v4/js/metro.min.js"></script>
+    <script>
+      function submitForm() {
+        document.getElementById('submit-form').submit()
+      }
+    </script>
+  </body>
+</html>

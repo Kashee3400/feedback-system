@@ -115,3 +115,9 @@ class VCGMeetingSerializer(serializers.ModelSerializer):
     class Meta:
         model = VCGMeeting
         fields = ['meeting_id','mpp_meeting', 'conducted_by_type', 'conducted_by_name', 'conducted_by_fs', 'start_datetime', 'end_datetime', 'status', 'attendances','meeting_zero_days_pouring','meeting_member_complaints']
+
+
+class ZeroPourerMembersSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ZeroPourerMembers
+        fields = ['id', 'name']  # Include any fields you need

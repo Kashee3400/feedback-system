@@ -21,7 +21,7 @@ else:
 
 DEBUG = False
 
-# DEBUG = True
+DEBUG = True
 if DEBUG:
     ALLOWED_HOSTS = ['localhost', '*']
 else:
@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     'vcg',
     'veterinary',
     'channels',
+    'formtools',
     'webpush',
     'daphne',
     'rest_framework_simplejwt',
@@ -106,15 +107,13 @@ if not DEBUG:
         },
     }
 else:
+    # myproject/settings.py
+
     DATABASES = {
         'default': {
-            'ENGINE': 'django.db.backends.mysql',
-            'NAME': 'nachiketa',
-            'USER': 'root',
-            'PASSWORD': '@Kashee#12345',
-            'HOST': 'localhost',
-            'PORT': 3307,
-        },
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
     }
 
 

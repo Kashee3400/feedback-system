@@ -218,3 +218,58 @@ class MonthAssignmentAdmin(admin.ModelAdmin):
     search_fields = ['mpp__mpp_loc','mpp__mpp_loc_code']
     
 admin.site.register(MonthAssignment,MonthAssignmentAdmin)
+
+
+# Admin configuration for each model
+class EventSessionAdmin(admin.ModelAdmin):
+    list_display = ['session_name', 'created_at', 'updated_at']
+    search_fields = ['session_name']
+    ordering = ['-created_at']
+
+class MppVisitByAdmin(admin.ModelAdmin):
+    list_display = ['session','facilitator_name', 'mcc', 'mcc_code', 'mpp', 'mpp_name', 'no_of_pourer', 'no_of_non_member_pourer']
+    search_fields = ['facilitator_name', 'mcc', 'mpp']
+
+class CompositeDataAdmin(admin.ModelAdmin):
+    list_display = ['session','qty', 'fat', 'snf', 'created_at']
+    search_fields = ['qty', 'fat']
+
+class DispatchDataAdmin(admin.ModelAdmin):
+    list_display = ['session','qty', 'fat', 'snf', 'created_at']
+    search_fields = ['qty', 'fat']
+
+class MaintenanceChecklistAdmin(admin.ModelAdmin):
+    list_display = ['session','battery_water_level', 'weekly_cleaning_done', 'created_at']
+    search_fields = ['battery_water_level']
+
+class NonPourerMeetAdmin(admin.ModelAdmin):
+    list_display = ['session','member', 'cow_in_milk', 'cow_dry', 'buff_in_milk', 'buff_dry', 'surplus', 'created_at']
+    search_fields = ['member__name']
+
+class SessionVcgMeetingAdmin(admin.ModelAdmin):
+    list_display = ['session','meeting_done', 'created_at']
+    search_fields = ['meeting_done']
+
+class MembershipAppAdmin(admin.ModelAdmin):
+    list_display = ['session','no_of_installs', 'created_at']
+    search_fields = ['no_of_installs']
+
+class FormProgressAdmin(admin.ModelAdmin):
+    list_display = ['session', 'step', 'status', 'timestamp']
+    search_fields = ['session__session_name', 'step', 'status']
+
+class ZeroPourerMembersAdmin(admin.ModelAdmin):
+    list_display = ['name', 'code', 'mpp', 'created_at']
+    search_fields = ['name', 'code', 'mpp']
+
+# Register each model with its admin configuration
+admin.site.register(EventSession, EventSessionAdmin)
+admin.site.register(MppVisitBy, MppVisitByAdmin)
+admin.site.register(CompositeData, CompositeDataAdmin)
+admin.site.register(DispatchData, DispatchDataAdmin)
+admin.site.register(MaintenanceChecklist, MaintenanceChecklistAdmin)
+admin.site.register(NonPourerMeet, NonPourerMeetAdmin)
+admin.site.register(SessionVcgMeeting, SessionVcgMeetingAdmin)
+admin.site.register(MembershipApp, MembershipAppAdmin)
+admin.site.register(FormProgress, FormProgressAdmin)
+admin.site.register(ZeroPourerMembers, ZeroPourerMembersAdmin)

@@ -1,0 +1,25 @@
+{% extends 'mppvisit/visit-form.html' %}
+
+{% block content %}
+  <div class="mx-auto" data-role="panel" data-collapsible="true" data-cls-panel="shadow-1" data-cls-title="bg-yellow fg-dark" data-cls-collapse-toggle="bg-dark fg-white marker-light" data-title-caption="Step 1: Non-Pourer Meeting" data-title-icon="<span class='mif-apps'></span>">
+    <div class="row m-3">
+      {% for field in form %}
+        <div class="cell-12 cell-md-4 cell-sm-12 cell-lg-4">
+          <div class="form-group">
+            <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+            {{ field }}
+            {% if field.errors %}
+              <div class="fg-red">{{ field.errors }}</div>
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
+      <div class="cell-12 cell-md-4 cell-sm-12 cell-lg-4">
+        <div class="form-group">
+          <label for="want_to_add_more">Want to add more records?</label>
+          <input type="checkbox" name="want_to_add_more" id="want_to_add_more">
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

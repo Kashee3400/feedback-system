@@ -34,5 +34,6 @@ urlpatterns = [
     path('vcg/', include('vcg.urls')),
     path('route/', include(router.urls)),
     path('accounts/', include('django.contrib.auth.urls')),
+    path('create-mppvisit/', views.DataCollectionWizard.as_view(views.FORMS), name='create_mppvisit'),
     re_path(r'^webpush/', include('webpush.urls')),
 ]
