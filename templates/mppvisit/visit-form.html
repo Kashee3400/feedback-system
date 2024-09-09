@@ -70,7 +70,7 @@
       <div class="container m-5">
         <div data-role="stepper" data-steps="{{ wizard.steps.count }}" data-step="{{ wizard.steps.step1 }}" data-view="cycle" data-cls-complete="bg-green" data-cls-current="bg-red"></div>
       </div>
-      <form id="submit-form" method="post" enctype="multipart/form-data">
+      <form id="submit-form" method="post">
         {% csrf_token %}
         {{ wizard.management_form }}
 
@@ -82,7 +82,6 @@
 
         <div class="row m-3">
           {% if wizard.steps.prev %}
-            <!-- Hidden field to indicate navigation -->
             <input type="hidden" name="is_navigation" value="true" />
             <button name="wizard_goto_step" type="submit" class="button secondary" value="{{ wizard.steps.first }}">{% translate 'First step' %}</button>
             <button name="wizard_goto_step" type="submit" class="button secondary" value="{{ wizard.steps.prev }}">{% translate 'Previous step' %}</button>
@@ -98,15 +97,83 @@
         <div class="row">
           <div class="dialog-actions">
             <button type="reset" class="button js-dialog-close">Cancel</button>
-            <button type="button" class="button primary js-dialog-close" onclick="submitForm()">Submit</button>
+            <button type="button" class="button primary js-dialog-close" onclick="validateForm()">Submit</button>
           </div>
         </div>
       </div>
     </div>
     <script src="https://cdn.metroui.org.ua/v4/js/metro.min.js"></script>
+
     <script>
-      function submitForm() {
-        document.getElementById('submit-form').submit()
+      function validateForm() {
+        if('{{ wizard.steps.step1 }}'!=='5'){
+          document.getElementById('submit-form').submit();
+          return
+        }
+        var isValid = true
+           
+        // Get form values
+        var member = document.getElementById('id_member').value
+        var cowInMilk = parseInt(document.getElementById('id_cow_in_milk').value, 10)
+        var cowDry = parseInt(document.getElementById('id_cow_dry').value, 10)
+        var buffInMilk = parseInt(document.getElementById('id_buff_in_milk').value, 10)
+        var buffDry = parseInt(document.getElementById('id_buff_dry').value, 10)
+        var surplus = parseFloat(document.getElementById('id_surplus').value)
+        var zeroDaysReason = document.getElementById('id_zero_days_reaason').value
+        var reason = document.getElementById('id_reason').value
+      
+        // Validate member
+        if (!member) {
+          showError('error', 'Member field is required.')
+          isValid = false
+        }
+      
+        // Validate cows and buffaloes counts
+        if (isNaN(cowInMilk) || cowInMilk < 0) {
+          showError('error', 'Cows in milk cannot be negative.')
+          isValid = false
+        }
+        if (isNaN(cowDry) || cowDry < 0) {
+          showError('error', 'Dry cows cannot be negative.')
+          isValid = false
+        }
+        if (isNaN(buffInMilk) || buffInMilk < 0) {
+          showError('error', 'Buffaloes in milk cannot be negative.')
+          isValid = false
+        }
+        if (isNaN(buffDry) || buffDry < 0) {
+          showError('error', 'Dry buffaloes cannot be negative.')
+          isValid = false
+        }
+      
+        // Validate surplus
+        if (cowInMilk === 0 && buffInMilk === 0 && surplus > 0) {
+          showError('error', 'Surplus can’t be more than 0 when both cows and buffaloes are not producing milk.')
+          isValid = false
+        }
+      
+        // Validate zero days reason
+        if (surplus === 0 && !zeroDaysReason) {
+          showError('error', 'Zero days reason is required when there is no surplus.')
+          isValid = false
+        }
+      
+        // Validate reason
+        if (zeroDaysReason === 'Others' && !reason) {
+          showError('error', 'Reason is required when the zero days reason is "Others".')
+          isValid = false
+        }
+      
+        // Submit form if valid
+        if (isValid) {
+          document.getElementById('submit-form').submit()
+        }
+      }
+      
+      function showError(errorId, message) {
+        var errorElement = document.getElementById(errorId)
+        errorElement.textContent = message
+        errorElement.parentElement.style.display = 'block' // Show the list
       }
     </script>
   </body>

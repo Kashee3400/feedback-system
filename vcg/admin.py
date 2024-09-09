@@ -189,6 +189,12 @@ class ZeroDaysReportAdmin(admin.ModelAdmin):
     
 admin.site.register(ZeroDaysPouringReport,ZeroDaysReportAdmin)
 
+class ZeroDaysReasonAdmin(admin.ModelAdmin):
+    list_display = ['reason']
+    
+admin.site.register(ZeroDaysPourerReason,ZeroDaysReasonAdmin)
+
+
 class MemberComplaintReportAdmin(admin.ModelAdmin):
     list_display = ['member','reason','meeting']
     
@@ -260,7 +266,7 @@ class FormProgressAdmin(admin.ModelAdmin):
 
 class ZeroPourerMembersAdmin(admin.ModelAdmin):
     list_display = ['name', 'code', 'mpp', 'created_at']
-    search_fields = ['name', 'code', 'mpp']
+    search_fields = ['mpp']
 
 # Register each model with its admin configuration
 admin.site.register(EventSession, EventSessionAdmin)

@@ -344,7 +344,7 @@ class MppVisitBy(models.Model):
         blank=True,
         null=True,
         verbose_name=_('Sahayak Code'),
-        help_text=_('Code for sahayak.')
+        help_text=_('In which code sahayak pouring non-member (Not a member of Kashee MPC) milk')
     )
     non_pourer_names = models.TextField(
         blank=True, 
@@ -352,6 +352,7 @@ class MppVisitBy(models.Model):
         verbose_name=_('Non-Pourer Names'),
         help_text=_('Names of non-pourers, if any.')
     )
+    new_membership_enrolled = models.IntegerField(default=0,verbose_name=_('New Membership Enrolled'),help_text=_('How many new memberships are enrolled in kashee'))
     created_at = models.DateTimeField(
         auto_now_add=True, 
         verbose_name=_('Created At'),
@@ -553,6 +554,8 @@ class NonPourerMeet(models.Model):
         verbose_name=_('Surplus'),
         help_text=_('Surplus amount.')
     )
+    zero_days_reaason = models.ForeignKey(ZeroDaysPourerReason, on_delete=models.SET_NULL,blank=True ,null=True, verbose_name=_('Zero Days Pouring Reason'),
+                                          help_text=_('Zero days reason for not pouring milk.'))
     reason = models.TextField(
         blank=True,
         null=True,
@@ -644,3 +647,33 @@ class FormProgress(models.Model):
     def __str__(self):
         return f"Session {self.session.session_name} - Step {self.step} ({self.status})"
 
+
+class AgriculturalProducts(models.Model):
+    cf = models.IntegerField(
+        verbose_name="CF", 
+        help_text="Enter the value for CF", 
+        default=0
+    )
+    mm = models.IntegerField(
+        verbose_name="MM", 
+        help_text="Enter the value for MM", 
+        default=0
+    )
+    deverming = models.IntegerField(
+        verbose_name="Deverming", 
+        help_text="Enter the value for Deverming", 
+        default=0
+    )
+    ss_utensils = models.IntegerField(
+        verbose_name="SS Utensils", 
+        help_text="Enter the value for SS Utensils", 
+        default=0
+    )
+    fodder_seeds = models.IntegerField(
+        verbose_name="Fodder Seeds", 
+        help_text="Enter the value for Fodder Seeds", 
+        default=0
+    )
+
+    def __str__(self):
+        return f"CF: {self.cf}, MM: {self.mm}, Deverming: {self.deverming}, Utensils: {self.ss_utensils}, Fodder Seeds: {self.fodder_seeds}"

@@ -22,6 +22,7 @@ else:
 DEBUG = False
 
 # DEBUG = True
+
 if DEBUG:
     ALLOWED_HOSTS = ['localhost', '*']
 else:

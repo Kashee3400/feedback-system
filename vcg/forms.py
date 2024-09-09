@@ -4,7 +4,7 @@ from .models import MppVisitBy, CompositeData, DispatchData, MaintenanceChecklis
 class MppVisitByForm(forms.ModelForm):
     class Meta:
         model = MppVisitBy
-        fields = ['facilitator_name', 'mcc', 'mcc_code', 'mpp', 'mpp_name', 'no_of_pourer', 'no_of_non_member_pourer', 'sahayak_code', 'non_pourer_names']
+        fields = ['facilitator_name', 'mcc', 'mcc_code', 'mpp', 'mpp_name', 'no_of_pourer', 'no_of_non_member_pourer', 'non_pourer_names','sahayak_code','new_membership_enrolled']
         widgets = {
             'facilitator_name': forms.TextInput(attrs={"data-role":"input"}),
             'mcc_code': forms.TextInput(attrs={"data-role":"input"}),
@@ -13,6 +13,7 @@ class MppVisitByForm(forms.ModelForm):
             'mpp_name': forms.TextInput(attrs={"data-role":"input"}),
             'no_of_pourer': forms.NumberInput(attrs={"data-role":"input"}),
             'no_of_non_member_pourer': forms.NumberInput(attrs={"data-role":"input"}),
+            'new_membership_enrolled': forms.NumberInput(attrs={"data-role":"input"}),
             'non_pourer_names': forms.Textarea(attrs={"data-role":"taginput", "data-tag-trigger":"Comma"}),
             'sahayak_code': forms.TextInput(attrs={"data-role":"taginput", "data-tag-trigger":"Comma"}),
         }
@@ -24,13 +25,13 @@ class MppVisitByForm(forms.ModelForm):
             'mpp_name': 'MPP Name',
             'no_of_pourer': 'Number of Pourers',
             'no_of_non_member_pourer': 'Number of Non-Members Pourer',
-            'sahayak_code': 'In which code sahayak pouring milk',
-            'non_pourer_names': 'Non-Pourer Names',
+            'sahayak_code': 'In which code sahayak pouring non-member milk',
+            'non_pourer_names': 'Non-Member Names',
         }
 
     def clean(self):
         cleaned_data = super().clean()
-        no_of_non_pourer_member = int(cleaned_data.get('no_of_non_member_pourer'))
+        no_of_non_pourer_member = cleaned_data.get('no_of_non_member_pourer')
         sahayak_code = cleaned_data.get('sahayak_code')
         non_pourer_names = cleaned_data.get('non_pourer_names')
 
@@ -82,61 +83,9 @@ class MaintenanceChecklistForm(forms.ModelForm):
             'weekly_cleaning_done': forms.CheckboxInput(attrs={"type": "checkbox", "data-role": "switch", "data-material": "true"}),
         }
         labels = {
-            'battery_water_level': 'Battery Water Level',
+            'battery_water_level': 'Battery Water Level Check',
             'weekly_cleaning_done': 'Weekly Cleaning Done',
         }
-class NonPourerMeetForm(forms.ModelForm):
-
-    class Meta:
-        model = NonPourerMeet
-        fields = ['member', 'cow_in_milk', 'cow_dry', 'buff_in_milk', 'buff_dry', 'surplus','reason']
-        widgets = {
-            'member': forms.Select(attrs={'data-role':'select'}),
-            'cow_in_milk': forms.NumberInput(attrs={"data-role": "input",}),
-            'cow_dry': forms.NumberInput(attrs={"data-role": "input",}),
-            'buff_in_milk': forms.NumberInput(attrs={"data-role": "input",}),
-            'buff_dry': forms.NumberInput(attrs={"data-role": "input",}),
-            'surplus': forms.NumberInput(attrs={"data-role": "input",}),
-            'reason':forms.Textarea(attrs={"data-role":"textarea", "data-prepend":"<span class='mif-leanpub'></span>"})
-        }
-        labels = {
-            'member': 'Member',
-            'cow_in_milk': 'Cows in Milk',
-            'cow_dry': 'Dry Cows',
-            'buff_in_milk': 'Buffaloes in Milk',
-            'buff_dry': 'Dry Buffaloes',
-            'surplus': 'Surplus',
-            'reason': 'Reason'
-        }
-        
-    def __init__(self, *args, **kwargs):
-        mpp = kwargs.pop('mpp', None)
-        super().__init__(*args, **kwargs)
-        if mpp:
-            queryset = ZeroPourerMembers.objects.filter(mpp=mpp)
-        else:
-            queryset = ZeroPourerMembers.objects.all()
-
-        self.fields['member'].queryset = queryset
-
-    def clean(self):
-        cleaned_data = super().clean()
-
-        cow_in_milk = cleaned_data.get('cow_in_milk')
-        buff_in_milk = cleaned_data.get('buff_in_milk')
-        surplus = cleaned_data.get('surplus')
-        reason = cleaned_data.get('reason')
-
-        # Condition 1: Check if both cow_in_milk and buff_in_milk are 0
-        if (cow_in_milk == 0 or cow_in_milk is None) and (buff_in_milk == 0 or buff_in_milk is None):
-            if surplus and surplus > 0:
-                self.add_error('surplus', 'Surplus can\'t be more than 0 when both cows and buffaloes are not producing milk.')
-
-        # Condition 2: Check if surplus is greater than 0 and reason is not provided
-        if surplus and surplus > 0 and not reason:
-            self.add_error('reason', 'Reason is required when surplus is greater than 0.')
-
-        return cleaned_data
 
 class MembershipAppForm(forms.ModelForm):
     class Meta:
@@ -159,3 +108,104 @@ class VcgMeetingForm(forms.ModelForm):
         labels = {
             'meeting_done': 'Meeting Done',
         }
+
+from .models import AgriculturalProducts
+
+class ProductsDemandsForm(forms.ModelForm):
+    
+    class Meta:
+        model = AgriculturalProducts
+        fields = ['cf', 'mm', 'deverming', 'ss_utensils', 'fodder_seeds']
+        widgets = {
+            'cf': forms.NumberInput(attrs={'type':'text',"data-role":"input", 'min': 0, 'step': 1}),
+            'mm': forms.NumberInput(attrs={'type':'text',"data-role":"input", 'min': 0, 'step': 1}),
+            'deverming': forms.NumberInput(attrs={'type':'text',"data-role":"input", 'min': 0, 'step': 1}),
+            'ss_utensils': forms.NumberInput(attrs={'type':'text',"data-role":"input", 'min': 0, 'step': 1}),
+            'fodder_seeds': forms.NumberInput(attrs={'type':'text',"data-role":"input", 'min': 0, 'step': 1}),
+        }
+
+
+from django import forms
+from .models import NonPourerMeet, ZeroPourerMembers, ZeroDaysPourerReason
+
+class NonPourerMeetForm(forms.ModelForm):
+    class Meta:
+        model = NonPourerMeet
+        fields = [
+            'member', 'cow_in_milk', 'cow_dry', 'buff_in_milk',
+            'buff_dry', 'surplus', 'zero_days_reaason', 'reason'
+        ]
+        widgets = {
+            'member': forms.Select(attrs={'data-role': 'select'}),
+            'cow_in_milk': forms.NumberInput(attrs={"data-role": "input"}),
+            'cow_dry': forms.NumberInput(attrs={"data-role": "input"}),
+            'buff_in_milk': forms.NumberInput(attrs={"data-role": "input"}),
+            'buff_dry': forms.NumberInput(attrs={"data-role": "input"}),
+            'surplus': forms.NumberInput(attrs={"data-role": "input"}),
+            'zero_days_reaason': forms.Select(attrs={'data-role': 'select'}),
+            'reason': forms.Textarea(attrs={"data-role": "textarea", "data-prepend": "<span class='mif-leanpub'></span>"})
+        }
+        labels = {
+            'member': 'Member',
+            'cow_in_milk': 'Cows in Milk',
+            'cow_dry': 'Dry Cows',
+            'buff_in_milk': 'Buffaloes in Milk',
+            'buff_dry': 'Dry Buffaloes',
+            'surplus': 'Surplus',
+            'zero_days_reaason': 'Zero Days Reason',
+            'reason': 'Other Reason'
+        }
+        
+    def __init__(self, *args, **kwargs):
+        mpp = kwargs.pop('mpp', None)
+        super().__init__(*args, **kwargs)
+        if mpp:
+            queryset = ZeroPourerMembers.objects.filter(mpp=mpp)
+        else:
+            queryset = ZeroPourerMembers.objects.all()            
+        self.fields['member'].queryset = queryset
+
+
+    def clean_cow_in_milk(self):
+        cow_in_milk = self.cleaned_data.get('cow_in_milk')
+        if cow_in_milk is not None and cow_in_milk < 0:
+            raise forms.ValidationError("Cows in milk cannot be negative.")
+        return cow_in_milk
+
+    def clean_cow_dry(self):
+        cow_dry = self.cleaned_data.get('cow_dry')
+        if cow_dry is not None and cow_dry < 0:
+            raise forms.ValidationError("Dry cows cannot be negative.")
+        return cow_dry
+
+    def clean_buff_in_milk(self):
+        buff_in_milk = self.cleaned_data.get('buff_in_milk')
+        if buff_in_milk is not None and buff_in_milk < 0:
+            raise forms.ValidationError("Buffaloes in milk cannot be negative.")
+        return buff_in_milk
+
+    def clean_buff_dry(self):
+        buff_dry = self.cleaned_data.get('buff_dry')
+        if buff_dry is not None and buff_dry < 0:
+            raise forms.ValidationError("Dry buffaloes cannot be negative.")
+        return buff_dry
+
+    def clean_surplus(self):
+        surplus = self.cleaned_data.get('surplus')
+        cow_in_milk = self.cleaned_data.get('cow_in_milk')
+        buff_in_milk = self.cleaned_data.get('buff_in_milk')
+        
+        if (cow_in_milk == 0 or cow_in_milk is None) and (buff_in_milk == 0 or buff_in_milk is None):
+            if surplus is not None and surplus > 0:
+                raise forms.ValidationError("Surplus can’t be more than 0 when both cows and buffaloes are not producing milk.")
+        return surplus
+
+    def clean_reason(self):
+        reason = self.cleaned_data.get('reason')
+        zero_days_reaason = self.cleaned_data.get('zero_days_reaason')
+
+        if zero_days_reaason == 'Others' and not reason:
+            raise forms.ValidationError("Reason is required when the zero days reason is 'Others'.")
+        
+        return reason
+

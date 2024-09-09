@@ -543,77 +543,60 @@ from formtools.wizard.views import SessionWizardView
 from django.shortcuts import render
 from .forms import (
     MppVisitByForm, CompositeDataForm, DispatchDataForm,
-    MaintenanceChecklistForm, NonPourerMeetForm, VcgMeetingForm, MembershipAppForm
+    MaintenanceChecklistForm, NonPourerMeetForm, VcgMeetingForm, MembershipAppForm,ProductsDemandsForm
 )
-from django.shortcuts import render, redirect, get_object_or_404
-from django.http import Http404
-from django.utils import timezone
-from django.urls import reverse_lazy
-from django.db import transaction, IntegrityError
-from formtools.wizard.views import SessionWizardView
-from .models import EventSession, FormProgress
-from .forms import MppVisitByForm, CompositeDataForm, DispatchDataForm, MaintenanceChecklistForm, NonPourerMeetForm, VcgMeetingForm, MembershipAppForm
 
-FORMS = [
-    ('facilitator', MppVisitByForm),
-    ('composite_data', CompositeDataForm),
-    ('dispatch_data', DispatchDataForm),
-    ('maintenance_checklist', MaintenanceChecklistForm),
-    ('non_pourer_meet', NonPourerMeetForm),
-    ('vcg_meeting', VcgMeetingForm),
-    ('membership_app', MembershipAppForm),
-]
 
 TEMPLATES = {
+    'maintenance_checklist': 'mppvisit/maintenance_checklist.html',
     'facilitator': 'mppvisit/facilitator.html',
     'composite_data': 'mppvisit/composite_data.html',
     'dispatch_data': 'mppvisit/dispatch_data.html',
-    'maintenance_checklist': 'mppvisit/maintenance_checklist.html',
     'non_pourer_meet': 'mppvisit/non_pourer_meet.html',
     'vcg_meeting': 'mppvisit/vcg_meeting.html',
     'membership_app': 'mppvisit/membership_app.html',
+    'demands':'mppvisit/demands-form.html'
 }
+
+FORMS = [
+    ('maintenance_checklist', MaintenanceChecklistForm),
+    ('facilitator', MppVisitByForm),
+    ('composite_data', CompositeDataForm),
+    ('dispatch_data', DispatchDataForm),
+    ('non_pourer_meet', NonPourerMeetForm),
+    ('vcg_meeting', VcgMeetingForm),
+    ('membership_app', MembershipAppForm),
+    ('demands', ProductsDemandsForm)
+]
 
 from django.contrib import messages
 
 class DataCollectionWizard(SessionWizardView):
     template_name = 'mppvisit/visit-form.html'
-    url_name = reverse_lazy('home')  # Replace with the correct URL name
+    url_name = reverse_lazy('home')
 
     def get_template_names(self):
         return [TEMPLATES[self.steps.current]]
 
-    def get_user_instance(self):
-        """
-        Get or create the EventSession instance based on the session name from the URL.
-        If no session exists, create a new one when the form is first rendered.
-        """
+    def get_form_session(self):
         session_name = self.kwargs.get('session_name')
-
-        # Check if the session is already created and stored in the wizard's storage
         session_id = self.storage.data.get('session_id')
+
         if session_id:
             return get_object_or_404(EventSession, id=session_id)
 
-        # If session_name exists, try to fetch the session
         if session_name:
-            try:
-                session = EventSession.objects.get(session_name=session_name)
+            session = EventSession.objects.filter(session_name=session_name).first()
+            if session:
                 self.storage.data['session_id'] = session.id
                 return session
-            except EventSession.DoesNotExist:
-                pass  # Handle the case where session_name does not exist
 
-        # If no session_name or no existing session, create a new one
         new_session = EventSession.objects.create()
         self.storage.data['session_id'] = new_session.id
         return new_session
 
     def get_form_initial(self, step):
-        """
-        Load the saved form data for the user if it exists. If no user, return an empty form.
-        """
-        session = self.get_user_instance()
+        session = self.get_form_session()
         if session:
             progress = FormProgress.objects.filter(session=session, step=step).first()
             if progress:
@@ -625,103 +608,72 @@ class DataCollectionWizard(SessionWizardView):
         if step == 'non_pourer_meet':
             mpp_form_data = self.get_form_initial('facilitator')
             mpp = mpp_form_data.get('mpp') if mpp_form_data else None
-            form = NonPourerMeetForm(**kwargs, mpp=mpp) 
+            form = NonPourerMeetForm(**kwargs, mpp=mpp)
         return form
-    
 
     def post(self, *args, **kwargs):
         current_step = self.steps.current
-        session = self.get_user_instance()
         form = self.get_form(current_step, data=self.request.POST)
         if form.is_valid():
             if current_step == 'non_pourer_meet':
-                if self.request.POST.get('want_to_add_more'):
-                    try:
-                        form.save(commit=False)
-                        meet = form.instance
-                        meet.session_id = session.pk
-                        meet.save()
-                        messages.success(self.request, 'Record added successfully. You can add more records now.')
-                        return self.render(self.get_form(current_step))
-                    except Exception as e:
-                        messages.error(self.request, f'An error occurred while saving the record: {str(e)}')
-                        return self.render(form)
-                else:
-                    messages.success(self.request, 'Record saved successfully. Moving to the next step.')
-                    return super().post(*args, **kwargs)
+                return self.handle_non_pourer_meet_form(form)
             else:
-                try:
-                    self.save_form_data(session, current_step, form.cleaned_data)
-                    messages.success(self.request, f'Successfully completed step: {current_step}.')
-                    return super().post(*args, **kwargs)
-                except Exception as e:
-                    messages.error(self.request, f'An error occurred while processing the step: {str(e)}')
-                    return self.render(form)
+                return self.handle_step(form, current_step)
         else:
             messages.error(self.request, 'Please correct the errors below.')
             return self.render(form)
 
+    def handle_non_pourer_meet_form(self, form):     
+        if self.request.POST.get('want_to_add_more'):
+            try:
+                instance = form.save(commit=False)
+                instance.session = self.get_form_session()
+                instance.save()
+                messages.success(self.request, 'Record added successfully. You can add more records now.')
+                return self.render(self.get_form('non_pourer_meet'))
+            except Exception as e:
+                messages.error(self.request, f'An error occurred while saving the record: {str(e)}')
+                return self.render(form)
+        else:
+            if form.is_valid():
+                return super().post()  # Continue with the default behavior of the wizard
+            else:
+                messages.error(self.request, 'Please correct the errors below.')
+                return self.render(form)
+
+    def handle_step(self, form, current_step):
+        try:
+            self.save_form_data(self.get_form_session(), current_step, form.cleaned_data)
+            messages.success(self.request, f'Successfully completed step: {current_step}.')
+            return super().post()
+        except Exception as e:
+            messages.error(self.request, f'An error occurred while processing the step: {str(e)}')
+            return self.render(form)
+
     def save_form_data(self, session, current_step, form_data):
-        """
-        Save form data securely and handle rollback in case of failure.
-        """
         try:
             FormProgress.objects.update_or_create(
                 session=session, step=current_step, defaults={'data': form_data}
             )
-        except IntegrityError as e:
+        except IntegrityError:
             messages.error(self.request, "An error occurred while saving your data. Please try again.")
             raise
 
     def done(self, form_list, **kwargs):
         try:
             with transaction.atomic():
-                mppvisitby_form = form_list[0]
-                composite_data_form = form_list[1]
-                dispatch_data_form = form_list[2]
-                maintenance_checklist_form = form_list[3]
-                non_pourer_form = form_list[4]
-                vcg_meeting_form = form_list[5]
-                membership_app_form = form_list[6]
+                for form in form_list:
+                    instance = form.save(commit=False)
+                    instance.session = self.get_form_session()
+                    instance.save()
 
-                session = self.get_user_instance()
-
-                mppvisitby = mppvisitby_form.save(commit=False)
-                mppvisitby.session = session
-                mppvisitby.save()
-
-                composite_data = composite_data_form.save(commit=False)
-                composite_data.session = session
-                composite_data.save()
-
-                dispatch_data = dispatch_data_form.save(commit=False)
-                dispatch_data.session = session
-                dispatch_data.save()
-
-                maintenance_checklist_data = maintenance_checklist_form.save(commit=False)
-                maintenance_checklist_data.session = session
-                maintenance_checklist_data.save()
-
-                non_pourer_data = non_pourer_form.save(commit=False)
-                non_pourer_data.session = session
-                non_pourer_data.save()
-
-
-                vcg_meeting_data = vcg_meeting_form.save(commit=False)
-                vcg_meeting_data.session = session
-                vcg_meeting_data.save()
-
-                membership_app_data = membership_app_form.save(commit=False)
-                membership_app_data.session = session
-                membership_app_data.save()
-
-                FormProgress.objects.filter(session=session).update(status='completed')
-
+                FormProgress.objects.filter(session=self.get_form_session()).update(status='completed')
                 return redirect('create_mppvisit')
-            
-        except IntegrityError as e:
+
+        except IntegrityError:
             messages.error(self.request, "An error occurred while finalizing your data. Please try again.")
             return self.render_error_page()
 
     def render_error_page(self):
         return redirect('error_page')
+    
