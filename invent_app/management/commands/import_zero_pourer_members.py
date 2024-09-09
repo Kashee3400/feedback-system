@@ -1,6 +1,7 @@
 import pandas as pd
 from django.core.management.base import BaseCommand
 from vcg.models import ZeroPourerMembers
+import numpy as np
 
 class Command(BaseCommand):
     help = 'Import zero pourer members from an Excel file'
@@ -10,7 +11,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
         excel_file = kwargs['excel_file']
-        
+        ZeroPourerMembers.objects.all().delete()
         # Load Excel file
         try:
             data = pd.read_excel(excel_file)
@@ -29,6 +30,12 @@ class Command(BaseCommand):
             mpp = row['MPP Code']
             name = row['Member Name']
             code = row['Member code']
+
+            # Handle NaN and non-numeric values for 'Member code'
+            if pd.isna(code) or not isinstance(code, (int, float)):
+                code = 0
+            else:
+                code = int(code)
 
             try:
                 ZeroPourerMembers.objects.create(mpp=mpp, name=name, code=code)
