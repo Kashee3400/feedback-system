@@ -633,7 +633,6 @@ class DataCollectionWizard(SessionWizardView):
         current_step = self.steps.current
         session = self.get_user_instance()
         form = self.get_form(current_step, data=self.request.POST)
-        print(self.request.POST)
         if form.is_valid():
             if current_step == 'non_pourer_meet':
                 if self.request.POST.get('want_to_add_more'):
