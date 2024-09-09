@@ -18,7 +18,7 @@ class MppVisitByForm(forms.ModelForm):
             'sahayak_code': forms.TextInput(attrs={"data-role":"taginput", "data-tag-trigger":"Comma"}),
         }
         labels = {
-            'facilitator_name': 'Facilitator Name',
+            'facilitator_name': 'AM/Facilitator Name',
             'mcc': 'MCC Name',
             'mcc_code': 'MCC Code',
             'mpp': 'MPP Code',

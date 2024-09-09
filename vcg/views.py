@@ -666,7 +666,6 @@ class DataCollectionWizard(SessionWizardView):
                     instance = form.save(commit=False)
                     instance.session = self.get_form_session()
                     instance.save()
-
                 FormProgress.objects.filter(session=self.get_form_session()).update(status='completed')
                 return redirect('create_mppvisit')
 
