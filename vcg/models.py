@@ -700,4 +700,4 @@ class AgriculturalProducts(models.Model):
     )
 
     def __str__(self):
-        return f"CF: {self.cf}, MM: {self.mm}, Deverming: {self.deverming}, Utensils: {self.ss_utensils}, Fodder Seeds: {self.fodder_seeds}"
+        return f"CF: {self.cf}, MM: {self.mm}, Deworming: {self.deverming}, Utensils: {self.ss_utensils}, Fodder Seeds: {self.fodder_seeds}"
