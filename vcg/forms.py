@@ -1,5 +1,5 @@
 from django import forms
-from .models import MppVisitBy, CompositeData, DispatchData, MaintenanceChecklist, NonPourerMeet, MembershipApp, SessionVcgMeeting, ZeroPourerMembers
+from .models import MppVisitBy, CompositeData, DispatchData, MaintenanceChecklist, NonPourerMeet, MembershipApp, SessionVcgMeeting, ZeroPourerMembers,VMCCs
 
 class MppVisitByForm(forms.ModelForm):
     class Meta:
@@ -14,9 +14,23 @@ class MppVisitByForm(forms.ModelForm):
             'no_of_pourer': forms.NumberInput(attrs={"data-role":"input"}),
             'no_of_non_member_pourer': forms.NumberInput(attrs={"data-role":"input"}),
             'new_membership_enrolled': forms.NumberInput(attrs={"data-role":"input"}),
-            'non_pourer_names': forms.Textarea(attrs={"data-role":"taginput", "data-tag-trigger":"Comma"}),
-            'sahayak_code': forms.TextInput(attrs={"data-role":"taginput", "data-tag-trigger":"Comma"}),
+            'non_pourer_names': forms.Textarea(
+                attrs={
+                    "data-role": "textarea",
+                    "data-append": "<span class='mif-leanpub'></span>",
+                    "placeholder": "Enter comma-separated values. For ex: - name1, name2,"
+                }
+            ),
+            'sahayak_code': forms.TextInput(
+                attrs={
+                    "data-role": "textarea",
+                    "data-append": "<span class='mif-leanpub'></span>",
+                    "placeholder": "Enter comma-separated values. For ex: - code1, code2,"
+                }
+            ),
+
         }
+        
         labels = {
             'facilitator_name': 'AM/Facilitator Name',
             'mcc': 'MCC Name',
@@ -123,6 +137,14 @@ class ProductsDemandsForm(forms.ModelForm):
             'ss_utensils': forms.NumberInput(attrs={'type':'text',"data-role":"input", 'min': 0, 'step': 1}),
             'fodder_seeds': forms.NumberInput(attrs={'type':'text',"data-role":"input", 'min': 0, 'step': 1}),
         }
+        
+        labels = {
+            'cf': 'Cattle Feed',
+            'mm': 'Mineral Mixture',
+            'deverming': 'Deworming',
+            'ss_utensils': 'SS Utensils',
+            'fodder_seeds': 'Fodder Seeds',
+        }
 
 
 from django import forms
@@ -209,3 +231,26 @@ class NonPourerMeetForm(forms.ModelForm):
         
         return reason
 
+class EventSessionFilterForm(forms.Form):
+    STATUS_CHOICES = [
+        ('', '-- All --'),
+        ('in-progress', 'In Progress'),
+        ('completed', 'Completed'),
+    ]
+    
+    status = forms.ChoiceField(
+        choices=STATUS_CHOICES, 
+        required=False, 
+        label='Filter by Form Progress Status',
+        widget=forms.Select(attrs={"class": "form-control"})  # Define widget here
+    )
+    
+    mcc = forms.ModelChoiceField(
+        queryset=VMCCs.objects.all(), 
+        required=False, 
+        label='Filter by MCC',
+        widget=forms.Select(attrs={"class": "form-control"})  # Define widget here
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)

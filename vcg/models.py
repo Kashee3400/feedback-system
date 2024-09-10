@@ -255,7 +255,7 @@ from django.utils.timezone import now
 import random
 import string
 from django.db import models
-from django.utils.translation import gettext_lazy as _  # For internationalization
+from django.utils.translation import gettext_lazy as _ 
 
 class EventSession(models.Model):
     session_name = models.CharField(
@@ -302,17 +302,18 @@ class MppVisitBy(models.Model):
         EventSession, 
         on_delete=models.CASCADE, 
         verbose_name=_('Session'),
+        related_name='mppvisit',
         help_text=_('Associated event session.')
     )
     facilitator_name = models.CharField(
         max_length=255, 
         verbose_name=_('Facilitator Name'),
-        help_text=_('Name of the facilitator.')
+        help_text=_('Name of the facilitator or Area Manager.')
     )
     mcc = models.CharField(
         max_length=255, 
         verbose_name=_('MCC'),
-        help_text=_('MCC code or name.')
+        help_text=_('MCC cname.')
     )
     mcc_code = models.CharField(
         max_length=50, 
@@ -322,7 +323,7 @@ class MppVisitBy(models.Model):
     mpp = models.CharField(
         max_length=255, 
         verbose_name=_('MPP'),
-        help_text=_('MPP code or name.')
+        help_text=_('MPP code.')
     )
     mpp_name = models.CharField(
         max_length=255, 
@@ -350,7 +351,7 @@ class MppVisitBy(models.Model):
         blank=True, 
         null=True, 
         verbose_name=_('Non-Pourer Names'),
-        help_text=_('Names of non-pourers, if any.')
+        help_text=_('Names of non-pourers required, if "Number of Non-Member Pourers" more than 0.')
     )
     new_membership_enrolled = models.IntegerField(default=0,verbose_name=_('New Membership Enrolled'),help_text=_('How many new memberships are enrolled in kashee'))
     created_at = models.DateTimeField(
@@ -373,6 +374,7 @@ class CompositeData(models.Model):
         EventSession, 
         on_delete=models.CASCADE, 
         verbose_name=_('Session'),
+        related_name="compositedata",
         help_text=_('Associated event session.')
     )
     qty = models.FloatField(
@@ -387,6 +389,7 @@ class CompositeData(models.Model):
         verbose_name=_('SNF'),
         help_text=_('SNF content in the composite data.')
     )
+    
     created_at = models.DateTimeField(
         auto_now_add=True, 
         verbose_name=_('Created At'),
@@ -407,6 +410,7 @@ class DispatchData(models.Model):
         EventSession, 
         on_delete=models.CASCADE, 
         verbose_name=_('Session'),
+        related_name="dispatchdata",
         help_text=_('Associated event session.')
     )
     qty = models.FloatField(
@@ -433,7 +437,7 @@ class DispatchData(models.Model):
     )
 
     def __str__(self):
-        return f"Dispatch Qty: {self.qty}, Fat: {self.fat}, SNF: {self.snf}"
+        return f"Qty: {self.qty}, Fat: {self.fat}, SNF: {self.snf}"
 
 
 class MaintenanceChecklist(models.Model):
@@ -441,6 +445,7 @@ class MaintenanceChecklist(models.Model):
         EventSession, 
         on_delete=models.CASCADE, 
         verbose_name=_('Session'),
+        related_name="maintenancecheck",
         help_text=_('Associated event session.')
     )
     battery_water_level = models.BooleanField(
@@ -465,7 +470,7 @@ class MaintenanceChecklist(models.Model):
     )
 
     def __str__(self):
-        return f"Battery Level: {self.battery_water_level}, Cleaning Done: {self.weekly_cleaning_done}"
+        return f"Battery Level Check: {self.battery_water_level},Weekly Cleaning Done: {self.weekly_cleaning_done}"
 
 
 class ZeroPourerMembers(models.Model):
@@ -509,6 +514,7 @@ class NonPourerMeet(models.Model):
         EventSession, 
         on_delete=models.CASCADE, 
         verbose_name=_('Session'),
+        related_name="nonpourermeet",
         help_text=_('Associated event session.')
     )
     member = models.ForeignKey(
@@ -554,13 +560,18 @@ class NonPourerMeet(models.Model):
         verbose_name=_('Surplus'),
         help_text=_('Surplus amount.')
     )
-    zero_days_reaason = models.ForeignKey(ZeroDaysPourerReason, on_delete=models.SET_NULL,blank=True ,null=True, verbose_name=_('Zero Days Pouring Reason'),
-                                          help_text=_('Zero days reason for not pouring milk.'))
+    zero_days_reaason = models.ForeignKey(
+        ZeroDaysPourerReason, 
+        on_delete=models.SET_NULL,
+        blank=True ,null=True,
+        verbose_name=_('Zero Days Pouring Reason'),
+        help_text=_('Zero days reason for not pouring milk.'))
+    
     reason = models.TextField(
         blank=True,
         null=True,
         verbose_name=_('Reason'),
-        help_text=_('Reason for the surplus or other notes.')
+        help_text=_('Reason is required for other "zero_days_reaason" other.')
     )
     created_at = models.DateTimeField(
         auto_now_add=True, 
@@ -582,6 +593,7 @@ class SessionVcgMeeting(models.Model):
         EventSession, 
         on_delete=models.CASCADE, 
         verbose_name=_('Session'),
+        related_name="meetings",
         help_text=_('Associated event session.')
     )
     meeting_done = models.BooleanField(
@@ -609,6 +621,7 @@ class MembershipApp(models.Model):
         EventSession, 
         on_delete=models.CASCADE, 
         verbose_name=_('Session'),
+        related_name="membershipapp",
         help_text=_('Associated event session.')
     )
     no_of_installs = models.IntegerField(
@@ -636,7 +649,7 @@ class FormProgress(models.Model):
         ('completed', 'Completed'),
     ]
 
-    session = models.ForeignKey(EventSession, on_delete=models.CASCADE)
+    session = models.ForeignKey(EventSession, on_delete=models.CASCADE,related_name="formprogress")
     step = models.CharField(max_length=255)
     data = models.JSONField()
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='in-progress')
@@ -649,6 +662,7 @@ class FormProgress(models.Model):
 
 
 class AgriculturalProducts(models.Model):
+    session = models.ForeignKey(EventSession, on_delete=models.CASCADE,related_name="saledemands",blank=True,null=True)
     cf = models.IntegerField(
         verbose_name="CF", 
         help_text="Enter the value for CF", 
@@ -660,7 +674,7 @@ class AgriculturalProducts(models.Model):
         default=0
     )
     deverming = models.IntegerField(
-        verbose_name="Deverming", 
+        verbose_name="Deworming", 
         help_text="Enter the value for Deverming", 
         default=0
     )
@@ -673,6 +687,16 @@ class AgriculturalProducts(models.Model):
         verbose_name="Fodder Seeds", 
         help_text="Enter the value for Fodder Seeds", 
         default=0
+    )
+    created_at = models.DateTimeField(
+        auto_now=True, 
+        verbose_name=_('Created At'),
+        help_text=_('Timestamp when the record was created.')
+    )
+    updated_at = models.DateTimeField(
+        auto_now=True, blank=True,null=True,
+        verbose_name=_('Updated At'),
+        help_text=_('Timestamp when the record was last updated.')
     )
 
     def __str__(self):

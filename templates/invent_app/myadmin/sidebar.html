@@ -9,7 +9,7 @@
         {% url "admin:index" as admin_index %}
         {% url "dashboard" as dashboard_url %}
         {% url "vet_dashboard" as vet_dashboard_url %}
-        {% url "reports" as reports_url %}
+        {% url "event_session_list" as event_session_list %}
         <li class="submenu-open">
           <h6 class="submenu-hdr">{% trans "Main" %}</h6>
           <ul>
@@ -18,7 +18,7 @@
               {% if request.path == admin_index %}active{% endif %}
               {% if request.path == dashboard_url %}active{% endif %}
               {% if request.path == vet_dashboard_url %}active{% endif %}
-              {% if request.path == reports_url %}active{% endif %}
+              {% if request.path == event_session_list %}active{% endif %}
               "><i data-feather="home"></i><span>{% trans "Home" %}</span><span class="menu-arrow"></span></a>
       
               <ul>
@@ -34,7 +34,7 @@
                   <a href="{{dashboard_url}}" class="{% if request.path == dashboard_url %}active{% endif %}">{% trans "Feedback Dashboard" %}</a>
                 </li>                 
                 <li>
-                  <a href="{{reports_url}}" class="{% if request.path == reports_url %}active{% endif %}">{% trans "Reports" %}</a>
+                  <a href="{{event_session_list}}" class="{% if request.path == event_session_list %}active{% endif %}">{% trans "MPP Visit Report" %}</a>
                 </li>                
               </ul>
             </li>

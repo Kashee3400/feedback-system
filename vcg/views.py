@@ -26,9 +26,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from django.core.exceptions import PermissionDenied,ObjectDoesNotExist
 from django.db import IntegrityError, transaction
-import logging
-from django.core.files.storage import FileSystemStorage
-
+from .forms import *
 
 class VMCCsViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny]
@@ -676,3 +674,120 @@ class DataCollectionWizard(SessionWizardView):
     def render_error_page(self):
         return redirect('error_page')
     
+
+
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+        
+class EventSessionListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
+    model = EventSession
+    template_name = 'mppvisit/mppvisit-report.html'
+    context_object_name = 'event_sessions'
+    paginate_by = 10 
+    login_url = reverse_lazy('login_user')
+    permission_required = ['vcg.view_eventsession']
+
+    def test_func(self):
+        return self.request.user.has_perm(self.permission_required)
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+
+        # Filter out event sessions that have no associated progress data
+        queryset = queryset.filter(formprogress__isnull=False).distinct()
+
+        # Delete event sessions that have no progress data
+        EventSession.objects.filter(formprogress__isnull=True).delete()
+
+        # Apply filters based on status and mcc
+        status = self.request.GET.get('status')
+        mcc = self.request.GET.get('mcc')
+        print(mcc)
+        if status:
+            queryset = queryset.filter(formprogress__status=status)
+
+        if mcc:
+            queryset = queryset.filter(mppvisit__mcc_code=mcc)
+
+        return queryset
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['filter_form'] = EventSessionFilterForm(self.request.GET)
+        return context
+
+class MppVisirReportView(LoginRequiredMixin, UserPassesTestMixin, View):
+    template_name = 'mppvisit/mpp-visit-detail.html'
+    
+    def test_func(self):
+        return self.request.user.is_staff
+
+    def get(self, request, *args, **kwargs):
+        session = get_object_or_404(EventSession, session_name=kwargs['name'])
+        context = {
+        'session': session,
+        'maintenance_checklist_data': get_maintenance_checklist_data(session),
+        'facilitator_data': get_facilitator_data(session),
+        'composite_data_data': get_composite_data(session),
+        'dispatch_data_data': get_dispatch_data(session),
+        'non_pourer_meet_data': get_non_pourer_meet_data(session),
+        'vcg_meeting_data': get_vcg_meeting_data(session),
+        'membership_app_data': get_membership_app_data(session),
+        'demands_data': get_demands_data(session),
+        }
+        return render(request, self.template_name, context)
+
+def get_maintenance_checklist_data(session):
+    try:
+        data = MaintenanceChecklist.objects.filter(session=session).last()
+        return data
+    except MaintenanceChecklist.DoesNotExist:
+        return None
+
+def get_facilitator_data(session):
+    try:
+        data = MppVisitBy.objects.filter(session=session).last()
+        return data
+    except EventSession.DoesNotExist:
+        return None
+
+def get_composite_data(session):
+    try:
+        data = CompositeData.objects.filter(session=session).last()
+        return data
+    except CompositeData.DoesNotExist:
+        return None
+
+def get_dispatch_data(session):
+    try:
+        data = DispatchData.objects.filter(session=session).last()
+        return data
+    except DispatchData.DoesNotExist:
+        return None
+
+def get_non_pourer_meet_data(session):
+    try:
+        data = NonPourerMeet.objects.filter(session=session)
+        return data
+    except NonPourerMeet.DoesNotExist:
+        return None
+
+def get_vcg_meeting_data(session):
+    try:
+        data = SessionVcgMeeting.objects.filter(session=session).last()
+        return data
+    except SessionVcgMeeting.DoesNotExist:
+        return None
+
+def get_membership_app_data(session):
+    try:
+        data = MembershipApp.objects.filter(session=session).last()
+        return data
+    except MembershipApp.DoesNotExist:
+        return None
+
+def get_demands_data(session):
+    try:
+        data = AgriculturalProducts.objects.filter(session=session).last()
+        return data
+    except AgriculturalProducts.DoesNotExist:
+        return None

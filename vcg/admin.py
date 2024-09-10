@@ -268,7 +268,13 @@ class ZeroPourerMembersAdmin(admin.ModelAdmin):
     list_display = ['name', 'code', 'mpp', 'created_at']
     search_fields = ['mpp']
 
+class AgriculturalProductsAdmin(admin.ModelAdmin):
+    list_display = ['cf', 'mm', 'deverming', 'ss_utensils','fodder_seeds','created_at','updated_at']
+    search_fields = ['cf', 'mm', 'deverming', 'ss_utensils','fodder_seeds']
+
+
 # Register each model with its admin configuration
+admin.site.register(AgriculturalProducts, AgriculturalProductsAdmin)
 admin.site.register(EventSession, EventSessionAdmin)
 admin.site.register(MppVisitBy, MppVisitByAdmin)
 admin.site.register(CompositeData, CompositeDataAdmin)

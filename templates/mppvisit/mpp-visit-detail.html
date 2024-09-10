@@ -1,0 +1,193 @@
+{% extends 'invent_app/myadmin/base.html' %}
+{% load static %}
+{% load permission_check %}
+{% load models_field_tag %}
+
+{% block title %}
+  MPP Visit Report
+{% endblock %}
+
+{% block xtra_css %}
+
+{% endblock %}
+
+{% block main_content %}
+  <div class="page-wrapper">
+    <div class="container m-3">
+      <h1>{{ session.session_name }}</h1>
+      <hr />
+      <div class="row">
+        {% comment %}Maintenance Checklist{% endcomment %}
+        <div class="col-xl-4 col-sm-12 col-12 col-md-4 d-flex">
+          <div class="card flex-fill">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <h5 class="card-title mb-0"><p>Maintenance Checklist</p></h5>
+            </div>
+            <div class="card-body">
+              <div>
+                <ul>
+                  <li>
+                    Battery Water Level:{% if maintenance_checklist_data.battery_water_level %}
+                      <i class="fas fa-check-circle text-success"></i>
+                    {% else %}
+                      <i class="fas fa-times-circle text-danger"></i>
+                    {% endif %}
+                  </li>
+                  <li>
+                    Weekly Cleaning Done:{% if maintenance_checklist_data.weekly_cleaning_done %}
+                      <i class="fas fa-check-circle text-success"></i>
+                    {% else %}
+                      <i class="fas fa-times-circle text-danger"></i>
+                    {% endif %}
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% comment %}Mpp Visit By{% endcomment %}
+        <div class="col-xl-8 col-sm-12 col-12 col-md-8 d-flex">
+          <div class="card flex-fill">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <h5 class="card-title mb-0"><p>MPP Visit</p></h5>
+            </div>
+            <div class="card-body">
+              <div class="row">
+                <div class="col-6">
+                  <p>MCC: <strong>{{ facilitator_data.mcc }}</strong>, MCC Code: <strong>{{ facilitator_data.mcc_code }}</strong></p>
+                </div>
+                <div class="col-6">
+                  <p>MPP: <strong>{{ facilitator_data.mpp_name }}</strong>,  MPP Code: <strong>{{ facilitator_data.mpp }}</strong></p>
+                </div>
+                <div class="col-6">
+                  <p>Visited By: <strong>{{ facilitator_data.facilitator_name }}</strong></p>
+                </div>
+                <div class="col-6">
+                  <p>No Of Pourers: <strong>{{ facilitator_data.no_of_pourer }}</strong></p>
+                </div>
+                <div class="col-6">
+                  <p>No Of Non-Member Pourers: <strong>{{ facilitator_data.no_of_non_member_pourer }}</strong></p>
+                </div>
+                <div class="col-6">
+                  <p>Codes (Shayak pouring Non-Member Milk): <strong>{{ facilitator_data.sahayak_code }}</strong></p>
+                </div>
+                <div class="col-6">
+                  <p>Name Of Non-Members: <strong>{{ facilitator_data.non_pourer_names }}</strong></p>
+                </div>
+                <div class="col-6">
+                <p>New Membership Enrolled: <strong>{{ facilitator_data.new_membership_enrolled }}</strong></p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% comment %}MPP Composite Data{% endcomment %}
+        <div class="col-xl-4 col-sm-12 col-12 col-md-6 d-flex">
+          <div class="card flex-fill">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <h5 class="card-title mb-0"><p>MPP Composite Data</p></h5>
+            </div>
+            <div class="card-body">
+              <div>{{ composite_data_data }}</div>
+            </div>
+          </div>
+        </div>
+        {% comment %}MPP Dispatch Data{% endcomment %}
+        <div class="col-xl-4 col-sm-12 col-12 col-md-6 d-flex">
+          <div class="card flex-fill">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <h5 class="card-title mb-0"><p>MPP Dispatch Data</p></h5>
+            </div>
+            <div class="card-body">
+              <div>{{ dispatch_data_data }}</div>
+            </div>
+          </div>
+        </div>
+        {% comment %}VCG Meeting Conducted{% endcomment %}
+        <div class="col-xl-4 col-sm-12 col-12 col-md-6 d-flex">
+          <div class="card flex-fill">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <h5 class="card-title mb-0"><p>VCG Meeting Conducted</p></h5>
+            </div>
+            <div class="card-body">
+              <ul>
+                <li>
+                  VCG Meeting Done:{% if vcg_meeting_data.meeting_done %}
+                    <i class="fas fa-check-circle text-success"></i>
+                  {% else %}
+                    <i class="fas fa-times-circle text-danger"></i>
+                  {% endif %}
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-4 col-sm-12 col-12 col-md-6 d-flex">
+          <div class="card flex-fill">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <h5 class="card-title mb-0"><p>Membership Application Installation</p></h5>
+            </div>
+            <div class="card-body">
+              <div>{{ membership_app_data }}</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-xl-4 col-sm-12 col-12 col-md-6 d-flex">
+          <div class="card flex-fill">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <h5 class="card-title mb-0"><p>Sale Demands</p></h5>
+            </div>
+            <div class="card-body">
+              <div>{{ demands_data }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-xl-12 col-sm-12 col-12 col-md-12 d-flex">
+          <div class="card flex-fill">
+            <div class="card-header d-flex justify-content-between align-items-center">
+              <h5 class="card-title mb-0"><p>Non-Pourer Meeting</p></h5>
+            </div>
+            <div class="card-body">
+              <div class="table-responsive dataview">
+                <table class="table datanew">
+                  <thead>
+                    <tr>
+                      <th>Member</th>
+                      <th>Member Code</th>
+                      <th>Cow In Milk</th>
+                      <th>Dry Cow</th>
+                      <th>Buff In Milk</th>
+                      <th>Dry Buff</th>
+                      <th>Surplus</th>
+                      <th>Zero Days Reason</th>
+                      <th>Reason</th>
+                      <th>Created At</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for data in non_pourer_meet_data %}
+                      <tr>
+                        <td>{{ data.member.name }}</td>
+                        <td>{{ data.member.code }}</td>
+                        <td>{{ data.cow_in_milk }}</td>
+                        <td>{{ data.cow_dry }}</td>
+                        <td>{{ data.buff_in_milk }}</td>
+                        <td>{{ data.buff_dry }}</td>
+                        <td>{{ data.surplus }}</td>
+                        <td>{{ data.zero_days_reaason }}</td>
+                        <td>{{ data.reason }}</td>
+                        <td>{{ data.created_at }}</td>
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

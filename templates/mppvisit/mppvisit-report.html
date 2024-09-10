@@ -1,0 +1,172 @@
+{% extends 'invent_app/myadmin/base.html' %}
+{% load static i18n %}
+{% load permission_check %}
+{% load models_field_tag %}
+
+{% block title %}
+  Feedback Review
+{% endblock %}
+
+{% block xtra_css %}
+  <style>
+    .pagination .btn {
+      margin: 0 5px;
+      font-size: 14px;
+    }
+    
+    .pagination .btn-primary {
+      background-color: #007bff;
+      border-color: #007bff;
+    }
+    
+    .pagination .btn-outline-primary {
+      border-color: #007bff;
+      color: #007bff;
+    }
+    
+    .pagination .btn-outline-secondary {
+      border-color: #6c757d;
+      color: #6c757d;
+    }
+    
+    .pagination .btn-primary:hover,
+    .pagination .btn-outline-primary:hover {
+      background-color: #0056b3;
+      border-color: #0056b3;
+    }
+  </style>
+{% endblock %}
+
+{% block main_content %}
+  <div class="page-wrapper">
+    <div class="container m-3">
+      <h1>MPP Visit Sessions</h1>
+      <hr />
+      <div class="container bg-light p-3">
+        <form method="get" action="{% url 'event_session_list' %}">
+          <div class="row">
+            <div class="col-4 col-md-4 col-sm-12 col-lg-4">{{ filter_form.status.label_tag }}
+              {{ filter_form.status }}</div>
+            <div class="col-4 col-md-4 col-sm-12 col-lg-4">{{ filter_form.mcc.label_tag }}
+              {{ filter_form.mcc }}</div>
+            <div class="col-2col-md-2 col-sm-12 col-lg-2">
+              <button type="submit" class="btn btn-primary mt-4">Filter</button>
+            </div>
+            <div class="col-2 col-md-2 col-sm-12 col-lg-2">
+              <a href="{% url 'event_session_list' %}" class="btn btn-secondary mt-4">Clear Filter</a>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div class="row m-3">
+      <div class="col-xl-12 col-sm-12 col-12 d-flex">
+        <div class="card flex-fill">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="card-title mb-0">
+              <p>
+                {% translate 'Feedback Review' %}
+              </p>
+            </h5>
+            <div class="graph-sets">
+              <div class="view-all-link">
+                {% comment %} <a href="{% url 'all_s_feedback_list' %}" class="view-all d-flex align-items-center">{% translate 'View All' %}<span class="ps-2 d-flex align-items-center"><i data-feather="arrow-right" class="feather-16"></i></span></a> {% endcomment %}
+              </div>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table datanew table-striped mt-3">
+                <thead>
+                  <tr>
+                    <th>
+                      <a href="{% url 'event_session_list' %}?sort=session_name">Session Name</a>
+                    </th>
+                    <th>MCC</th>
+                    <th>MCC Code</th>
+                    <th>MPP</th>
+                    <th>MPP Code</th>
+                    <th>MPP Visit By</th>
+                    <th>Created At</th>
+                    <th>Updated At</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for session in event_sessions %}
+                    <tr>
+                      <td>
+                        <a href="{% url 'session_details' session.session_name %}">{{ session.session_name }}</a>
+                      </td>
+                      <td>
+                        {% if session.mppvisit.exists %}
+                          {{ session.mppvisit.last.mcc }}
+                        {% endif %}
+                      </td>
+                      <td>
+                        {% if session.mppvisit.exists %}
+                          {{ session.mppvisit.last.mcc_code }}
+                        {% endif %}
+                      </td>
+                      <td>
+                        {% if session.mppvisit.exists %}
+                          {{ session.mppvisit.last.mpp_name }}
+                        {% endif %}
+                      </td>
+                      <td>
+                        {% if session.mppvisit.exists %}
+                          {{ session.mppvisit.last.mpp }}
+                        {% endif %}
+                      </td>
+                      <td>
+                        {% if session.mppvisit.exists %}
+                          {{ session.mppvisit.last.facilitator_name }}
+                        {% endif %}
+                      </td>
+                      <td>{{ session.created_at }}</td>
+                      <td>{{ session.updated_at }}</td>
+
+                      {% comment %} <td>
+                        {% if session.formprogress.exists %}
+                          {% for progress in session.formprogress.all %}
+                            {{ progress.status }} ({{ progress.step }}){% if not forloop.last %}
+                              <br />
+                            {% endif %}
+                          {% endfor %}
+                        {% else %}
+                          No Progress Data
+                        {% endif %}
+                      </td> {% endcomment %}
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="container m-3">
+      <div class="pagination">
+        <span class="step-links">
+          {% if page_obj.has_previous %}
+            <a href="?page=1" class="btn btn-outline-primary">&laquo; First</a>
+            <a href="?page={{ page_obj.previous_page_number }}" class="btn btn-outline-primary">Previous</a>
+          {% else %}
+            <button class="btn btn-outline-secondary" disabled>&laquo; First</button>
+            <button class="btn btn-outline-secondary" disabled>Previous</button>
+          {% endif %}
+
+          <span class="current btn btn-primary mx-2">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+
+          {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}" class="btn btn-outline-primary">Next</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}" class="btn btn-outline-primary">Last &raquo;</a>
+          {% else %}
+            <button class="btn btn-outline-secondary" disabled>Next</button>
+            <button class="btn btn-outline-secondary" disabled>Last &raquo;</button>
+          {% endif %}
+        </span>
+      </div>
+    </div>
+  </div>
+{% endblock %}

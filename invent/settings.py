@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'veterinary',
     'channels',
     'formtools',
+    'fontawesomefree',
     'webpush',
     'daphne',
     'rest_framework_simplejwt',

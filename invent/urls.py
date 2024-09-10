@@ -35,5 +35,6 @@ urlpatterns = [
     path('route/', include(router.urls)),
     path('accounts/', include('django.contrib.auth.urls')),
     path('create-mppvisit/', views.DataCollectionWizard.as_view(views.FORMS), name='create_mppvisit'),
+    path('event-sessions/', views.EventSessionListView.as_view(), name='event_session_list'),
     re_path(r'^webpush/', include('webpush.urls')),
 ]
