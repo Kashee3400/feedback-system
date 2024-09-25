@@ -109,7 +109,7 @@ class MembershipAppForm(forms.ModelForm):
             'no_of_installs': forms.NumberInput(attrs={"data-role":"input",}),
         }
         labels = {
-            'no_of_installs': 'Number of Membership Application Installed',
+            'no_of_installs': 'Number of Member Application Installed',
         }
 
 class VcgMeetingForm(forms.ModelForm):
