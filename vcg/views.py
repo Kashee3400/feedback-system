@@ -790,7 +790,7 @@ class EventSessionListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = EventSession
     template_name = "mppvisit/mppvisit-report.html"
     context_object_name = "event_sessions"
-    paginate_by = 10
+    paginate_by = 100
     login_url = reverse_lazy("login_user")
     permission_required = ["vcg.view_eventsession"]
 
