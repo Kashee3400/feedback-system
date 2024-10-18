@@ -116,9 +116,7 @@ class VcgMeetingForm(forms.ModelForm):
     class Meta:
         model = SessionVcgMeeting
         fields = ['meeting_done']
-        widgets = {
-            'meeting_done': forms.CheckboxInput(attrs={"type": "checkbox", "data-role": "switch", "data-material": "true"}),
-        }
+        widgets = {'meeting_done': forms.CheckboxInput(attrs={"type": "checkbox", "data-role": "switch", "data-material": "true"}),}
         labels = {
             'meeting_done': 'Meeting Done',
         }

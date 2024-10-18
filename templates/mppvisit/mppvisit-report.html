@@ -4,7 +4,7 @@
 {% load models_field_tag %}
 
 {% block title %}
-  Feedback Review
+  MPP Visit Report
 {% endblock %}
 
 {% block xtra_css %}
@@ -65,81 +65,96 @@
           <div class="card-header d-flex justify-content-between align-items-center">
             <h5 class="card-title mb-0">
               <p>
-                {% translate 'Feedback Review' %}
+                {% translate 'MPP Visit Report' %}
               </p>
             </h5>
+            <div class="d-flex justify-content-between mt-3">
+              <div>
+                <p>Total Rows: {{ event_sessions.count }}</p>
+              </div>
+            </div>
+            <div class="d-flex justify-content-between mt-3">
+              <div>
+                <p>
+                  Selected Rows: <span id="selected-count">0</span>
+                </p>
+              </div>
+            </div>
             <div class="graph-sets">
               <div class="view-all-link">
-                {% comment %} <a href="{% url 'all_s_feedback_list' %}" class="view-all d-flex align-items-center">{% translate 'View All' %}<span class="ps-2 d-flex align-items-center"><i data-feather="arrow-right" class="feather-16"></i></span></a> {% endcomment %}
+                <button id="exportBtn" class="btn btn-success"><i class="fa-solid fa-file-excel"></i> Export Selected</button>
+              </div>
+            </div>
+            <div class="graph-sets">
+              <div class="view-all-link">
+                <button id="deleteBtn" class="btn btn-danger"><i class="fa-solid fa-trash"></i>Delete</button>
               </div>
             </div>
           </div>
           <div class="card-body">
             <div class="table-responsive">
-              <table class="table datanew table-striped mt-3">
-                <thead>
-                  <tr>
-                    <th>
-                      <a href="{% url 'event_session_list' %}?sort=session_name">Session Name</a>
-                    </th>
-                    <th>MCC</th>
-                    <th>MCC Code</th>
-                    <th>MPP</th>
-                    <th>MPP Code</th>
-                    <th>MPP Visit By</th>
-                    <th>Created At</th>
-                    <th>Updated At</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {% for session in event_sessions %}
+              <form method="POST" id="export-form" action="{% url 'event_session_list' %}">
+                {% csrf_token %}
+                <input type="hidden" name="action" id="formAction" value="" />
+                <table class="table datanew table-striped mt-3">
+                  <thead>
                     <tr>
-                      <td>
-                        <a href="{% url 'session_details' session.session_name %}">{{ session.session_name }}</a>
-                      </td>
-                      <td>
-                        {% if session.mppvisit.exists %}
-                          {{ session.mppvisit.last.mcc }}
-                        {% endif %}
-                      </td>
-                      <td>
-                        {% if session.mppvisit.exists %}
-                          {{ session.mppvisit.last.mcc_code }}
-                        {% endif %}
-                      </td>
-                      <td>
-                        {% if session.mppvisit.exists %}
-                          {{ session.mppvisit.last.mpp_name }}
-                        {% endif %}
-                      </td>
-                      <td>
-                        {% if session.mppvisit.exists %}
-                          {{ session.mppvisit.last.mpp }}
-                        {% endif %}
-                      </td>
-                      <td>
-                        {% if session.mppvisit.exists %}
-                          {{ session.mppvisit.last.facilitator_name }}
-                        {% endif %}
-                      </td>
-                      <td>{{ session.created_at }}</td>
-                      <td>{{ session.updated_at }}</td>
-
-                      {% comment %} <td>
-                        {% if session.formprogress.exists %}
-                          {% for progress in session.formprogress.all %}
-                            {{ progress.status }} ({{ progress.step }}){% if not forloop.last %}
-                              <br />
-                            {% endif %}
-                          {% endfor %}
-                        {% else %}
-                          No Progress Data
-                        {% endif %}
-                      </td> {% endcomment %}
+                      <th>
+                        <input type="checkbox" id="select-all" />
+                      </th>
+                      <th>
+                        <a href="{% url 'event_session_list' %}?sort=session_name">Session Name</a>
+                      </th>
+                      <th>MCC</th>
+                      <th>MCC Code</th>
+                      <th>MPP</th>
+                      <th>MPP Code</th>
+                      <th>MPP Visit By</th>
+                      <th>Created At</th>
+                      <th>Updated At</th>
                     </tr>
-                  {% endfor %}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {% for session in event_sessions %}
+                      <tr>
+                        <td>
+                          <input type="checkbox" name="selected_rows" value="{{ session.id }}" class="session-checkbox" />
+                        </td>
+                        <td>
+                          <a href="{% url 'session_details' session.session_name %}">{{ session.session_name }}</a>
+                        </td>
+                        <td>
+                          {% if session.mppvisit.exists %}
+                            {{ session.mppvisit.last.mcc }}
+                          {% endif %}
+                        </td>
+                        <td>
+                          {% if session.mppvisit.exists %}
+                            {{ session.mppvisit.last.mcc_code }}
+                          {% endif %}
+                        </td>
+                        <td>
+                          {% if session.mppvisit.exists %}
+                            {{ session.mppvisit.last.mpp_name }}
+                          {% endif %}
+                        </td>
+                        <td>
+                          {% if session.mppvisit.exists %}
+                            {{ session.mppvisit.last.mpp }}
+                          {% endif %}
+                        </td>
+                        <td>
+                          {% if session.mppvisit.exists %}
+                            {{ session.mppvisit.last.facilitator_name }}
+                          {% endif %}
+                        </td>
+                        <td>{{ session.created_at }}</td>
+                        <td>{{ session.updated_at }}</td>
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </form>
             </div>
           </div>
         </div>
@@ -169,4 +184,50 @@
       </div>
     </div>
   </div>
+
+  <script>
+    // Handle "Select All" checkbox
+    document.getElementById('select-all').addEventListener('change', function () {
+      let checkboxes = document.querySelectorAll('.session-checkbox')
+      checkboxes.forEach((checkbox) => {
+        checkbox.checked = this.checked
+      })
+      updateSelectedCount()
+    })
+    
+    // Update count of selected checkboxes
+    function updateSelectedCount() {
+      let selected = document.querySelectorAll('.session-checkbox:checked').length
+      document.getElementById('selected-count').textContent = selected
+    }
+    
+    // Handle individual checkbox change
+    document.querySelectorAll('.session-checkbox').forEach((checkbox) => {
+      checkbox.addEventListener('change', updateSelectedCount)
+    })
+    
+    document.getElementById('exportBtn').onclick = function (e) {
+      let selected = document.querySelectorAll('.session-checkbox:checked').length
+      if (selected === 0) {
+        e.preventDefault()
+        alert('Please select at least one session to export.')
+      } else {
+        document.getElementById('formAction').value = 'export'
+        document.getElementById('export-form').submit()
+      }
+    }
+    
+    document.getElementById('deleteBtn').onclick = function (e) {
+      let selected = document.querySelectorAll('.session-checkbox:checked').length
+      if (selected === 0) {
+        e.preventDefault()
+        alert('Please select at least one session to export.')
+      } else {
+        if (confirm('Are you sure you want to delete the selected rows?')) {
+          document.getElementById('formAction').value = 'delete'
+          document.getElementById('export-form').submit()
+        }
+      }
+    }
+  </script>
 {% endblock %}
