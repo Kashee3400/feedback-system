@@ -267,8 +267,6 @@ class Feedback(BaseFeedback):
         return f"Feedback from {self.sender.username} - {self.message}"
 
 
-
-
 class LanguageSopported(models.Model):
     title = models.CharField(max_length=30)
     code = models.CharField(max_length = 100,primary_key=True, default="en-US")

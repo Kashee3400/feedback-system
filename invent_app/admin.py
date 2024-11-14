@@ -1,9 +1,9 @@
 from django.contrib import admin
 from django.utils.translation import gettext_lazy
-from .models import *
 from django.contrib.auth.admin import UserAdmin
-from .models import CustomUser
 from django.apps import apps
+from .resoruces import *
+from import_export.admin import ImportExportModelAdmin
 
 # Get all models from the app 'invent_app'
 
@@ -13,7 +13,7 @@ app_models = apps.get_app_config(app_name).get_models()
 
 for model in app_models:
     # Exclude CustomUser model
-    if model.__name__ == 'CustomUser':
+    if model.__name__ in ['CustomUser','FarmerFeedback']:
         continue
     
     # Determine searchable fields
@@ -43,3 +43,11 @@ class CustomUserAdmin(UserAdmin):
     )
 
 admin.site.register(CustomUser, CustomUserAdmin)
+
+
+@admin.register(FarmerFeedback)
+class FarmerFeedbacksAdmin(ImportExportModelAdmin):
+    resource_class = FarmerFeedbacksResource
+    list_display = ('feedback_id','mcc_code', 'mcc_ex_code', 'mcc_name', 'mpp_code', 'mpp_short_name','name','code', 'mobile', 'message','is_closed')
+    search_fields = ('feedback_id','mcc_code', 'mcc_ex_code', 'mcc_name', 'mpp_code','name','code', 'mobile',)
+    
