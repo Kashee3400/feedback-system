@@ -50,4 +50,4 @@ class FarmerFeedbacksAdmin(ImportExportModelAdmin):
     resource_class = FarmerFeedbacksResource
     list_display = ('feedback_id','mcc_code', 'mcc_ex_code', 'mcc_name', 'mpp_code', 'mpp_short_name','name','code', 'mobile', 'message','is_closed')
     search_fields = ('feedback_id','mcc_code', 'mcc_ex_code', 'mcc_name', 'mpp_code','name','code', 'mobile',)
-    list_editable = ('is_closed')
+    list_editable = ('is_closed',)
