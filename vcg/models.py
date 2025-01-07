@@ -250,11 +250,9 @@ class MonthAssignment(models.Model):
         verbose_name_plural = 'Month Assignments'
 
 
-from django.db import models
 from django.utils.timezone import now
 import random
 import string
-from django.db import models
 from django.utils.translation import gettext_lazy as _ 
 
 class EventSession(models.Model):

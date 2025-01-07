@@ -795,8 +795,8 @@ class EventSessionListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     permission_required = ["vcg.view_eventsession"]
 
     def test_func(self):
-        return self.request.user.has_perm(self.permission_required)
-
+        return all(self.request.user.has_perm(perm) for perm in self.permission_required)
+    
     def get_queryset(self):
         queryset = super().get_queryset()
         queryset = queryset.filter(formprogress__isnull=False).distinct()

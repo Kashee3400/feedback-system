@@ -190,13 +190,11 @@ class FeedbackCategory(models.Model):
         verbose_name_plural = 'Feedback Categories'
 
 
-
 import uuid
 from django.db import models
 from django.utils import timezone
 
 class BaseFeedback(models.Model):
-    # Fields related to feedback
     mcc_code = models.CharField(max_length=5, blank=True, null=True)
     mcc_ex_code = models.CharField(max_length=20, blank=True, null=True)
     mcc_name = models.CharField(max_length=255, blank=True, null=True)

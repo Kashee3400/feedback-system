@@ -1,21 +1,15 @@
 from rest_framework import generics, status
-from django.core.files.base import ContentFile
-from PIL import Image
 from rest_framework.views import APIView
-from rest_framework.authtoken.models import Token
 from invent_app.serializers import *
 from django.core.files.storage import default_storage
 from rest_framework.response import Response
 from invent_app.models import *
 from .serializers import *
-from rest_framework import viewsets
 from .models import *
 from rest_framework.permissions import AllowAny,IsAdminUser,IsAuthenticated
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny
-from .models import CattleTagging
-from .serializers import CattleTaggingSerializer
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework.exceptions import PermissionDenied, ValidationError
 
